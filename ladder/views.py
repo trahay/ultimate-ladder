@@ -6,6 +6,8 @@ from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
 from django.contrib import messages
 from datetime import datetime    
+import logging
+logger = logging.getLogger(__name__)
 
 from .forms import PlayerForm, GameForm, ScoreForm
 from .models import Player, League, Game, Team
@@ -46,6 +48,11 @@ class PlayerCreate(CreateView):
 
     def form_valid(self, form):
         messages.success(self.request, "The Player was created successfully.")
+        name=form.cleaned_data.get("name")
+        gender=form.cleaned_data.get("gender")
+        score=form.cleaned_data.get("score")
+        logger.warning("PlayerCreate(name='"+name+"', gender='"+gender+"', score='"+str(score)+"')")
+
         return super(PlayerCreate,self).form_valid(form)
 
 class PlayerUpdate(UpdateView):
@@ -55,6 +62,10 @@ class PlayerUpdate(UpdateView):
     template_name = "ladder/edit_player.html"
     def form_valid(self, form):
         messages.success(self.request, "The Player was updated successfully.")
+        name=form.cleaned_data.get("name")
+        gender=form.cleaned_data.get("gender")
+        score=form.cleaned_data.get("score")
+        logger.warning("PlayerUpdate(name='"+name+"', gender='"+gender+"', score='"+str(score)+"')")
         return super(PlayerUpdate,self).form_valid(form)
 
 class PlayerDelete(DeleteView):
@@ -64,8 +75,9 @@ class PlayerDelete(DeleteView):
     
     def form_valid(self, form):
         messages.success(self.request, "The Player was deleted successfully.")
+        name=form.cleaned_data.get("name")
+        logger.warning("PlayerDeleteUpdate()")
         return super(PlayerDelete,self).form_valid(form)
-
 
 
 class LeagueList(generic.ListView):
@@ -92,6 +104,8 @@ class LeagueCreate(CreateView):
 
     def form_valid(self, form):
         messages.success(self.request, "The League was created successfully.")
+        name=form.cleaned_data.get("name")
+        logger.warning("LeagueCreate(name='"+name+"')")
         return super(LeagueCreate,self).form_valid(form)
 
 class LeagueUpdate(UpdateView):
@@ -101,6 +115,7 @@ class LeagueUpdate(UpdateView):
     template_name = "ladder/edit_league.html"
     def form_valid(self, form):
         messages.success(self.request, "The League was updated successfully.")
+        logger.warning("LeagueUpdate(name='"+name+"')")
         return super(LeagueUpdate,self).form_valid(form)
 
 class LeagueDelete(DeleteView):
@@ -110,8 +125,8 @@ class LeagueDelete(DeleteView):
     
     def form_valid(self, form):
         messages.success(self.request, "The League was deleted successfully.")
+        logger.warning("LeagueDelete()")
         return super(LeagueDelete,self).form_valid(form)
-
 
     
 class GameDetail(FormMixin, generic.DetailView):
@@ -139,6 +154,8 @@ class GameDetail(FormMixin, generic.DetailView):
             game.completed = True
             game.completion_date = datetime.now()
             game.save()
+            logger.warning("GameComplete(game='"+str(game)+"', score="+str(game.score_team_a)+"-"+str(game.score_team_b)+")")
+
             UpdateStats(game)
 
             messages.success(request, "The Game was updated successfully.")
@@ -159,6 +176,8 @@ class GameDelete(DeleteView):
     
     def form_valid(self, form):
         messages.success(self.request, "The Game was deleted successfully.")
+        game=form.cleaned_data.get("game")
+        logger.warning("GameDelete()")
         return super(GameDelete,self).form_valid(form)
 
 
@@ -177,50 +196,95 @@ def NewGame(request, league_id):
             # TODO: matchmaking !
             team_a_players = players[:int(len(players)/2)]
             team_b_players = players[int(len(players)/2):]
+            team_a=[]
+            team_b=[]
             for p in team_a_players:
                 player = get_object_or_404(Player, id=p)
                 t = Team(game=game, player=player, team_name='A')
                 t.save()
+                team_a.append(player)
+
             for p in team_b_players:
                 player = get_object_or_404(Player, id=p)
                 t = Team(game=game, player=player, team_name='B')
                 t.save()
+                team_b.append(player)
 
+            logger.warning("NewGame(game='"+str(game)+"', team_a="+str(team_a)+", team_b="+str(team_b)+")")
             return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
         else:
             return render(request, 'ladder/new_game.html', {'form': form})
 
+def TeamScore(team):
+    score=0
+    for t in team:
+         player = t.player
+         score = score + player.score
+    return score
+
 def UpdateStats(game):
-    delta=(game.score_team_a - game.score_team_b) * 10
+    # We need to update each player's score
+
+    # The winning team's players score increase, and the loosers score decrease
+    # The sum of increase and decrease should be zero
+
+    nb_players=game.team_set.count()
+    # On average, each player will get 5 points for each point difference during this game
+    delta=(game.score_team_a - game.score_team_b) * 5 * nb_players
+
+    # Then, if a team is "stronger" than the other, reduce/increase the delta
+    score_a=TeamScore(game.team_set.filter(team_name='A'))
+    score_b=TeamScore(game.team_set.filter(team_name='B'))
+    team_balance=score_a/score_b
+    delta=delta*team_balance
+    
+    # The number of players may be different
+    # This is the number of points to give/remove to each team
+    nb_points=delta*nb_players/2
+    team_a_points=nb_points/game.team_set.filter(team_name='A').count()
+    team_b_points=nb_points/game.team_set.filter(team_name='B').count()
+
+    logger.warning("UpdateStats(game='"+str(game)+"', level_a="+str(score_a)+", level_b="+str(score_b)+")")
+    
+    logger.warning("UpdateStats(game='"+str(game)+"', score="+str(game.score_team_a)+"-"+str(game.score_team_b)+", delta="+str(delta)+")")
+
+    
     for t in game.team_set.filter(team_name='A'):
         p = t.player
-        p.score = p.score + delta
-        p.save()       
+        new_score=p.score + team_a_points
+        logger.warning("\tUpdateStats(player='"+str(p)+"', score="+str(p.score)+") -> "+str(new_score))
+        p.score = new_score
+        p.save()
 
     for t in game.team_set.filter(team_name='B'):
         p = t.player
-        p.score = p.score - delta
+        new_score=p.score - team_b_points
+        logger.warning("\tUpdateStats(player='"+str(p)+"', score="+str(p.score)+") -> "+str(new_score))
+        p.score = new_score
         p.save()
 
-def EditGame(request, league_id, pk):
-    league = get_object_or_404(League, id=league_id)
-    game = get_object_or_404(Game, id=pk)
-    if request.method == 'POST':
-        form = ScoreForm(request.POST)
-        if form.is_valid():    
-            if game.completed == True:
-                messages.error(request, "The Game is already completed.")
-                return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
-
-            game.completed = True
-            game.completion_date = datetime.now()
-            game.save()
-            UpdateStats(game)
-
-            messages.success(request, "The Game was updated successfully.")
-            return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
-        else:
-            messages.error(request, "form is not valid!.")
-    else:
-        messages.error(request, "method != post")
-    return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+#def EditGame(request, league_id, pk):
+#    league = get_object_or_404(League, id=league_id)
+#    game = get_object_or_404(Game, id=pk)
+#    if request.method == 'POST':
+#        form = ScoreForm(request.POST)
+#        if form.is_valid():    
+#            if game.completed == True:
+#                messages.error(request, "The Game is already completed.")
+#                return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+#
+#            game.completed = True
+#            game.completion_date = datetime.now()
+#            game.save()
+#            logger.warning("NewGame(game='"+str(game)+"', team_a="+str(team_a)+", team_b="+str(team_b)+")")
+#
+#            UpdateStats(game)
+#
+#            messages.success(request, "The Game was updated successfully.")
+#            return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+#        else:
+#            messages.error(request, "form is not valid!.")
+#    else:
+#        messages.error(request, "method != post")
+#    return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+#
