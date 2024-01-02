@@ -32,3 +32,13 @@ class Team(models.Model):
     team_name = models.CharField(max_length=1)
     def __str__(self):
         return str(self.player) + " ("+str(self.game)+" / "+self.team_name+")"
+
+class PlayerStats(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    league = models.ForeignKey(League, on_delete=models.CASCADE)
+    win = models.IntegerField(default=0)
+    loss = models.IntegerField(default=0)
+    draw = models.IntegerField(default=0)
+    total_points = models.IntegerField(default=0)
+    
+    

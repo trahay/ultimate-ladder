@@ -5,12 +5,14 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
 from django.contrib import messages
-from datetime import datetime    
+from datetime import datetime
+from django.db.models import Count
+
 import logging
 logger = logging.getLogger(__name__)
 
 from .forms import PlayerForm, GameForm, ScoreForm
-from .models import Player, League, Game, Team
+from .models import Player, League, Game, Team, PlayerStats
 
 
 class Index(generic.ListView):
@@ -94,6 +96,8 @@ class LeagueDetail(generic.DetailView):
         # Add in a QuerySet of all the books
         context["ongoing_games"] = context["league"].game_set.filter(completed=False)
         context["completed_games"] = context["league"].game_set.filter(completed=True)
+        context["player_list"] = context["league"].playerstats_set.all()
+
         return context
 
 class LeagueCreate(CreateView):
@@ -227,6 +231,7 @@ def UpdateStats(game):
 
     # The winning team's players score increase, and the loosers score decrease
     # The sum of increase and decrease should be zero
+    # (actually there's a rounding error, so it may not be exactly zero)
 
     nb_players=game.team_set.count()
     # On average, each player will get 5 points for each point difference during this game
@@ -253,8 +258,18 @@ def UpdateStats(game):
         p = t.player
         new_score=p.score + team_a_points
         logger.warning("\tUpdateStats(player='"+str(p)+"', score="+str(p.score)+") -> "+str(new_score))
-        p.score = new_score
+        p.score = new_score        
         p.save()
+
+        playerStat,created = PlayerStats.objects.get_or_create(player=p, league=game.league)
+        if(game.score_team_a > game.score_team_b):
+            playerStat.win = playerStat.win + 1
+        if(game.score_team_a == game.score_team_b):
+            playerStat.draw = playerStat.draw + 1
+        if(game.score_team_a < game.score_team_b):
+            playerStat.loss = playerStat.loss + 1
+        playerStat.total_points = playerStat.total_points + team_a_points
+        playerStat.save()
 
     for t in game.team_set.filter(team_name='B'):
         p = t.player
@@ -262,6 +277,16 @@ def UpdateStats(game):
         logger.warning("\tUpdateStats(player='"+str(p)+"', score="+str(p.score)+") -> "+str(new_score))
         p.score = new_score
         p.save()
+
+        playerStat,created = PlayerStats.objects.get_or_create(player=p, league=game.league)
+        if(game.score_team_b > game.score_team_a):
+            playerStat.win = playerStat.win + 1
+        if(game.score_team_b == game.score_team_a):
+            playerStat.draw = playerStat.draw + 1
+        if(game.score_team_b < game.score_team_a):
+            playerStat.loss = playerStat.loss + 1
+        playerStat.total_points = playerStat.total_points - team_a_points
+        playerStat.save()
 
 #def EditGame(request, league_id, pk):
 #    league = get_object_or_404(League, id=league_id)

@@ -27,6 +27,24 @@ Previous games:
 {% endif %}
 
 
+    <table>
+	<thead><tr>
+	    <th>Player</th><th>Wins</th><th>Losses</th><th>Draws</th><th>Total Points</th>
+	</tr></thead>
+	<tbody>
+	    {% for player in player_list %}
+	    <tr>
+		<td><a href="{% url 'ladder:player' player.id %}">{{ player.player.name }}</a></td>
+		<td>{{player.win}}</td>
+		<td>{{player.loss}}</td>
+		<td>{{player.draw}}</td>
+		<td>{{player.total_points}}</td>
+	    </tr>
+	    {% endfor %}	    
+	</tbody>
+	
+    </table>
+
 <a href="{% url 'ladder:add-game' league.id %}">New game</a>
 
 <a href="{% url 'ladder:edit-league' league.id %}">Edit League</a>
