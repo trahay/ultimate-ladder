@@ -27,6 +27,5 @@ urlpatterns = [
 # new game
     path("leagues/<int:league_id>/create_game/", views.NewGame, name="add-game"),
 # edit game
-    path("leagues/<int:league_id>/edit_game/<int:pk>", views.EditGame, name="edit-game"),
     path("leagues/<int:league_id>/delete_game/<int:pk>", views.GameDelete.as_view(), name="delete-game"),
 ]

@@ -11,8 +11,6 @@ from .forms import PlayerForm, GameForm, ScoreForm
 from .models import Player, League, Game, Team
 
 
-# Create your views here.
-
 class Index(generic.ListView):
     model=League
     context_object_name = "league_list"
@@ -141,6 +139,7 @@ class GameDetail(FormMixin, generic.DetailView):
             game.completed = True
             game.completion_date = datetime.now()
             game.save()
+            UpdateStats(game)
 
             messages.success(request, "The Game was updated successfully.")
             return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
@@ -191,6 +190,18 @@ def NewGame(request, league_id):
         else:
             return render(request, 'ladder/new_game.html', {'form': form})
 
+def UpdateStats(game):
+    delta=(game.score_team_a - game.score_team_b) * 10
+    for t in game.team_set.filter(team_name='A'):
+        p = t.player
+        p.score = p.score + delta
+        p.save()       
+
+    for t in game.team_set.filter(team_name='B'):
+        p = t.player
+        p.score = p.score - delta
+        p.save()
+
 def EditGame(request, league_id, pk):
     league = get_object_or_404(League, id=league_id)
     game = get_object_or_404(Game, id=pk)
@@ -204,6 +215,7 @@ def EditGame(request, league_id, pk):
             game.completed = True
             game.completion_date = datetime.now()
             game.save()
+            UpdateStats(game)
 
             messages.success(request, "The Game was updated successfully.")
             return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
