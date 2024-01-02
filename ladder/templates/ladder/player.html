@@ -6,7 +6,11 @@
 
 Score: {{ player.score }}
 
-<a href="{% url 'ladder:edit-player' player.id %}">Edit</a>
-<a href="{% url 'ladder:delete-player' player.id %}">Delete</a>
+
+<p>
+  <a href="{% url 'ladder:edit-player' player.id %}" class="logo">Edit Player</a>
+
+  <a href="{% url 'ladder:delete-player' player.id %}" class="logo">Delete Player</a>
+</p>
 
 {% endblock content %}

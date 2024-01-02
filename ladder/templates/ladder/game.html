@@ -38,6 +38,6 @@ Team B:
   {% endfor %}
 </ul>
 
-<a href="{% url 'ladder:delete-game' league.id game.id %}">Delete</a>
+<a href="{% url 'ladder:delete-game' league.id game.id %}" class="logo">Delete Game</a>
 
 {% endblock content %}
