@@ -1,0 +1,36 @@
+{% extends 'ladder/base.html' %}
+	
+{% block content %}
+
+<h1>{{ league.name }} </h1>
+
+{% if league.game_set.count %}
+Ongoing games:
+    <ul>
+    {% for game in ongoing_games %}
+        <li><a href="{% url 'ladder:game' league.id game.id %}">{{ game.creation_date }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No ongoing game.</p>
+{% endif %}
+
+{% if completed_games.count > 0 %}
+Previous games:
+    <ul>
+    {% for game in completed_games %}
+        <li><a href="{% url 'ladder:game' league.id game.id %}">{{ game.creation_date }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No previous ongoing game.</p>
+{% endif %}
+
+
+<a href="{% url 'ladder:add-game' league.id %}">New game</a>
+
+<a href="{% url 'ladder:edit-league' league.id %}">Edit League</a>
+
+<a href="{% url 'ladder:delete-league' league.id %}">Delete League</a>
+
+{% endblock content %}

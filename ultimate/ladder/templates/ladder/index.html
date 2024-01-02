@@ -1,0 +1,33 @@
+{% extends 'ladder/base.html' %}
+	
+{% block content %}
+
+<H1>Leagues</H1>
+{% if league_list %}
+    <ul>
+    {% for league in league_list %}
+        <li><a href="{% url 'ladder:league' league.id %}">{{ league.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No league available.</p>
+{% endif %}
+
+    <div>
+      <a href="{% url 'ladder:add-league' %}">Create League</a>
+    </div>
+    
+<H1>Players</H1>
+    {% if all_players %}
+    <ul>
+    {% for player in all_players %}
+        <li><a href="{% url 'ladder:player' player.id %}">{{ player.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No player.</p>
+{% endif %}
+
+    <a href="{% url 'ladder:add-player' %}">Create Player</a>
+
+    {% endblock content %}

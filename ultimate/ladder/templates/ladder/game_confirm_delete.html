@@ -1,0 +1,16 @@
+{% extends 'ladder/base.html' %}
+	
+{% block content %}
+
+<div class="center">
+	<form method="post" class="card">
+		{% csrf_token %}
+		<h2>Delete Game</h2>
+		<p>Are you sure that you want to delete "{{game}}"?</p>
+		<p class="form-buttons">
+			<input type="submit" class="btn btn-primary" value="Delete">
+			<a href="{% url 'ladder:league' league.id %}" class="btn btn-outline">Cancel</a>
+		</p>
+	</form>
+</div>
+{% endblock content %}

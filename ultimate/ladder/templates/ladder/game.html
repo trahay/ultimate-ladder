@@ -1,0 +1,43 @@
+{% extends 'ladder/base.html' %}
+	
+{% block content %}
+<h1>{{ game.league.name }} ( {{ game.creation_date }} ) </h1>
+
+<ul>
+  <li>Creation date:   {{game.creation_date}}</li>
+  {% if game.completed %}
+  <li>Completion date:   {{game.completion_date}}</li>
+  <li>Score A:   {{game.score_team_a}}</li>
+  <li>Score B:   {{game.score_team_b}}</li>
+  {% else %}
+  <li> Ongoing game </li>
+  {% endif %}
+</ul>
+
+{% if game.completed == False %}
+
+<form action="{% url 'ladder:game' league.id game.id %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+</form>
+
+{% endif %}
+
+Team A:
+<ul>
+  {% for team in team_a  %}
+  <li><a href="{% url 'ladder:player' team.player.id %}">{{ team.player.name }} ( {{ team.player.score }} )</a></li>
+  {% endfor %}
+</ul>
+
+Team B:
+<ul>
+  {% for team in team_b  %}
+  <li><a href="{% url 'ladder:player' team.player.id %}">{{ team.player.name }} ( {{ team.player.score }} )</a></li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'ladder:delete-game' league.id game.id %}">Delete</a>
+
+{% endblock content %}

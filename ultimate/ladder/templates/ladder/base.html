@@ -1,0 +1,44 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'ladder/style.css' %}">
+    <script src="{% static 'js/app.js' %}" defer></script>
+    <title>My Site</title>
+  </head>
+  <body>
+      <header class="header">
+          <div class="container">
+              <a href="{%url 'ladder:index' %}" class="logo">Home</a>
+	      <nav class="nav">
+		  <a href="{% url 'ladder:leagues' %}">Leagues</a>
+		  <a href="{% url 'ladder:players' %}">Players</a>
+	      </nav>
+	  </div>
+      </header>
+      <main>
+	  <div class="container">
+	      {% if messages %}
+	      <div class="messages">
+		  {% for message in messages %}
+		  <div class="alert {% if message.tags %}alert-{{ message.tags }}"{% endif %}>
+		      {{ message }}
+		  </div>
+		  {% endfor %}
+	      </div>
+	      {% endif %}
+	      
+	      {%block content%} 
+	      {%endblock content%}
+	  </div>
+      </main>
+
+      <footer class="footer">
+          <div class="container">
+          </div>
+      </footer>
+
+  </body>
+</html>
