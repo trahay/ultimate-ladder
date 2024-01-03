@@ -13,6 +13,8 @@
   --color-info: #02a2b9;
   --color-success: #1ba345;
   --color-input: #00d1b2;
+  --color-blue: #3131fe;
+  --color-pink: #fe86b7;
    --border-radius: 5px;
 }
 * {
@@ -253,6 +255,14 @@ textarea {
   margin-top: auto;
   padding: 0.5rem 0;
   border-top: solid 1px var(--color-light);
+}
+
+.man {
+    color:var(--color-blue);
+}
+
+woman {
+    color:var(--color-pink);
 }
 
 .btn {

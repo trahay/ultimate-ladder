@@ -6,13 +6,15 @@
 <link rel="stylesheet" href="{% static 'ladder/style.css' %}">
 
 {% if player_list %}
-    <ul>
+    <div>
     {% for player in player_list %}
-        <li><a href="{% url 'ladder:player' player.id %}">{{ player.name }} ({{ player.score }})</a></li>
+    <p><a href="{% url 'ladder:player' player.id %}" class="{% if player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.name }} ({{ player.score }})</a></p>
     {% endfor %}
-    </ul>
-{% else %}
-    <p>No player available.</p>
+    </div>
+    {% else %}
+    <div>
+      <p>No player available.</p>
+    </div>
 {% endif %}
 
     <a href="{% url 'ladder:add-player' %}" class="logo">Create Player</a>

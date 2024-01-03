@@ -5,14 +5,16 @@
 <h1>{{ league.name }} </h1>
 
 {% if league.game_set.count %}
-Ongoing games:
-    <ul>
+<h2>Ongoing games</h2>
+    <div>
     {% for game in ongoing_games %}
-        <li><a href="{% url 'ladder:game' league.id game.id %}">{{ game.creation_date }}</a></li>
+        <p><a href="{% url 'ladder:game' league.id game.id %}">{{ game.creation_date }}</a></p>
     {% endfor %}
-    </ul>
-{% else %}
-    <p>No ongoing game.</p>
+    </div>
+    {% else %}
+    <div>
+	<p>No ongoing game.</p>
+    </div>
     {% endif %}
 
 
@@ -23,7 +25,7 @@ Ongoing games:
 	<tbody>
 	    {% for player in player_list %}
 	    <tr>
-		<td><a href="{% url 'ladder:player' player.id %}">{{ player.player.name }}</a></td>
+		<td><a href="{% url 'ladder:player' player.id %}" class="{% if player.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.player.name }}</a></td>
 		<td>{{player.win}}</td>
 		<td>{{player.loss}}</td>
 		<td>{{player.draw}}</td>
@@ -35,21 +37,23 @@ Ongoing games:
     </table>
 
     {% if completed_games.count > 0 %}
-    Archived games:
-    <ul>
+    <h2>Archived games</h2>
+    <div>
 	{% for game in completed_games %}
-        <li><a href="{% url 'ladder:game' league.id game.id %}">{{ game.creation_date }}</a></li>
+        <p><a href="{% url 'ladder:game' league.id game.id %}">{{ game.creation_date }}</a></p>
 	{% endfor %}
-    </ul>
+    </div>
     {% else %}
-    <p>No previous ongoing game.</p>
+    <div>
+	<p>No previous ongoing game.</p>
+    </div>
     {% endif %}
 
 
     <a href="{% url 'ladder:add-game' league.id %}" class="logo">New game</a>
 
-<a href="{% url 'ladder:edit-league' league.id %}" class="logo">Edit League</a>
+    <a href="{% url 'ladder:edit-league' league.id %}" class="logo">Edit League</a>
 
-<a href="{% url 'ladder:delete-league' league.id %}" class="logo">Delete League</a>
+    <a href="{% url 'ladder:delete-league' league.id %}" class="logo">Delete League</a>
 
 {% endblock content %}

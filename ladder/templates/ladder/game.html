@@ -3,16 +3,16 @@
 {% block content %}
 <h1>{{ game.league.name }} ( {{ game.creation_date }} ) </h1>
 
-<ul>
-  <li>Creation date:   {{game.creation_date}}</li>
+<div>
+  <p><b>Creation date</b>:   {{game.creation_date}}</p>
   {% if game.completed %}
-  <li>Completion date:   {{game.completion_date}}</li>
-  <li>Score A:   {{game.score_team_a}}</li>
-  <li>Score B:   {{game.score_team_b}}</li>
+  <p><b>Completion date</b>:   {{game.completion_date}}</p>
+  <p><b>Score A</b>:   {{game.score_team_a}}</p>
+  <p><b>Score B</b>:   {{game.score_team_b}}</p>
   {% else %}
-  <li> Ongoing game </li>
+  <p><b>Ongoing game</b></p>
   {% endif %}
-</ul>
+</div>
 
 {% if game.completed == False %}
 
@@ -24,17 +24,18 @@
 
 {% endif %}
 
-Team A:
+<h2>Team A</h2>
 <ul>
   {% for team in team_a  %}
-  <li><a href="{% url 'ladder:player' team.player.id %}">{{ team.player.name }} ( {{ team.player.score }} )</a></li>
+  <p>
+    <a href="{% url 'ladder:player' team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player.score }} )</a></p>
   {% endfor %}
 </ul>
 
-Team B:
+<h2>Team B</h2>
 <ul>
   {% for team in team_b  %}
-  <li><a href="{% url 'ladder:player' team.player.id %}">{{ team.player.name }} ( {{ team.player.score }} )</a></li>
+  <p><a href="{% url 'ladder:player' team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player.score }} )</a></p>
   {% endfor %}
 </ul>
 
