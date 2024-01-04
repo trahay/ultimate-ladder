@@ -7,6 +7,13 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMi
 from django.contrib import messages
 from datetime import datetime
 from django.db.models import Count
+import pandas as pd
+import sys
+import math
+
+sys.path.insert(0, './ladder/matchmaking')
+import matchmaking as mm
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -132,7 +139,10 @@ class LeagueDelete(DeleteView):
         logger.warning("LeagueDelete()")
         return super(LeagueDelete,self).form_valid(form)
 
-    
+def get_team_score(Game, team_name):
+    team=Game.team_set.filter(team_name=team_name)
+    return TeamScore(team)
+
 class GameDetail(FormMixin, generic.DetailView):
     model=Game
     template_name = "ladder/game.html"
@@ -140,6 +150,8 @@ class GameDetail(FormMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["score_team_a"] = get_team_score(context["game"], 'A')
+        context["score_team_b"] = get_team_score(context["game"], 'B')
         context["team_a"] = context["game"].team_set.filter(team_name='A')
         context["team_b"] = context["game"].team_set.filter(team_name='B')
         context["league"] = context["game"].league
@@ -197,18 +209,64 @@ def NewGame(request, league_id):
                         creation_date=datetime.now())
             game.save()
             players = form.cleaned_data.get("players")
-            # TODO: matchmaking !
-            team_a_players = players[:int(len(players)/2)]
-            team_b_players = players[int(len(players)/2):]
+
+            # Matchmaking algorithm:
+            # for each gender, make 2 teams with similar score
+            # Then, concatenate the genders
+            player_list_m=[]
+            skill_list_m=[]
+            player_list_f=[]
+            skill_list_f=[]
+            # take the list of players along with their score
+            for p in players:
+                p = get_object_or_404(Player, id=p)
+                if p.gender == 'm':
+                    player_list_m.append(p.id)
+                    skill_list_m.append(p.score)
+                else:
+                    player_list_f.append(p.id)
+                    skill_list_f.append(p.score)
+
+            d_m={'player': player_list_m, 'skill': skill_list_m}
+            df_m = pd.DataFrame(data=d_m)
+            d_f={'player': player_list_f, 'skill': skill_list_f}
+            df_f = pd.DataFrame(data=d_f)
+            # Call a matchmaking algorithm
+            my_mm_m = mm.MatchMaking(df_m, teamsize=math.ceil(len(player_list_m)/2))
+            teams_m=my_mm_m.optimize()
+            my_mm_f = mm.MatchMaking(df_f, teamsize=math.ceil(len(player_list_f)/2))
+            teams_f=my_mm_f.optimize()
+
+            # get the results of the matchmaking
+            team_a_players_m = list(teams_m[teams_m["team"]==1]["player"])
+            team_b_players_m = list(teams_m[teams_m["team"]==0]["player"])
+
+            team_a_players_f = list(teams_f[teams_f["team"]==1]["player"])
+            team_b_players_f = list(teams_f[teams_f["team"]==0]["player"])
+
+            nb_players_a=len(team_a_players_m)+len(team_a_players_f)
+            nb_players_b=len(team_b_players_m)+len(team_b_players_f)
+            if nb_players_a > nb_players_b + 1 or  nb_players_b > nb_players_a + 1 :
+                # inbalance. This is because there's an odd number of
+                # male, and an odd number of female. As a result, the
+                # matchmaking algorithm assigns 2 more players in one
+                # team.
+
+                # Solution: swap the female teams
+                temp=team_a_players_f
+                team_a_players_f = team_b_players_f 
+                team_b_players_f = temp
+                
             team_a=[]
             team_b=[]
-            for p in team_a_players:
+            # Create Team entries in the database
+            for p in team_a_players_m + team_a_players_f:
                 player = get_object_or_404(Player, id=p)
                 t = Team(game=game, player=player, team_name='A')
                 t.save()
                 team_a.append(player)
 
-            for p in team_b_players:
+            for p in team_b_players_m + team_b_players_f:
                 player = get_object_or_404(Player, id=p)
                 t = Team(game=game, player=player, team_name='B')
                 t.save()

@@ -1,0 +1,3 @@
+[submodule "ladder/matchmaking"]
+	path = ladder/matchmaking
+	url = https://github.com/Xwoe/matchmaking.git
