@@ -219,7 +219,6 @@ def NewGame(request, league_id):
             skill_list_f=[]
             # take the list of players along with their score
             for p in players:
-                p = get_object_or_404(Player, id=p)
                 if p.gender == 'm':
                     player_list_m.append(p.id)
                     skill_list_m.append(p.score)
@@ -232,17 +231,22 @@ def NewGame(request, league_id):
             d_f={'player': player_list_f, 'skill': skill_list_f}
             df_f = pd.DataFrame(data=d_f)
             # Call a matchmaking algorithm
-            my_mm_m = mm.MatchMaking(df_m, teamsize=math.ceil(len(player_list_m)/2))
-            teams_m=my_mm_m.optimize()
-            my_mm_f = mm.MatchMaking(df_f, teamsize=math.ceil(len(player_list_f)/2))
-            teams_f=my_mm_f.optimize()
+            team_a_players_m=[]
+            team_a_players_f=[]
+            team_b_players_m=[]
+            team_b_players_f=[]
+            if len(player_list_m) > 0:
+                my_mm_m = mm.MatchMaking(df_m, teamsize=math.ceil(len(player_list_m)/2))
+                teams_m=my_mm_m.optimize()
+                # get the results of the matchmaking
+                team_a_players_m = list(teams_m[teams_m["team"]==1]["player"])
+                team_b_players_m = list(teams_m[teams_m["team"]==2]["player"])
 
-            # get the results of the matchmaking
-            team_a_players_m = list(teams_m[teams_m["team"]==1]["player"])
-            team_b_players_m = list(teams_m[teams_m["team"]==0]["player"])
-
-            team_a_players_f = list(teams_f[teams_f["team"]==1]["player"])
-            team_b_players_f = list(teams_f[teams_f["team"]==0]["player"])
+            if len(player_list_f) > 0:
+                my_mm_f = mm.MatchMaking(df_f, teamsize=math.ceil(len(player_list_f)/2))
+                teams_f=my_mm_f.optimize()
+                team_a_players_f = list(teams_f[teams_f["team"]==1]["player"])
+                team_b_players_f = list(teams_f[teams_f["team"]==2]["player"])
 
             nb_players_a=len(team_a_players_m)+len(team_a_players_f)
             nb_players_b=len(team_b_players_m)+len(team_b_players_f)

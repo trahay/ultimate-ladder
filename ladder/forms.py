@@ -8,14 +8,18 @@ class PlayerForm(forms.ModelForm):
         fields = '__all__'
 
 
+ALL_PLAYERS=Player.objects.all().values_list('id', 'name')
 class GameForm(forms.ModelForm):
-    ALL_PLAYERS=Player.objects.all().values_list('id', 'name');
-    players = forms.MultipleChoiceField(required=True,
-                                        widget = forms.CheckboxSelectMultiple,
-                                        choices = ALL_PLAYERS)
+    players = forms.ModelMultipleChoiceField(
+        widget = forms.CheckboxSelectMultiple,
+        queryset = Player.objects.all(),
+        initial = 0
+        )
+
     class Meta:
         model = Game
         fields = ['players']
+
 
 class ScoreForm(forms.ModelForm):
     class Meta:

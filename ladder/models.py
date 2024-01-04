@@ -10,7 +10,9 @@ class Player(models.Model):
     score = models.IntegerField(default=1000)
     def __str__(self):
         return self.name + " (" + self.gender + ")"
-
+    def value(self):
+        return (self.id, self.name)
+    
 class League(models.Model):
     name = models.CharField(max_length=200)
     def __str__(self):

@@ -4,4 +4,8 @@ python -m venv venv
 source venv/bin/activate
 
 git submodule init
-pip install django
+git submodule update
+
+pip install django, pandas
+
+python manage.py makemigrations ladder
