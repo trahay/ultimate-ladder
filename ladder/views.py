@@ -175,7 +175,7 @@ class GameDetail(FormMixin, generic.DetailView):
             UpdateStats(game)
 
             messages.success(request, "The Game was updated successfully.")
-            return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+            return HttpResponseRedirect(reverse('ladder:league', kwargs={"pk":league.id}))
         messages.error(request, "form is not valid!.")
         return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
 
@@ -238,15 +238,27 @@ def NewGame(request, league_id):
             if len(player_list_m) > 0:
                 my_mm_m = mm.MatchMaking(df_m, teamsize=math.ceil(len(player_list_m)/2))
                 teams_m=my_mm_m.optimize()
+
+                team_a_id=min(teams_m["team"])
+                team_b_id=max(teams_m["team"])
+
+                logger.warning("Team A is team #"+str(team_a_id))
+                logger.warning("Team B is team #"+str(team_b_id))
+
                 # get the results of the matchmaking
-                team_a_players_m = list(teams_m[teams_m["team"]==1]["player"])
-                team_b_players_m = list(teams_m[teams_m["team"]==2]["player"])
+                team_a_players_m = list(teams_m[teams_m["team"]==team_a_id]["player"])
+                team_b_players_m = list(teams_m[teams_m["team"]==team_b_id]["player"])
 
             if len(player_list_f) > 0:
                 my_mm_f = mm.MatchMaking(df_f, teamsize=math.ceil(len(player_list_f)/2))
                 teams_f=my_mm_f.optimize()
-                team_a_players_f = list(teams_f[teams_f["team"]==1]["player"])
-                team_b_players_f = list(teams_f[teams_f["team"]==2]["player"])
+                team_a_id=min(teams_m["team"])
+                team_b_id=max(teams_m["team"])
+                logger.warning("Team A is team #"+str(team_a_id))
+                logger.warning("Team B is team #"+str(team_b_id))
+                # get the results of the matchmaking
+                team_a_players_f = list(teams_f[teams_f["team"]==team_a_id]["player"])
+                team_b_players_f = list(teams_f[teams_f["team"]==team_b_id]["player"])
 
             nb_players_a=len(team_a_players_m)+len(team_a_players_f)
             nb_players_b=len(team_b_players_m)+len(team_b_players_f)
