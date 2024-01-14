@@ -30,7 +30,7 @@
 
     <table id="players" class="display compact" >
 	<thead><tr>
-	    <th>Player</th><th>Wins</th><th>Losses</th><th>Draws</th><th>Total Points</th>
+	    <th>Player</th><th>Wins</th><th>Losses</th><th>Draws</th><th>Total Points</th><th>Score</th>
 	</tr></thead>
 	<tbody>
 	    {% for player in player_list %}
@@ -40,6 +40,7 @@
 		<td>{{player.loss}}</td>
 		<td>{{player.draw}}</td>
 		<td>{{player.total_points}}</td>
+		<td>{{player.player.score}}</td>
 	    </tr>
 	    {% endfor %}	    
 	</tbody>
