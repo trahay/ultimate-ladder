@@ -2,6 +2,16 @@
 	
 {% block content %}
 
+<script>
+    $(document).ready(function () {
+        $('#players').DataTable({
+	    order: [[4, 'desc']],
+	});
+    });
+</script>
+
+
+ 
 <h1>{{ league.name }} </h1>
 
 {% if league.game_set.count %}
@@ -18,14 +28,14 @@
     {% endif %}
 
 
-    <table>
+    <table id="players" class="display compact" >
 	<thead><tr>
 	    <th>Player</th><th>Wins</th><th>Losses</th><th>Draws</th><th>Total Points</th>
 	</tr></thead>
 	<tbody>
 	    {% for player in player_list %}
 	    <tr>
-		<td><a href="{% url 'ladder:player' player.id %}" class="{% if player.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.player.name }}</a></td>
+		<td><a href="{% url 'ladder:player' player.player.id %}" class="{% if player.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.player.name }}</a></td>
 		<td>{{player.win}}</td>
 		<td>{{player.loss}}</td>
 		<td>{{player.draw}}</td>
