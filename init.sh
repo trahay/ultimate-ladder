@@ -8,6 +8,6 @@ git submodule update
 
 pip install django pandas
 
-python manage.py makemigrations ladder
-python manage.py migrate ladder
+python manage.py makemigrations ultimate_ladder
+python manage.py migrate ultimate_ladder
 python manage.py migrate
