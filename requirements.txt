@@ -1,0 +1,5 @@
+Django==5.0.1
+Faker==22.5.1
+numpy==1.26.3
+pandas==2.2.0
+streamlit==1.30.0
