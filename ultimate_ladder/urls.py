@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.urls import include, path
 from . import views
 
-app_name="ultimate_ladder"
+app_name = "ultimate_ladder"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.Index.as_view(), name="index"),
@@ -42,7 +43,7 @@ urlpatterns = [
 # view game
     path("leagues/<int:league_id>/<int:pk>", views.GameDetail.as_view(), name="game"),
 # new game
-    path("leagues/<int:league_id>/create_game/", views.NewGame, name="add-game"),
+    path("leagues/<int:league_pk>/create_game/", views.NewGame, name="add-game"),
 # edit game
     path("leagues/<int:league_id>/delete_game/<int:pk>", views.GameDelete.as_view(), name="delete-game"),
 ]

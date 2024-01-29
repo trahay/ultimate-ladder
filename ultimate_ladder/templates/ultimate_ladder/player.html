@@ -8,9 +8,9 @@ Score: {{ player.score }}
 
 
 <p>
-  <a href="{% url 'ultimate_ladder:edit-player' player.id %}" class="logo">Edit Player</a>
+  <a href="{% url 'edit-player' player.id %}" class="logo">Edit Player</a>
 
-  <a href="{% url 'ultimate_ladder:delete-player' player.id %}" class="logo">Delete Player</a>
+  <a href="{% url 'delete-player' player.id %}" class="logo">Delete Player</a>
 </p>
 
 {% endblock content %}

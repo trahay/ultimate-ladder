@@ -9,7 +9,7 @@
 {% if league_list %}
     <div>
     {% for league in league_list %}
-        <p><a href="{% url 'ultimate_ladder:league' league.id %}">{{ league.name }}</a></p>
+        <p><a href="{% url 'league' league.id %}">{{ league.name }}</a></p>
     {% endfor %}
     </div>
     {% else %}
@@ -20,6 +20,6 @@
 
 
     <div>
-      <a href="{% url 'ultimate_ladder:add-league' %}" class="logo">Create League</a>
+      <a href="{% url 'add-league' %}" class="logo">Create League</a>
     </div>
 {% endblock content %}

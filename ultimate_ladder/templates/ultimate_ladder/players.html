@@ -8,7 +8,7 @@
 {% if player_list %}
     <div>
     {% for player in player_list %}
-    <p><a href="{% url 'ultimate_ladder:player' player.id %}" class="{% if player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.name }} ({{ player.score }})</a></p>
+    <p><a href="{% url 'player' player.id %}" class="{% if player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.name }} ({{ player.score }})</a></p>
     {% endfor %}
     </div>
     {% else %}
@@ -17,6 +17,6 @@
     </div>
 {% endif %}
 
-    <a href="{% url 'ultimate_ladder:add-player' %}" class="logo">Create Player</a>
+    <a href="{% url 'add-player' %}" class="logo">Create Player</a>
 
 {% endblock content %}
