@@ -1,0 +1,16 @@
+{% extends 'ultimate_ladder/base.html' %}
+	
+{% block content %}
+
+<h1>{{ player.name }} ( {{ player.gender }} )</h1>
+
+Score: {{ player.score }}
+
+
+<p>
+  <a href="{% url 'ultimate_ladder:edit-player' player.id %}" class="logo">Edit Player</a>
+
+  <a href="{% url 'ultimate_ladder:delete-player' player.id %}" class="logo">Delete Player</a>
+</p>
+
+{% endblock content %}

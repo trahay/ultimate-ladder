@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class LadderConfig(AppConfig):
+class UltimateLadderConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'ladder'
+    name = 'ultimate_ladder'

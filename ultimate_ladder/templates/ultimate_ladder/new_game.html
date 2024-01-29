@@ -1,11 +1,11 @@
-{% extends 'ladder/base.html' %}
+{% extends 'ultimate_ladder/base.html' %}
 	
 {% block content %}
 <h2>New Game</h2>
 
 League: {{ league.name }}
 
-<form action="{% url 'ladder:add-game' league.id %}" method="post">
+<form action="{% url 'ultimate_ladder:add-game' league.id %}" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Save">

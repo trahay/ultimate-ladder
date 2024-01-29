@@ -1,4 +1,4 @@
-{% extends 'ladder/base.html' %}
+{% extends 'ultimate_ladder/base.html' %}
 	
 {% block content %}
 
@@ -18,7 +18,7 @@
 <h2>Ongoing games</h2>
     <div>
     {% for game in ongoing_games %}
-        <p><a href="{% url 'ladder:game' league.id game.id %}">{{ game.creation_date }}</a></p>
+        <p><a href="{% url 'ultimate_ladder:game' league.id game.id %}">{{ game.creation_date }}</a></p>
     {% endfor %}
     </div>
     {% else %}
@@ -35,7 +35,7 @@
 	<tbody>
 	    {% for player in player_list %}
 	    <tr>
-		<td><a href="{% url 'ladder:player' player.player.id %}" class="{% if player.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.player.name }}</a></td>
+		<td><a href="{% url 'ultimate_ladder:player' player.player.id %}" class="{% if player.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.player.name }}</a></td>
 		<td>{{player.win}}</td>
 		<td>{{player.loss}}</td>
 		<td>{{player.draw}}</td>
@@ -51,7 +51,7 @@
     <h2>Archived games</h2>
     <div>
 	{% for game in completed_games %}
-        <p><a href="{% url 'ladder:game' league.id game.id %}">{{ game.creation_date }}</a></p>
+        <p><a href="{% url 'ultimate_ladder:game' league.id game.id %}">{{ game.creation_date }}</a></p>
 	{% endfor %}
     </div>
     {% else %}
@@ -61,10 +61,10 @@
     {% endif %}
 
 
-    <a href="{% url 'ladder:add-game' league.id %}" class="logo">New game</a>
+    <a href="{% url 'ultimate_ladder:add-game' league.id %}" class="logo">New game</a>
 
-    <a href="{% url 'ladder:edit-league' league.id %}" class="logo">Edit League</a>
+    <a href="{% url 'ultimate_ladder:edit-league' league.id %}" class="logo">Edit League</a>
 
-    <a href="{% url 'ladder:delete-league' league.id %}" class="logo">Delete League</a>
+    <a href="{% url 'ultimate_ladder:delete-league' league.id %}" class="logo">Delete League</a>
 
 {% endblock content %}

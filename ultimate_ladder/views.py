@@ -11,7 +11,7 @@ import pandas as pd
 import sys
 import math
 
-sys.path.insert(0, './ladder/matchmaking')
+sys.path.insert(0, './ultimate_ladder/matchmaking')
 import matchmaking as mm
 
 
@@ -25,7 +25,7 @@ from .models import Player, League, Game, Team, PlayerStats
 class Index(generic.ListView):
     model=League
     context_object_name = "league_list"
-    template_name = "ladder/index.html"
+    template_name = "ultimate_ladder/index.html"
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
@@ -37,11 +37,11 @@ class Index(generic.ListView):
 class PlayerList(generic.ListView):
     model=Player
     context_object_name = "player_list"
-    template_name = "ladder/players.html"
+    template_name = "ultimate_ladder/players.html"
 
 class PlayerDetail(generic.DetailView):
     model=Player
-    template_name = "ladder/player.html"
+    template_name = "ultimate_ladder/player.html"
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
@@ -52,8 +52,8 @@ class PlayerDetail(generic.DetailView):
 class PlayerCreate(CreateView):
     model = Player
     fields = [ 'name', 'gender', 'score' ]
-    success_url = reverse_lazy("ladder:players")
-    template_name = "ladder/edit_player.html"
+    success_url = reverse_lazy("ultimate_ladder:players")
+    template_name = "ultimate_ladder/edit_player.html"
 
     def form_valid(self, form):
         messages.success(self.request, "The Player was created successfully.")
@@ -67,8 +67,8 @@ class PlayerCreate(CreateView):
 class PlayerUpdate(UpdateView):
     model = Player
     fields = [ 'name', 'gender', 'score' ]
-    success_url = reverse_lazy("ladder:players")
-    template_name = "ladder/edit_player.html"
+    success_url = reverse_lazy("ultimate_ladder:players")
+    template_name = "ultimate_ladder/edit_player.html"
     def form_valid(self, form):
         messages.success(self.request, "The Player was updated successfully.")
         name=form.cleaned_data.get("name")
@@ -80,7 +80,7 @@ class PlayerUpdate(UpdateView):
 class PlayerDelete(DeleteView):
     model = Player
     context_object_name = 'player'
-    success_url = reverse_lazy("ladder:players")
+    success_url = reverse_lazy("ultimate_ladder:players")
     
     def form_valid(self, form):
         messages.success(self.request, "The Player was deleted successfully.")
@@ -92,11 +92,11 @@ class PlayerDelete(DeleteView):
 class LeagueList(generic.ListView):
     model=League
     context_object_name = "league_list"
-    template_name = "ladder/leagues.html"
+    template_name = "ultimate_ladder/leagues.html"
 
 class LeagueDetail(generic.DetailView):
     model=League
-    template_name = "ladder/league.html"
+    template_name = "ultimate_ladder/league.html"
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
@@ -110,8 +110,8 @@ class LeagueDetail(generic.DetailView):
 class LeagueCreate(CreateView):
     model = League
     fields = [ 'name' ]
-    success_url = reverse_lazy("ladder:leagues")
-    template_name = "ladder/edit_league.html"
+    success_url = reverse_lazy("ultimate_ladder:leagues")
+    template_name = "ultimate_ladder/edit_league.html"
 
     def form_valid(self, form):
         messages.success(self.request, "The League was created successfully.")
@@ -122,8 +122,8 @@ class LeagueCreate(CreateView):
 class LeagueUpdate(UpdateView):
     model = League
     fields = [ 'name' ]
-    success_url = reverse_lazy("ladder:league")
-    template_name = "ladder/edit_league.html"
+    success_url = reverse_lazy("ultimate_ladder:league")
+    template_name = "ultimate_ladder/edit_league.html"
     def form_valid(self, form):
         messages.success(self.request, "The League was updated successfully.")
         logger.warning("LeagueUpdate(name='"+name+"')")
@@ -132,7 +132,7 @@ class LeagueUpdate(UpdateView):
 class LeagueDelete(DeleteView):
     model = League
     context_object_name = 'league'
-    success_url = reverse_lazy("ladder:leagues")
+    success_url = reverse_lazy("ultimate_ladder:leagues")
     
     def form_valid(self, form):
         messages.success(self.request, "The League was deleted successfully.")
@@ -145,7 +145,7 @@ def get_team_score(Game, team_name):
 
 class GameDetail(FormMixin, generic.DetailView):
     model=Game
-    template_name = "ladder/game.html"
+    template_name = "ultimate_ladder/game.html"
     form_class=ScoreForm
 
     def get_context_data(self, **kwargs):
@@ -163,7 +163,7 @@ class GameDetail(FormMixin, generic.DetailView):
         if form.is_valid():    
             if game.completed == True:
                 messages.error(request, "The Game is already completed.")
-                return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+                return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
 
             game.score_team_a = form.cleaned_data.get("score_team_a")
             game.score_team_b = form.cleaned_data.get("score_team_b")
@@ -175,15 +175,15 @@ class GameDetail(FormMixin, generic.DetailView):
             UpdateStats(game)
 
             messages.success(request, "The Game was updated successfully.")
-            return HttpResponseRedirect(reverse('ladder:league', kwargs={"pk":league.id}))
+            return HttpResponseRedirect(reverse('ultimate_ladder:league', kwargs={"pk":league.id}))
         messages.error(request, "form is not valid!.")
-        return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+        return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
 
 
 class GameDelete(DeleteView):
     model = Game
     context_object_name = 'game'
-    success_url = reverse_lazy("ladder:leagues")
+    success_url = reverse_lazy("ultimate_ladder:leagues")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -201,7 +201,7 @@ def NewGame(request, league_id):
     league = get_object_or_404(League, id=league_id)
     if request.method == 'GET':
         context = {'form': GameForm(instance=league), 'league': league}
-        return render(request,'ladder/new_game.html',context)
+        return render(request,'ultimate_ladder/new_game.html',context)
     elif request.method == 'POST':
         form = GameForm(request.POST)
         if form.is_valid():
@@ -289,9 +289,9 @@ def NewGame(request, league_id):
                 team_b.append(player)
 
             logger.warning("NewGame(game='"+str(game)+"', team_a="+str(team_a)+", team_b="+str(team_b)+")")
-            return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+            return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
         else:
-            return render(request, 'ladder/new_game.html', {'form': form})
+            return render(request, 'ultimate_ladder/new_game.html', {'form': form})
 
 def TeamScore(team):
     score=0
@@ -370,7 +370,7 @@ def UpdateStats(game):
 #        if form.is_valid():    
 #            if game.completed == True:
 #                messages.error(request, "The Game is already completed.")
-#                return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+#                return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
 #
 #            game.completed = True
 #            game.completion_date = datetime.now()
@@ -380,10 +380,10 @@ def UpdateStats(game):
 #            UpdateStats(game)
 #
 #            messages.success(request, "The Game was updated successfully.")
-#            return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+#            return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
 #        else:
 #            messages.error(request, "form is not valid!.")
 #    else:
 #        messages.error(request, "method != post")
-#    return HttpResponseRedirect(reverse('ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+#    return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
 #

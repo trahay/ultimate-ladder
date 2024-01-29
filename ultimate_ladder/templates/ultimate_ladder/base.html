@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{% static 'ladder/style.css' %}">
+    <link rel="stylesheet" href="{% static 'ultimate_ladder/style.css' %}">
 
     <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.datatables.net/rss.xml">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
@@ -14,15 +14,15 @@
     <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 
-    <title>Ultimate ladder</title>
+    <title>Ultimate ultimate_ladder</title>
   </head>
   <body>
       <header class="header">
           <div class="container">
-              <a href="{%url 'ladder:index' %}" class="logo">Home</a>
+              <a href="{%url 'index' %}" class="logo">Home</a>
 	      <nav class="nav">
-		  <a href="{% url 'ladder:leagues' %}">Leagues</a>
-		  <a href="{% url 'ladder:players' %}">Players</a>
+		  <a href="{% url 'leagues' %}">Leagues</a>
+		  <a href="{% url 'players' %}">Players</a>
 	      </nav>
 	  </div>
       </header>

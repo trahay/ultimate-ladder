@@ -1,0 +1,22 @@
+{% extends 'ultimate_ladder/base.html' %}
+	
+{% block content %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'ultimate_ladder/style.css' %}">
+
+{% if player_list %}
+    <div>
+    {% for player in player_list %}
+    <p><a href="{% url 'ultimate_ladder:player' player.id %}" class="{% if player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.name }} ({{ player.score }})</a></p>
+    {% endfor %}
+    </div>
+    {% else %}
+    <div>
+      <p>No player available.</p>
+    </div>
+{% endif %}
+
+    <a href="{% url 'ultimate_ladder:add-player' %}" class="logo">Create Player</a>
+
+{% endblock content %}
