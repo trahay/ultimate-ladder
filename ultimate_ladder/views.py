@@ -291,7 +291,8 @@ def NewGame(request, league_pk):
             logger.warning("NewGame(game='"+str(game)+"', team_a="+str(team_a)+", team_b="+str(team_b)+")")
             return HttpResponseRedirect(reverse('game', kwargs={"league_id":league.id, "pk":game.id}))
         else:
-            return render(request, 'ultimate_ladder/new_game.html', {'form': form})
+            context = {'form': form, 'league': league}
+            return render(request, 'ultimate_ladder/new_game.html', context)
 
 def TeamScore(team):
     score=0

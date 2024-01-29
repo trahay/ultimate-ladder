@@ -16,6 +16,11 @@ class GameForm(forms.ModelForm):
         initial = 0
         )
 
+    def clean_players(self):
+        if len(self.cleaned_data['players']) < 2:
+            raise forms.ValidationError('Select at least two players.')
+        return self.cleaned_data['players']
+
     class Meta:
         model = Game
         fields = ['players']
