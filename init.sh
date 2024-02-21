@@ -1,13 +1,10 @@
 #!/bin/bash
 
-python -m venv venv
-source venv/bin/activate
-
 git submodule init
 git submodule update
 
-pip install django pandas
+poetry update
 
-python manage.py makemigrations ultimate_ladder
-python manage.py migrate ultimate_ladder
-python manage.py migrate
+poetry run python manage.py makemigrations ultimate_ladder
+poetry run python manage.py migrate ultimate_ladder
+poetry run python manage.py migrate

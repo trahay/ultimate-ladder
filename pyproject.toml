@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "ultimate-ladder"
+version = "0.1.0"
+description = "A matchmaking website for creating balanced teams when playing ultimate frisbee."
+authors = ["François Trahay <ftrahay@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+django = ">=4.0"
+pandas = "^2.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
