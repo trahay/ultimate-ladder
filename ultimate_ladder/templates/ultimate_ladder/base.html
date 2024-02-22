@@ -19,10 +19,10 @@
   <body>
       <header class="header">
           <div class="container">
-              <a href="{%url 'index' %}" class="logo">Home</a>
+              <a href="{%url 'ultimate_ladder:ultimate_ladder:index' %}" class="logo">Home</a>
 	      <nav class="nav">
-		  <a href="{% url 'leagues' %}">Leagues</a>
-		  <a href="{% url 'players' %}">Players</a>
+		  <a href="{% url 'ultimate_ladder:leagues' %}">Leagues</a>
+		  <a href="{% url 'ultimate_ladder:players' %}">Players</a>
 	      </nav>
 	  </div>
       </header>
@@ -45,8 +45,8 @@
 
       <footer class="footer">
           <div class="container">
-	    <a href="{% url 'add-league' %}" class="logo">Create League</a>
-	    <a href="{% url 'add-player' %}" class="logo">Create Player</a>
+	    <a href="{% url 'ultimate_ladder:add-league' %}" class="logo">Create League</a>
+	    <a href="{% url 'ultimate_ladder:add-player' %}" class="logo">Create Player</a>
           </div>
       </footer>
 

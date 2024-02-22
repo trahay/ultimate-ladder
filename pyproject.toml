@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.9"
 django = ">=4.0"
 pandas = "^2.2.0"
+gunicorn = "^21.2.0"
 
 
 [build-system]
