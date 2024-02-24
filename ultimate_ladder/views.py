@@ -10,6 +10,8 @@ from django.db.models import Count
 import pandas as pd
 import sys
 import math
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 sys.path.insert(0, './ultimate_ladder/matchmaking')
 import matchmaking as mm
@@ -49,7 +51,7 @@ class PlayerDetail(generic.DetailView):
         context["form"] = PlayerForm()
         return context
 
-class PlayerCreate(CreateView):
+class PlayerCreate(LoginRequiredMixin, CreateView):
     model = Player
     fields = [ 'name', 'gender', 'score' ]
     success_url = reverse_lazy("ultimate_ladder:players")
@@ -64,7 +66,7 @@ class PlayerCreate(CreateView):
 
         return super(PlayerCreate,self).form_valid(form)
 
-class PlayerUpdate(UpdateView):
+class PlayerUpdate(LoginRequiredMixin, UpdateView):
     model = Player
     fields = [ 'name', 'gender', 'score' ]
     success_url = reverse_lazy("ultimate_ladder:players")
@@ -77,7 +79,7 @@ class PlayerUpdate(UpdateView):
         logger.warning("PlayerUpdate(name='"+name+"', gender='"+gender+"', score='"+str(score)+"')")
         return super(PlayerUpdate,self).form_valid(form)
 
-class PlayerDelete(DeleteView):
+class PlayerDelete(LoginRequiredMixin, DeleteView):
     model = Player
     context_object_name = 'player'
     success_url = reverse_lazy("ultimate_ladder:players")
@@ -107,7 +109,7 @@ class LeagueDetail(generic.DetailView):
 
         return context
 
-class LeagueCreate(CreateView):
+class LeagueCreate(LoginRequiredMixin, CreateView):
     model = League
     fields = [ 'name' ]
     success_url = reverse_lazy("ultimate_ladder:leagues")
@@ -119,7 +121,7 @@ class LeagueCreate(CreateView):
         logger.warning("LeagueCreate(name='"+name+"')")
         return super(LeagueCreate,self).form_valid(form)
 
-class LeagueUpdate(UpdateView):
+class LeagueUpdate(LoginRequiredMixin, UpdateView):
     model = League
     fields = [ 'name' ]
     success_url = reverse_lazy("ultimate_ladder:league")
@@ -129,7 +131,7 @@ class LeagueUpdate(UpdateView):
         logger.warning("LeagueUpdate(name='"+name+"')")
         return super(LeagueUpdate,self).form_valid(form)
 
-class LeagueDelete(DeleteView):
+class LeagueDelete(LoginRequiredMixin, DeleteView):
     model = League
     context_object_name = 'league'
     success_url = reverse_lazy("ultimate_ladder:leagues")
@@ -156,6 +158,8 @@ class GameDetail(FormMixin, generic.DetailView):
         context["team_b"] = context["game"].team_set.filter(team_name='B')
         context["league"] = context["game"].league
         return context
+
+    @login_required
     def post(self, request, *args, **kwargs):
         league = get_object_or_404(League, id=kwargs.get("league_id"))
         game = get_object_or_404(Game, id=kwargs.get("pk"))
@@ -180,7 +184,7 @@ class GameDetail(FormMixin, generic.DetailView):
         return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
 
 
-class GameDelete(DeleteView):
+class GameDelete(LoginRequiredMixin, DeleteView):
     model = Game
     context_object_name = 'game'
     success_url = reverse_lazy("ultimate_ladder:leagues")
@@ -197,6 +201,7 @@ class GameDelete(DeleteView):
         return super(GameDelete,self).form_valid(form)
 
 
+@login_required
 def NewGame(request, league_pk):
     league = get_object_or_404(League, id=league_pk)
     if request.method == 'GET':
@@ -301,6 +306,7 @@ def NewGame(request, league_pk):
             context = {'form': form, 'league': league}
             return render(request, 'ultimate_ladder/new_game.html', context)
 
+@login_required
 def TeamScore(team):
     score=0
     for t in team:
@@ -308,6 +314,7 @@ def TeamScore(team):
          score = score + player.score
     return score
 
+@login_required
 def UpdateStats(game):
     # We need to update each player's score
 
