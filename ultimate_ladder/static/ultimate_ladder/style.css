@@ -95,17 +95,11 @@ a:hover {
 .nav {
 	display:flex;
 	gap:1rem;
-	align-items: center;
-	justify-content: center;
+	align-items: right;
+	justify-content: right;
 	flex-basis: 100%;
-}
-
-
-
-.nav a:nth-last-child(2) {
-	margin-left: auto;
 	font-weight: bold;
-} 
+}
 
 
 .logo {

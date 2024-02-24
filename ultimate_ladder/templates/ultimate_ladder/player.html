@@ -7,10 +7,11 @@
 Score: {{ player.score }}
 
 
+{% if user.is_authenticated %}
 <p>
   <a href="{% url 'ultimate_ladder:edit-player' player.id %}" class="logo">Edit Player</a>
 
   <a href="{% url 'ultimate_ladder:delete-player' player.id %}" class="logo">Delete Player</a>
 </p>
-
+{% endif %}
 {% endblock content %}

@@ -61,10 +61,11 @@
     {% endif %}
 
 
+{% if user.is_authenticated %}
     <a href="{% url 'ultimate_ladder:add-game' league.id %}" class="logo">New game</a>
 
     <a href="{% url 'ultimate_ladder:edit-league' league.id %}" class="logo">Edit League</a>
 
     <a href="{% url 'ultimate_ladder:delete-league' league.id %}" class="logo">Delete League</a>
-
+{% endif %}
 {% endblock content %}

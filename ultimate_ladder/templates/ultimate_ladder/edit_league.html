@@ -2,12 +2,13 @@
 	
 {% block content %}
 
+{% if user.is_authenticated %}
 <h2>{% if league %} Edit {% else %} New {% endif %} League</h2>
 
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Save">
 </form>
-
+{% endif %}
 
 {% endblock content %}

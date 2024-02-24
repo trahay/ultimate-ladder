@@ -1,6 +1,8 @@
 {% extends 'ultimate_ladder/base.html' %}
 	
 {% block content %}
+
+{% if user.is_authenticated %}
 <h2>New Game</h2>
 
 League: {{ league.name }}
@@ -10,5 +12,5 @@ League: {{ league.name }}
     {{ form.as_p }}
     <input type="submit" value="Save">
 </form>
-
+{% endif %}
 {% endblock content %}

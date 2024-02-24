@@ -15,9 +15,11 @@
     </div>
     {% endif %}
 
+{% if user.is_authenticated %}
     <div>
       <a href="{% url 'ultimate_ladder:add-league' %}" class="logo">Create League</a>
     </div>
+    {% endif %}
     
 <H1>Players</H1>
     {% if all_players %}
@@ -34,6 +36,7 @@
     </div>
 {% endif %}
 
+    {% if user.is_authenticated %}
     <a href="{% url 'ultimate_ladder:add-player' %}" class="logo">Create Player</a>
-
+    {% endif %} 
     {% endblock content %}

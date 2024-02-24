@@ -21,6 +21,7 @@ from . import views
 app_name = "ultimate_ladder"
 
 urlpatterns = [
+    path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path("", views.Index.as_view(), name="index"),
 # view players
