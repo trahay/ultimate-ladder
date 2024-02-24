@@ -10,7 +10,7 @@
 		<p>Are you sure that you want to delete "{{league}}"?</p>
 		<p class="form-buttons">
 			<input type="submit" class="btn btn-primary" value="Delete">
-			<a href="{% url 'ultimate_ladder:leagues' %}" class="btn btn-outline">Cancel</a>
+			<a href="{% url 'ultimate_ladder:leagues' league.user_db %}" class="btn btn-outline">Cancel</a>
 		</p>
 	</form>
 </div>

@@ -7,7 +7,7 @@
 
 League: {{ league.name }}
 
-<form action="{% url 'ultimate_ladder:add-game' league.id %}" method="post">
+<form action="{% url 'ultimate_ladder:add-game' league.user_db league.id %}" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Save">

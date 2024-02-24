@@ -20,18 +20,22 @@
       <header class="header">
           <div class="container">
               <a href="{%url 'ultimate_ladder:index' %}" class="logo">Home</a>
+	      {% if user.is_authenticated %}
 	      <nav class="nav">
-		  <a href="{% url 'ultimate_ladder:leagues' %}">Leagues</a>
-		  <a href="{% url 'ultimate_ladder:players' %}">Players</a>
+		  <a href="{% url 'ultimate_ladder:leagues' user %}">Leagues</a>
+		  <a href="{% url 'ultimate_ladder:players' user %}">Players</a>
 	      </nav>
 	      <nav>
-		{% if user.is_authenticated %}
 		  User: {{ user.get_username }}
 		  <a href="{% url 'logout' %}?next={{ request.path }}">Logout</a>
-		  {% else %}
-		  <a href="{% url 'login' %}?next={{ request.path }}">Login</a>
-		  {% endif %}
 	      </nav>
+	      {% else %}
+	      <nav class="nav">
+	      </nav>
+	      <nav>
+		<a href="{% url 'login' %}?next={{ request.path }}">Login</a>
+	      </nav>
+		  {% endif %}
 	  </div>
       </header>
       <main>
@@ -54,8 +58,8 @@
       <footer class="footer">
 	{% if user.is_authenticated %}
           <div class="container">
-	    <a href="{% url 'ultimate_ladder:add-league' %}" class="logo">Create League</a>
-	    <a href="{% url 'ultimate_ladder:add-player' %}" class="logo">Create Player</a>
+	    <a href="{% url 'ultimate_ladder:add-league' user %}" class="logo">Create League</a>
+	    <a href="{% url 'ultimate_ladder:add-player' user %}" class="logo">Create Player</a>
           </div>
 	  {% endif %}
       </footer>
