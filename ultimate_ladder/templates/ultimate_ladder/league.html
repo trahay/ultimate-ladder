@@ -18,7 +18,7 @@
 <h2>Ongoing games</h2>
     <div>
     {% for game in ongoing_games %}
-        <p><a href="{% url 'ultimate_ladder:game' league.user_db league.id game.id %}">{{ game.creation_date }}</a></p>
+        <p><a href="{% url 'ultimate_ladder:game' league.owner league.id game.id %}">{{ game.creation_date }}</a></p>
     {% endfor %}
     </div>
     {% else %}
@@ -35,7 +35,7 @@
 	<tbody>
 	    {% for player in player_list %}
 	    <tr>
-		<td><a href="{% url 'ultimate_ladder:player' league.user_db player.player.id %}" class="{% if player.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.player.name }}</a></td>
+		<td><a href="{% url 'ultimate_ladder:player' league.owner player.player.id %}" class="{% if player.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.player.name }}</a></td>
 		<td>{{player.win}}</td>
 		<td>{{player.loss}}</td>
 		<td>{{player.draw}}</td>
@@ -51,7 +51,7 @@
     <h2>Archived games</h2>
     <div>
 	{% for game in completed_games %}
-        <p><a href="{% url 'ultimate_ladder:game' league.user_db league.id game.id %}">{{ game.creation_date }}</a></p>
+        <p><a href="{% url 'ultimate_ladder:game' league.owner league.id game.id %}">{{ game.creation_date }}</a></p>
 	{% endfor %}
     </div>
     {% else %}
@@ -62,10 +62,10 @@
 
 
 {% if user.is_authenticated %}
-    <a href="{% url 'ultimate_ladder:add-game' league.user_db league.id %}" class="logo">New game</a>
+    <a href="{% url 'ultimate_ladder:add-game' league.owner league.id %}" class="logo">New game</a>
 
-    <a href="{% url 'ultimate_ladder:edit-league' league.user_db league.id %}" class="logo">Edit League</a>
+    <a href="{% url 'ultimate_ladder:edit-league' league.owner league.id %}" class="logo">Edit League</a>
 
-    <a href="{% url 'ultimate_ladder:delete-league' league.user_db league.id %}" class="logo">Delete League</a>
+    <a href="{% url 'ultimate_ladder:delete-league' league.owner league.id %}" class="logo">Delete League</a>
 {% endif %}
 {% endblock content %}

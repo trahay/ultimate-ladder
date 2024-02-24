@@ -8,7 +8,7 @@ from django.conf import settings
 genders=( ('m', 'M'), ('f', 'F'))
 
 class Player(models.Model):
-    user_db = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     name = models.CharField(max_length=200)
     gender = models.CharField(max_length=10, choices=genders)
     score = models.IntegerField(default=1000)
@@ -18,13 +18,13 @@ class Player(models.Model):
         return (self.id, self.name)
     
 class League(models.Model):
-    user_db = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     name = models.CharField(max_length=200)
     def __str__(self):
         return self.name
 
 class Game(models.Model):
-    user_db = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     league = models.ForeignKey(League, on_delete=models.CASCADE)
     creation_date = models.DateTimeField()
     completion_date = models.DateTimeField(default=datetime.datetime.utcfromtimestamp(0))
@@ -35,15 +35,15 @@ class Game(models.Model):
         return str(self.league) + " ("+str(self.creation_date)+")"
 
 class Team(models.Model):
-    user_db = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     team_name = models.CharField(max_length=1)
     def __str__(self):
-        return str(self.player) + " ("+str(self.game)+" / "+self.team_name+")" + "(db:"+str(self.user_db)+")"
+        return str(self.player) + " ("+str(self.game)+" / "+self.team_name+")" + "(db:"+str(self.owner)+")"
 
 class PlayerStats(models.Model):
-    user_db = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     league = models.ForeignKey(League, on_delete=models.CASCADE)
     win = models.IntegerField(default=0)

@@ -17,7 +17,7 @@
 {% if user.is_authenticated %}
 {% if game.completed == False %}
 
-<form action="{% url 'ultimate_ladder:game' game.user_db league.id game.id %}" method="post">
+<form action="{% url 'ultimate_ladder:game' game.owner league.id game.id %}" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Save">
@@ -30,19 +30,19 @@
 <ul>
   {% for team in team_a  %}
   <p>
-    <a href="{% url 'ultimate_ladder:player' game.user_db team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player.score }} )</a></p>
+    <a href="{% url 'ultimate_ladder:player' game.owner team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player.score }} )</a></p>
   {% endfor %}
 </ul>
 
 <h2>Team B ({{ score_team_b }})</h2>
 <ul>
   {% for team in team_b  %}
-  <p><a href="{% url 'ultimate_ladder:player' game.user_db team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player.score }} )</a></p>
+  <p><a href="{% url 'ultimate_ladder:player' game.owner team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player.score }} )</a></p>
   {% endfor %}
 </ul>
 
 {% if user.is_authenticated %}
-<a href="{% url 'ultimate_ladder:delete-game' game.user_db league.id game.id %}" class="logo">Delete Game</a>
+<a href="{% url 'ultimate_ladder:delete-game' game.owner league.id game.id %}" class="logo">Delete Game</a>
 {% endif %}
 
 {% endblock content %}

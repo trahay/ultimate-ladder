@@ -9,7 +9,7 @@
 {% if league_list %}
     <div>
     {% for league in league_list %}
-        <p><a href="{% url 'ultimate_ladder:league' user_db league.id %}">{{ league.name }}</a></p>
+        <p><a href="{% url 'ultimate_ladder:league' owner league.id %}">{{ league.name }}</a></p>
     {% endfor %}
     </div>
     {% else %}

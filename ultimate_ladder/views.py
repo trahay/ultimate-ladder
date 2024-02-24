@@ -39,13 +39,13 @@ class Index(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            context["all_players"]=Player.objects.filter(user_db=self.request.user)
-            context["league_list"]=League.objects.filter(user_db=self.request.user)
-            context["user_db"]=self.request.user
+            context["all_players"]=Player.objects.filter(owner=self.request.user)
+            context["league_list"]=League.objects.filter(owner=self.request.user)
+            context["owner"]=self.request.user
         else:
             context["all_players"]=[]
             context["league_list"]=[]
-            context["user_db"]=[]
+            context["owner"]=[]
         return context
 
 
@@ -55,35 +55,64 @@ class PlayerList(generic.ListView):
     template_name = "ultimate_ladder/players.html"
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_db=getUserDB(self.kwargs["user_db"])
-        context["user_db"]=user_db.username
-        context["player_list"]=Player.objects.filter(user_db=user_db)
+        owner=getUserDB(self.kwargs["owner"])
+        context["owner"]=owner.username
+        context["player_list"]=Player.objects.filter(owner=owner)
         return context
+
 class PlayerDetail(generic.DetailView):
     model=Player
     template_name = "ultimate_ladder/player.html"
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_db=getUserDB(self.kwargs["user_db"])
-        context["user_db"]=user_db.username
+        owner=getUserDB(self.kwargs["owner"])
+        context["owner"]=owner.username
         context["form"] = PlayerForm()
         return context
 
+
+class LeagueList(generic.ListView):
+    model=League
+    context_object_name = "league_list"
+    template_name = "ultimate_ladder/leagues.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user=User.objects.get(username=self.kwargs["owner"])
+        context["owner"]=self.kwargs["owner"]
+        context["league_list"]=League.objects.filter(owner=user)
+        return context
+
+class LeagueDetail(generic.DetailView):
+    model=League
+    template_name = "ultimate_ladder/league.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["ongoing_games"] = context["league"].game_set.filter(completed=False)
+        context["completed_games"] = context["league"].game_set.filter(completed=True)
+        context["player_list"] = context["league"].playerstats_set.all()
+
+        return context
+
+# require authentification
 class PlayerCreate(LoginRequiredMixin, CreateView):
     model = Player
     fields = [ 'name', 'gender', 'score' ]
     template_name = "ultimate_ladder/edit_player.html"
+
     def get_success_url(self):
-        return reverse('ultimate_ladder:players', kwargs={"user_db": self.request.user})
+        return reverse('ultimate_ladder:players', kwargs={"owner": self.request.user})
 
     def form_valid(self, form, **kwargs):
         messages.success(self.request, "The Player was created successfully.")
         name=form.cleaned_data.get("name")
         gender=form.cleaned_data.get("gender")
         score=form.cleaned_data.get("score")
-        user_db=getUserDB(self.kwargs["user_db"])
-        user_name=user_db.username
-        form.instance.user_db=user_db
+        if self.request.user.is_authenticated:
+            owner=self.request.user
+        user_name=owner.username
+        form.instance.owner=owner
         logger.warning("PlayerCreate(userdb='"+str(user_name)+"', name='"+name+"', gender='"+gender+"', score='"+str(score)+"')")
 
         return super(PlayerCreate, self).form_valid(form)
@@ -92,15 +121,23 @@ class PlayerUpdate(LoginRequiredMixin, UpdateView):
     model = Player
     fields = [ 'name', 'gender', 'score' ]
     template_name = "ultimate_ladder/edit_player.html"
+
     def get_success_url(self):
-        return reverse('ultimate_ladder:players', kwargs={"user_db": self.request.user})
-    
+        return reverse('ultimate_ladder:players', kwargs={"owner": self.request.user})
+
+    # make sure a user only modifies its data !
+    def get_object(self, *args, **kwargs):
+        obj = super(PlayerUpdate, self).get_object(*args, **kwargs)
+        if not obj.owner == self.request.user:
+            raise Http404
+        return obj
+
     def form_valid(self, form):
         messages.success(self.request, "The Player was updated successfully.")
         name=form.cleaned_data.get("name")
         gender=form.cleaned_data.get("gender")
         score=form.cleaned_data.get("score")
-        user_db=self.request.user
+        owner=self.request.user
         logger.warning("PlayerUpdate(name='"+name+"', gender='"+gender+"', score='"+str(score)+"')")
         return super(PlayerUpdate,self).form_valid(form)
 
@@ -108,8 +145,15 @@ class PlayerDelete(LoginRequiredMixin, DeleteView):
     model = Player
     context_object_name = 'player'
     def get_success_url(self):
-        return reverse('ultimate_ladder:players', kwargs={"user_db": self.request.user})
+        return reverse('ultimate_ladder:players', kwargs={"owner": self.request.user})
     
+    # make sure a user only modifies its data !
+    def get_object(self, *args, **kwargs):
+        obj = super(PlayerDelete, self).get_object(*args, **kwargs)
+        if not obj.owner == self.request.user:
+            raise Http404
+        return obj
+
     def form_valid(self, form):
         messages.success(self.request, "The Player was deleted successfully.")
         name=form.cleaned_data.get("name")
@@ -117,29 +161,6 @@ class PlayerDelete(LoginRequiredMixin, DeleteView):
         return super(PlayerDelete,self).form_valid(form)
 
 
-class LeagueList(generic.ListView):
-    model=League
-    context_object_name = "league_list"
-    template_name = "ultimate_ladder/leagues.html"
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user=User.objects.get(username=self.kwargs["user_db"])
-        context["user_db"]=self.kwargs["user_db"]
-        context["league_list"]=League.objects.filter(user_db=user)
-        return context
-
-class LeagueDetail(generic.DetailView):
-    model=League
-    template_name = "ultimate_ladder/league.html"
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
-        context["ongoing_games"] = context["league"].game_set.filter(completed=False)
-        context["completed_games"] = context["league"].game_set.filter(completed=True)
-        context["player_list"] = context["league"].playerstats_set.all()
-
-        return context
 
 class LeagueCreate(LoginRequiredMixin, CreateView):
     model = League
@@ -147,14 +168,15 @@ class LeagueCreate(LoginRequiredMixin, CreateView):
     template_name = "ultimate_ladder/edit_league.html"
 
     def get_success_url(self):
-        return reverse('ultimate_ladder:leagues', kwargs={"user_db": self.request.user_db})
+        return reverse('ultimate_ladder:leagues', kwargs={"owner": self.request.owner})
 
     def form_valid(self, form):
         messages.success(self.request, "The League was created successfully.")
         name=form.cleaned_data.get("name")
-        user_db=getUserDB(self.kwargs["user_db"])
-        user_name=user_db.username
-        form.instance.user_db=user_db
+        if self.request.user.is_authenticated:
+            owner=self.request.user
+        user_name=owner.username
+        form.instance.owner=owner
 
         logger.warning("LeagueCreate(name='"+name+"')")
         return super(LeagueCreate,self).form_valid(form)
@@ -165,7 +187,14 @@ class LeagueUpdate(LoginRequiredMixin, UpdateView):
     template_name = "ultimate_ladder/edit_league.html"
 
     def get_success_url(self):
-        return reverse('ultimate_ladder:leagues', kwargs={"user_db": self.request.user})
+        return reverse('ultimate_ladder:leagues', kwargs={"owner": self.request.user})
+
+    # make sure a user only modifies its data !
+    def get_object(self, *args, **kwargs):
+        obj = super(LeagueUpdate, self).get_object(*args, **kwargs)
+        if not obj.owner == self.request.user:
+            raise Http404
+        return obj
 
     def form_valid(self, form):
         messages.success(self.request, "The League was updated successfully.")
@@ -177,15 +206,22 @@ class LeagueDelete(LoginRequiredMixin, DeleteView):
     context_object_name = 'league'
 
     def get_success_url(self):
-        return reverse('ultimate_ladder:leagues', kwargs={"user_db": self.request.user})
+        return reverse('ultimate_ladder:leagues', kwargs={"owner": self.request.user})
     
+    # make sure a user only modifies its data !
+    def get_object(self, *args, **kwargs):
+        obj = super(LeagueDelete, self).get_object(*args, **kwargs)
+        if not obj.owner == self.request.user:
+            raise Http404
+        return obj
+
     def form_valid(self, form):
         messages.success(self.request, "The League was deleted successfully.")
         logger.warning("LeagueDelete()")
         return super(LeagueDelete,self).form_valid(form)
 
-def get_team_score(user_db, Game, team_name):
-    team=Game.team_set.filter(team_name=team_name, user_db=user_db)
+def get_team_score(owner, Game, team_name):
+    team=Game.team_set.filter(team_name=team_name, owner=owner)
     logger.warning("team:"+str(team))
     return TeamScore(team)
 
@@ -196,25 +232,29 @@ class GameDetail(FormMixin, generic.DetailView):
     form_class=ScoreForm
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_db=getUserDB(self.kwargs["user_db"])
-        context["user_db"]=user_db.username
-        context["score_team_a"] = get_team_score(user_db, context["game"], 'A')
-        context["score_team_b"] = get_team_score(user_db, context["game"], 'B')
+        context=super().get_context_data(**kwargs)
+        owner=getUserDB(self.kwargs["owner"])
+        context["owner"]=owner.username
+        context["score_team_a"] = get_team_score(owner, context["game"], 'A')
+        context["score_team_b"] = get_team_score(owner, context["game"], 'B')
         context["team_a"] = context["game"].team_set.filter(team_name='A')
         context["team_b"] = context["game"].team_set.filter(team_name='B')
         context["league"] = context["game"].league
         return context
 
-    @login_required
-    def post(self, request, *args, **kwargs):
+    def post(self, *args, **kwargs):
         league = get_object_or_404(League, id=kwargs.get("league_id"))
         game = get_object_or_404(Game, id=kwargs.get("pk"))
         form = self.get_form()
+
+        if not game.owner == self.request.user:
+            messages.error(self.request, "You can only modify you own games !")
+            raise Http404
+
         if form.is_valid():    
             if game.completed == True:
-                messages.error(request, "The Game is already completed.")
-                return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+                messages.error(self.request, "The Game is already completed.")
+                return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"owner":league.owner, "league_id":league.id, "pk":game.id}))
 
             game.score_team_a = form.cleaned_data.get("score_team_a")
             game.score_team_b = form.cleaned_data.get("score_team_b")
@@ -225,22 +265,30 @@ class GameDetail(FormMixin, generic.DetailView):
 
             UpdateStats(game)
 
-            messages.success(request, "The Game was updated successfully.")
-            return HttpResponseRedirect(reverse('ultimate_ladder:league', kwargs={"pk":league.id}))
+            messages.success(self.request, "The Game was updated successfully.")
+            return HttpResponseRedirect(reverse('ultimate_ladder:league', kwargs={"owner": league.owner, "pk":league.id}))
         messages.error(request, "form is not valid!.")
-        return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id}))
+        return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"owner": league.owner, "league_id":league.id, "pk":game.id}))
 
 
 class GameDelete(LoginRequiredMixin, DeleteView):
     model = Game
     context_object_name = 'game'
-    success_url = reverse_lazy("ultimate_ladder:leagues")
+
+    def get_success_url(self):
+        return reverse('ultimate_ladder:leagues', kwargs={"owner": self.request.user})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["league"] = context["game"].league
         return context
-    
+
+    def get_object(self, *args, **kwargs):
+        obj = super(GameDelete, self).get_object(*args, **kwargs)
+        if not obj.owner == self.request.user:
+            raise Http404
+        return obj
+
     def form_valid(self, form):
         messages.success(self.request, "The Game was deleted successfully.")
         game=form.cleaned_data.get("game")
@@ -249,18 +297,23 @@ class GameDelete(LoginRequiredMixin, DeleteView):
 
 
 @login_required
-def NewGame(request, league_pk, user_db):
-    user=getUserDB(user_db)
-    league = get_object_or_404(League, id=league_pk, user_db=user)
+def NewGame(request, league_pk, owner):
+    user=getUserDB(owner)
+    league = get_object_or_404(League, id=league_pk, owner=user)
     if request.method == 'GET':
-        context = {'form': GameForm(instance=league), 'league': league, 'user_db': user_db}
+        context = {'form': GameForm(instance=league), 'league': league, 'owner': owner}
         return render(request,'ultimate_ladder/new_game.html',context)
     elif request.method == 'POST':
         form = GameForm(request.POST)
+
+        if not league.owner == request.user:
+            messages.error(request, "You can only modify create game for your own league !")
+            raise Http404
+
         if form.is_valid():
             game = Game(league=league,
                         creation_date=datetime.now(),
-                        user_db=user)
+                        owner=league.owner)
             game.save()
             players = form.cleaned_data.get("players")
 
@@ -337,24 +390,23 @@ def NewGame(request, league_pk, user_db):
             for p in team_a_players_m + team_a_players_f:
                 player = get_object_or_404(Player, id=p)
                 logger.warning("Adding "+str(player)+" to team A")
-                t = Team(game=game, player=player, team_name='A', user_db=user)
+                t = Team(game=game, player=player, team_name='A', owner=league.owner)
                 t.save()
                 team_a.append(player)
 
             for p in team_b_players_m + team_b_players_f:
                 player = get_object_or_404(Player, id=p)
                 logger.warning("Adding "+str(player)+" to team B")
-                t = Team(game=game, player=player, team_name='B', user_db=user)
+                t = Team(game=game, player=player, team_name='B', owner=league.owner)
                 t.save()
                 team_b.append(player)
 
             logger.warning("NewGame(game='"+str(game)+"', team_a="+str(team_a)+", team_b="+str(team_b)+")")
-            return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id, "user_db":user_db}))
+            return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id, "owner":owner}))
         else:
-            context = {'form': form, 'league': league, "user_db": user_db}
+            context = {'form': form, 'league': league, "owner": owner}
             return render(request, 'ultimate_ladder/new_game.html', context)
 
-@login_required
 def TeamScore(team):
     score=0
     for t in team:
@@ -362,7 +414,6 @@ def TeamScore(team):
          score = score + player.score
     return score
 
-@login_required
 def UpdateStats(game):
     # We need to update each player's score
 
@@ -389,7 +440,6 @@ def UpdateStats(game):
     logger.warning("UpdateStats(game='"+str(game)+"', level_a="+str(score_a)+", level_b="+str(score_b)+")")
     
     logger.warning("UpdateStats(game='"+str(game)+"', score="+str(game.score_team_a)+"-"+str(game.score_team_b)+", delta="+str(delta)+")")
-
     
     for t in game.team_set.filter(team_name='A'):
         p = t.player
@@ -398,7 +448,7 @@ def UpdateStats(game):
         p.score = new_score        
         p.save()
 
-        playerStat,created = PlayerStats.objects.get_or_create(player=p, league=game.league)
+        playerStat,created = PlayerStats.objects.get_or_create(player=p, league=game.league, owner=game.owner)
         if(game.score_team_a > game.score_team_b):
             playerStat.win = playerStat.win + 1
         if(game.score_team_a == game.score_team_b):
@@ -415,7 +465,7 @@ def UpdateStats(game):
         p.score = new_score
         p.save()
 
-        playerStat,created = PlayerStats.objects.get_or_create(player=p, league=game.league)
+        playerStat,created = PlayerStats.objects.get_or_create(player=p, league=game.league, owner=game.owner)
         if(game.score_team_b > game.score_team_a):
             playerStat.win = playerStat.win + 1
         if(game.score_team_b == game.score_team_a):
