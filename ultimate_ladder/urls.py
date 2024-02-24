@@ -17,13 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from . import views
+from django.views.generic import RedirectView
 
 app_name = "ultimate_ladder"
 
 urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
-    path("", views.Index.as_view(), name="index"),
+
+    path("", views.IndexRedirectView.as_view(), name="index-redirect"),
+    path("<str:owner>/", views.Index.as_view(), name="index"),
 #    path("<str:user_db>", views.Index.as_view(), name="index"),
 
 # view players

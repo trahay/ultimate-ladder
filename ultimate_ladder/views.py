@@ -4,6 +4,7 @@ from django.template import loader
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMixin
+from django.views.generic.base import RedirectView
 from django.contrib import messages
 from datetime import datetime
 from django.db.models import Count
@@ -31,21 +32,29 @@ from .models import Player, League, Game, Team, PlayerStats
 def getUserDB(username):
     return User.objects.get(username=username)
 
+class IndexRedirectView(RedirectView):
+    permanent = False
+    query_string = True
+    pattern_name = "index"
+
+    def get_redirect_url(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return reverse('ultimate_ladder:index', kwargs={"owner": self.request.user})
+        else:
+            return reverse('ultimate_ladder:login')
+
 
 class Index(generic.ListView):
     model=League
     context_object_name = "league_list"
     template_name = "ultimate_ladder/index.html"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            context["all_players"]=Player.objects.filter(owner=self.request.user)
-            context["league_list"]=League.objects.filter(owner=self.request.user)
-            context["owner"]=self.request.user
-        else:
-            context["all_players"]=[]
-            context["league_list"]=[]
-            context["owner"]=[]
+        owner=getUserDB(self.kwargs["owner"])
+        context["owner"]=owner.username
+        context["all_players"]=Player.objects.filter(owner=owner)
+        context["league_list"]=League.objects.filter(owner=owner)
         return context
 
 
