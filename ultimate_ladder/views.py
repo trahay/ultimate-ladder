@@ -177,7 +177,7 @@ class LeagueCreate(LoginRequiredMixin, CreateView):
     template_name = "ultimate_ladder/edit_league.html"
 
     def get_success_url(self):
-        return reverse('ultimate_ladder:leagues', kwargs={"owner": self.request.owner})
+        return reverse('ultimate_ladder:leagues', kwargs={"owner": self.request.user})
 
     def form_valid(self, form):
         messages.success(self.request, "The League was created successfully.")
