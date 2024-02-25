@@ -11,10 +11,12 @@ bash  init.sh
 
 Then, you can start the server by running:
 ```
-poetry run python manage.py runserver
+bash run.sh
 ```
 
 Now, you can access the website at this address: http://127.0.0.1:8000/ultimate_ladder
+
+The admin interface is located at : http://127.0.0.1:8000/admin
 
 ## Real life deployement of the website
 
