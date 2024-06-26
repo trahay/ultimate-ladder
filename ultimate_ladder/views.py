@@ -310,10 +310,12 @@ def NewGame(request, league_pk, owner):
     user=getUserDB(owner)
     league = get_object_or_404(League, id=league_pk, owner=user)
     if request.method == 'GET':
-        context = {'form': GameForm(instance=league), 'league': league, 'owner': owner}
+        formdata = {'owner': owner, 'league': league}
+        context = {'form': GameForm(instance=league, initial=formdata), 'league': league, 'owner': owner}
         return render(request,'ultimate_ladder/new_game.html',context)
     elif request.method == 'POST':
-        form = GameForm(request.POST)
+        formdata = {'owner': owner, 'league': league}
+        form = GameForm(request.POST, initial=formdata)
 
         if not league.owner == request.user:
             messages.error(request, "You can only modify create game for your own league !")
