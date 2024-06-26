@@ -357,7 +357,11 @@ def NewGame(request, league_pk, owner):
             team_b_players_m=[]
             team_b_players_f=[]
             if len(player_list_m) > 0:
-                my_mm_m = mm.MatchMaking(df_m, teamsize=math.ceil(len(player_list_m)/2))
+                team_size=math.ceil(len(player_list_m)/2)
+                logger.warning("Creating 2 teams of "+str(team_size)+" players using:")
+                logger.warning(df_m)
+
+                my_mm_m = mm.MatchMaking(df_m, teamsize=team_size)
                 teams_m=my_mm_m.optimize()
 
                 team_a_id=min(teams_m["team"])
@@ -371,7 +375,11 @@ def NewGame(request, league_pk, owner):
                 logger.warning("Team B is team #"+str(team_b_id)+". Player list: "+str(team_b_players_m))
 
             if len(player_list_f) > 0:
-                my_mm_f = mm.MatchMaking(df_f, teamsize=math.ceil(len(player_list_f)/2))
+                team_size=math.ceil(len(player_list_f)/2)
+                logger.warning("Creating 2 teams of "+str(team_size)+" players using:")
+                logger.warning(df_f)
+
+                my_mm_f = mm.MatchMaking(df_f, teamsize=team_size)
                 teams_f=my_mm_f.optimize()
                 team_a_id=min(teams_f["team"])
                 team_b_id=max(teams_f["team"])
