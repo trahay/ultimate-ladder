@@ -29,7 +29,7 @@
 		  User: {{ user.get_username }}
 		  <form action="{% url 'logout' %}" method="post">
 		    {% csrf_token %}
-		    <button type="submit">Logout</button>
+		    <input type="submit" class="btn btn-default btn-lg" value="Logout">
 		  </form>
 	      </nav>
 	      {% else %}
