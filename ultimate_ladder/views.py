@@ -357,11 +357,14 @@ def NewGame(request, league_pk, owner):
             team_b_players_f=[]
             if len(player_list_m) > 0:
                 team_size=math.ceil(len(player_list_m)/2)
-                logger.warning("Creating 2 teams of "+str(team_size)+" players using:")
-                logger.warning(df_m)
 
-                my_mm_m = mm.MatchMaking(df_m, teamsize=team_size)
-                teams_m=my_mm_m.optimize()
+                nb_teams=0
+                while nb_teams != 2:
+                    logger.warning("Creating 2 teams of "+str(team_size)+" players using:")
+                    logger.warning(df_m)
+                    my_mm_m = mm.MatchMaking(df_m, teamsize=team_size)
+                    teams_m=my_mm_m.optimize()
+                    nb_teams=teams_m.team.nunique()
 
                 team_a_id=min(teams_m["team"])
                 team_b_id=max(teams_m["team"])
@@ -375,11 +378,14 @@ def NewGame(request, league_pk, owner):
 
             if len(player_list_f) > 0:
                 team_size=math.ceil(len(player_list_f)/2)
-                logger.warning("Creating 2 teams of "+str(team_size)+" players using:")
-                logger.warning(df_f)
+                nb_teams=0
+                while nb_teams != 2:
+                    logger.warning("Creating 2 teams of "+str(team_size)+" players using:")
+                    logger.warning(df_f)
+                    my_mm_f = mm.MatchMaking(df_f, teamsize=team_size)
+                    teams_f=my_mm_m.optimize()
+                    nb_teams=teams_m.team.nunique()
 
-                my_mm_f = mm.MatchMaking(df_f, teamsize=team_size)
-                teams_f=my_mm_f.optimize()
                 team_a_id=min(teams_f["team"])
                 team_b_id=max(teams_f["team"])
                 # get the results of the matchmaking
