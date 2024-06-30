@@ -81,13 +81,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ultimate_ladder.wsgi.application'
 
+#DATABASE_URL = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    "default": env.dj_db_url("DATABASE_URL", default="sqlite:///db.sqlite3"),
-}
+if env.str("DATABASE_URL", default=None) is None:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    print(DATABASES)
+else:
+    DATABASES = {
+        "default": env.dj_db_url("DATABASE_URL"),
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
