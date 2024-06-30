@@ -27,7 +27,10 @@
 	      </nav>
 	      <nav>
 		  User: {{ user.get_username }}
-		  <a href="{% url 'logout' %}?next={{ request.path }}">Logout</a>
+		  <form action="{% url 'logout' %}" method="post">
+		    {% csrf_token %}
+		    <button type="submit">Logout</button>
+		  </form>
 	      </nav>
 	      {% else %}
 	      <a href="{% url 'login' %}?next={{ request.path }}" class="logo">Home</a>
