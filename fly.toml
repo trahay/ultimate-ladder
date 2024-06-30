@@ -1,13 +1,16 @@
-# fly.toml app configuration file generated for ultimate-ladder-little-shadow-1352 on 2024-06-30T09:45:18+02:00
+# fly.toml app configuration file generated for ultimate-ladder on 2024-06-30T15:52:59+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'ultimate-ladder-little-shadow-1352'
+app = 'ultimate-ladder'
 primary_region = 'cdg'
 console_command = '/code/manage.py shell'
 
 [build]
+
+[deploy]
+  release_command = 'python manage.py migrate --noinput'
 
 [env]
   PORT = '8000'
@@ -26,5 +29,5 @@ console_command = '/code/manage.py shell'
   cpus = 1
 
 [[statics]]
-  guest_path = '/code/ultimate_ladder/static'
+  guest_path = '/code/static'
   url_prefix = '/static/'

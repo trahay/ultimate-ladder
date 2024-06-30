@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from pathlib import Path
+from environs import Env  # new
+
+env = Env()
+env.read_env()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,10 +26,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 from django.core.management.utils import get_random_secret_key
-SECRET_KEY = get_random_secret_key()
+SECRET_KEY = env.str(
+    "SECRET_KEY", 
+    default=get_random_secret_key(),
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
+DEBUG = env.bool("DEBUG", default=False)
 
 APP_NAME = os.environ.get("FLY_APP_NAME")
 
@@ -76,17 +85,8 @@ WSGI_APPLICATION = 'ultimate_ladder.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# default: postgres://<username>:<password>@<host>:<port>/<db>
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ultimateladder', 
-        'USER': 'postgress',
-        'PASSWORD': 'ky0qNmyz7AnFkFq',
-        'HOST': 'ultimateladderdb.flycast', 
-        'PORT': '5433',
-    }
+    "default": env.dj_db_url("DATABASE_URL", default="sqlite:///db.sqlite3"),
 }
 
 # Password validation
