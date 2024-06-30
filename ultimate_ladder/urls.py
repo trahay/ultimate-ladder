@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path("", views.IndexRedirectView.as_view(), name="index-redirect"),
+    path("ultimate_ladder/", views.IndexRedirectView.as_view(), name="index-redirect"),
     path("<str:owner>/", views.Index.as_view(), name="index"),
 #    path("<str:user_db>", views.Index.as_view(), name="index"),
 
