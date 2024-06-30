@@ -16,17 +16,11 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-import environ
-env = environ.Env(  # <-- Updated!
-    # set casting, default value
-    DEBUG=(bool, False),
-)
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 from django.core.management.utils import get_random_secret_key
-SECRET_KEY = env.str('SECRET_KEY', default=get_random_secret_key())
+SECRET_KEY = get_random_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
@@ -83,8 +77,16 @@ WSGI_APPLICATION = 'ultimate_ladder.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 # default: postgres://<username>:<password>@<host>:<port>/<db>
+
 DATABASES = {
-    'default': env.db('DATABASE_URL', default='postgres://postgres:ky0qNmyz7AnFkFq@ultimateladderdb.flycast:5432/ultimate_ladder')
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ultimateladder', 
+        'USER': 'postgress',
+        'PASSWORD': 'ky0qNmyz7AnFkFq',
+        'HOST': 'ultimateladderdb.flycast', 
+        'PORT': '5433',
+    }
 }
 
 # Password validation
@@ -124,6 +126,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = 'static/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
