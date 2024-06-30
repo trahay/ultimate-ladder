@@ -8,7 +8,7 @@
 {% if league_list %}
     <div>
     {% for league in league_list %}
-        <p><a href="{% url 'ultimate_ladder:league' user league.id %}">{{ league.name }}</a></p>
+        <p><a href="{% url 'league' user league.id %}">{{ league.name }}</a></p>
     {% endfor %}
     </div>
     {% else %}
@@ -18,14 +18,14 @@
     {% endif %}
 
     <div>
-      <a href="{% url 'ultimate_ladder:add-league' user %}" class="logo">Create League</a>
+      <a href="{% url 'add-league' user %}" class="logo">Create League</a>
     </div>
     
 <H1>Players</H1>
     {% if all_players %}
     <div>
     {% for player in all_players %}
-        <p><a href="{% url 'ultimate_ladder:player' user player.id %}" class="{% if player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.name }}</a></p>
+        <p><a href="{% url 'player' user player.id %}" class="{% if player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.name }}</a></p>
     {% endfor %}
     </div>
 {% else %}
@@ -36,7 +36,7 @@
     </div>
 {% endif %}
 
-    <a href="{% url 'ultimate_ladder:add-player' user %}" class="logo">Create Player</a>
+    <a href="{% url 'add-player' user %}" class="logo">Create Player</a>
 
     {% endif %} 
     {% endblock content %}

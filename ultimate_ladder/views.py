@@ -17,7 +17,6 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-
 sys.path.insert(0, './ultimate_ladder/matchmaking')
 import matchmaking as mm
 
@@ -39,9 +38,9 @@ class IndexRedirectView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         if self.request.user.is_authenticated:
-            return reverse('ultimate_ladder:index', kwargs={"owner": self.request.user})
+            return reverse('index', kwargs={"owner": self.request.user})
         else:
-            return reverse('ultimate_ladder:login')
+            return reverse('login')
 
 
 class Index(generic.ListView):
@@ -111,7 +110,7 @@ class PlayerCreate(LoginRequiredMixin, CreateView):
     template_name = "ultimate_ladder/edit_player.html"
 
     def get_success_url(self):
-        return reverse('ultimate_ladder:players', kwargs={"owner": self.request.user})
+        return reverse('players', kwargs={"owner": self.request.user})
 
     def form_valid(self, form, **kwargs):
         messages.success(self.request, "The Player was created successfully.")
@@ -132,7 +131,7 @@ class PlayerUpdate(LoginRequiredMixin, UpdateView):
     template_name = "ultimate_ladder/edit_player.html"
 
     def get_success_url(self):
-        return reverse('ultimate_ladder:players', kwargs={"owner": self.request.user})
+        return reverse('players', kwargs={"owner": self.request.user})
 
     # make sure a user only modifies its data !
     def get_object(self, *args, **kwargs):
@@ -154,7 +153,7 @@ class PlayerDelete(LoginRequiredMixin, DeleteView):
     model = Player
     context_object_name = 'player'
     def get_success_url(self):
-        return reverse('ultimate_ladder:players', kwargs={"owner": self.request.user})
+        return reverse('players', kwargs={"owner": self.request.user})
     
     # make sure a user only modifies its data !
     def get_object(self, *args, **kwargs):
@@ -177,7 +176,7 @@ class LeagueCreate(LoginRequiredMixin, CreateView):
     template_name = "ultimate_ladder/edit_league.html"
 
     def get_success_url(self):
-        return reverse('ultimate_ladder:leagues', kwargs={"owner": self.request.user})
+        return reverse('leagues', kwargs={"owner": self.request.user})
 
     def form_valid(self, form):
         messages.success(self.request, "The League was created successfully.")
@@ -196,7 +195,7 @@ class LeagueUpdate(LoginRequiredMixin, UpdateView):
     template_name = "ultimate_ladder/edit_league.html"
 
     def get_success_url(self):
-        return reverse('ultimate_ladder:leagues', kwargs={"owner": self.request.user})
+        return reverse('leagues', kwargs={"owner": self.request.user})
 
     # make sure a user only modifies its data !
     def get_object(self, *args, **kwargs):
@@ -215,7 +214,7 @@ class LeagueDelete(LoginRequiredMixin, DeleteView):
     context_object_name = 'league'
 
     def get_success_url(self):
-        return reverse('ultimate_ladder:leagues', kwargs={"owner": self.request.user})
+        return reverse('leagues', kwargs={"owner": self.request.user})
     
     # make sure a user only modifies its data !
     def get_object(self, *args, **kwargs):
@@ -263,7 +262,7 @@ class GameDetail(FormMixin, generic.DetailView):
         if form.is_valid():    
             if game.completed == True:
                 messages.error(self.request, "The Game is already completed.")
-                return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"owner":league.owner, "league_id":league.id, "pk":game.id}))
+                return HttpResponseRedirect(reverse('game', kwargs={"owner":league.owner, "league_id":league.id, "pk":game.id}))
 
             game.score_team_a = form.cleaned_data.get("score_team_a")
             game.score_team_b = form.cleaned_data.get("score_team_b")
@@ -275,9 +274,9 @@ class GameDetail(FormMixin, generic.DetailView):
             UpdateStats(game)
 
             messages.success(self.request, "The Game was updated successfully.")
-            return HttpResponseRedirect(reverse('ultimate_ladder:league', kwargs={"owner": league.owner, "pk":league.id}))
+            return HttpResponseRedirect(reverse('league', kwargs={"owner": league.owner, "pk":league.id}))
         messages.error(request, "form is not valid!.")
-        return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"owner": league.owner, "league_id":league.id, "pk":game.id}))
+        return HttpResponseRedirect(reverse('game', kwargs={"owner": league.owner, "league_id":league.id, "pk":game.id}))
 
 
 class GameDelete(LoginRequiredMixin, DeleteView):
@@ -285,7 +284,7 @@ class GameDelete(LoginRequiredMixin, DeleteView):
     context_object_name = 'game'
 
     def get_success_url(self):
-        return reverse('ultimate_ladder:leagues', kwargs={"owner": self.request.user})
+        return reverse('leagues', kwargs={"owner": self.request.user})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -421,7 +420,7 @@ def NewGame(request, league_pk, owner):
                 team_b.append(player)
 
             logger.warning("NewGame(game='"+str(game)+"', team_a="+str(team_a)+", team_b="+str(team_b)+")")
-            return HttpResponseRedirect(reverse('ultimate_ladder:game', kwargs={"league_id":league.id, "pk":game.id, "owner":owner}))
+            return HttpResponseRedirect(reverse('game', kwargs={"league_id":league.id, "pk":game.id, "owner":owner}))
         else:
             context = {'form': form, 'league': league, "owner": owner}
             return render(request, 'ultimate_ladder/new_game.html', context)
