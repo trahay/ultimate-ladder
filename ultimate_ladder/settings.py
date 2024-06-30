@@ -16,20 +16,25 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+import environ
+env = environ.Env(  # <-- Updated!
+    # set casting, default value
+    DEBUG=(bool, False),
+)
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d9oorxbcx!a!x+x=36v5q3!q&5sbt$rcbg&qr9&69$rh#$-fe!'
+from django.core.management.utils import get_random_secret_key
+SECRET_KEY = env.str('SECRET_KEY', default=get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
 
 APP_NAME = os.environ.get("FLY_APP_NAME")
-ALLOWED_HOSTS = [f"{APP_NAME}.fly.dev"]
 
-CSRF_TRUSTED_ORIGINS = [f"{APP_NAME}.fly.dev"]
-
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', f"{APP_NAME}.fly.dev"]
+CSRF_TRUSTED_ORIGINS = [f"https://{APP_NAME}.fly.dev"]
 
 # Application definition
 
@@ -77,13 +82,10 @@ WSGI_APPLICATION = 'ultimate_ladder.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# default: postgres://<username>:<password>@<host>:<port>/<db>
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db('DATABASE_URL', default='postgres://postgres:ky0qNmyz7AnFkFq@ultimateladderdb.flycast:5432/ultimate_ladder')
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
