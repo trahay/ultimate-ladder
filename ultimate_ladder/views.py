@@ -303,6 +303,38 @@ class GameDelete(LoginRequiredMixin, DeleteView):
         logger.warning("GameDelete()")
         return super(GameDelete,self).form_valid(form)
 
+def create_team(df):
+    player_list=df['player']
+    team_a_players=[]
+    team_b_players=[]
+
+    team_size=math.ceil(len(player_list)/2)
+    logger.warning("Creating 2 teams of "+str(team_size)+" players using:")
+    logger.warning(df)
+
+    if len(player_list) > 1:
+        nb_teams=0
+        while nb_teams != 2:
+            my_mm = mm.MatchMaking(df, teamsize=team_size)
+            teams=my_mm.optimize()
+            nb_teams=teams.team.nunique()
+
+            team_a_id=min(teams["team"])
+            team_b_id=max(teams["team"])
+
+            # get the results of the matchmaking
+            team_a_players = list(teams[teams["team"]==team_a_id]["player"])
+            team_b_players = list(teams[teams["team"]==team_b_id]["player"])
+
+    elif len(player_list) == 1:
+        team_a_players=[df['player'][0]]
+
+    logger.warning("Team A: Player list: "+str(team_a_players))
+    logger.warning("Team B: Player list: "+str(team_b_players))
+        
+    return team_a_players,team_b_players
+
+
 
 @login_required
 def NewGame(request, league_pk, owner):
@@ -355,44 +387,12 @@ def NewGame(request, league_pk, owner):
             team_a_players_f=[]
             team_b_players_m=[]
             team_b_players_f=[]
-            if len(player_list_m) > 0:
-                team_size=math.ceil(len(player_list_m)/2)
 
-                nb_teams=0
-                while nb_teams != 2:
-                    logger.warning("Creating 2 teams of "+str(team_size)+" players using:")
-                    logger.warning(df_m)
-                    my_mm_m = mm.MatchMaking(df_m, teamsize=team_size)
-                    teams_m=my_mm_m.optimize()
-                    nb_teams=teams_m.team.nunique()
+            team_a_players_m, team_b_players_m = create_team(df_m)
+            team_a_players_f, team_b_players_f = create_team(df_f)
 
-                team_a_id=min(teams_m["team"])
-                team_b_id=max(teams_m["team"])
-
-                # get the results of the matchmaking
-                team_a_players_m = list(teams_m[teams_m["team"]==team_a_id]["player"])
-                team_b_players_m = list(teams_m[teams_m["team"]==team_b_id]["player"])
-
-                logger.warning("Team A is team #"+str(team_a_id)+". Player list: "+str(team_a_players_m))
-                logger.warning("Team B is team #"+str(team_b_id)+". Player list: "+str(team_b_players_m))
-
-            if len(player_list_f) > 0:
-                team_size=math.ceil(len(player_list_f)/2)
-                nb_teams=0
-                while nb_teams != 2:
-                    logger.warning("Creating 2 teams of "+str(team_size)+" players using:")
-                    logger.warning(df_f)
-                    my_mm_f = mm.MatchMaking(df_f, teamsize=team_size)
-                    teams_f=my_mm_m.optimize()
-                    nb_teams=teams_m.team.nunique()
-
-                team_a_id=min(teams_f["team"])
-                team_b_id=max(teams_f["team"])
-                # get the results of the matchmaking
-                team_a_players_f = list(teams_f[teams_f["team"]==team_a_id]["player"])
-                team_b_players_f = list(teams_f[teams_f["team"]==team_b_id]["player"])
-                logger.warning("Team A is team #"+str(team_a_id)+". Player list: "+str(team_a_players_f))
-                logger.warning("Team B is team #"+str(team_b_id)+". Player list: "+str(team_b_players_f))
+            logger.warning("Team A: Player list: Male ("+str(team_a_players_m)+"), Female("+str(team_a_players_f)+")")
+            logger.warning("Team B: Player list: Male ("+str(team_b_players_m)+"), Female("+str(team_b_players_f)+")")
 
             nb_players_a=len(team_a_players_m)+len(team_a_players_f)
             nb_players_b=len(team_b_players_m)+len(team_b_players_f)
