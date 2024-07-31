@@ -32,12 +32,12 @@ SECRET_KEY = env.str(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG", default=False)
+DEBUG = env.bool("DEBUG", default=True)
 
-APP_NAME = os.environ.get("FLY_APP_NAME")
+APP_NAME = "ultimate-ladder"
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', f"{APP_NAME}.fly.dev"]
-CSRF_TRUSTED_ORIGINS = [f"https://{APP_NAME}.fly.dev"]
+ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', '172.21.0.3', 'localhost']
+#CSRF_TRUSTED_ORIGINS = [f"https://{APP_NAME}.fly.dev"]
 
 # Application definition
 

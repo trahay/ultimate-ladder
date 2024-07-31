@@ -22,7 +22,11 @@ RUN set -ex && \
     rm -rf /root/.cache/
 COPY . /code
 
+RUN python manage.py makemigrations ultimate_ladder
+RUN python manage.py migrate ultimate_ladder
+RUN python manage.py migrate
 RUN python manage.py collectstatic --noinput
+
 
 EXPOSE 8000
 

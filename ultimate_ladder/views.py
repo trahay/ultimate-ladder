@@ -29,7 +29,10 @@ from .models import Player, League, Game, Team, PlayerStats
 
 
 def getUserDB(username):
-    return User.objects.get(username=username)
+    try:
+        return User.objects.get(username=username)
+    except:
+        return None
 
 class IndexRedirectView(RedirectView):
     permanent = False
@@ -50,10 +53,14 @@ class Index(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        owner=getUserDB(self.kwargs["owner"])
-        context["owner"]=owner.username
-        context["all_players"]=Player.objects.filter(owner=owner)
-        context["league_list"]=League.objects.filter(owner=owner)
+        owner_name=self.kwargs["owner"]
+        logger.warning("Owner name:='"+str(owner_name)+"'")
+
+        owner=getUserDB(owner_name)
+        if owner is not None:
+            context["owner"]=owner.username
+            context["all_players"]=Player.objects.filter(owner=owner)
+            context["league_list"]=League.objects.filter(owner=owner)
         return context
 
 
