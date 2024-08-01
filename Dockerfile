@@ -22,12 +22,3 @@ RUN set -ex && \
     rm -rf /root/.cache/
 COPY . /code
 
-RUN python manage.py makemigrations ultimate_ladder
-RUN python manage.py migrate ultimate_ladder
-RUN python manage.py migrate
-RUN python manage.py collectstatic --noinput
-
-
-EXPOSE 8000
-
-CMD ["gunicorn", "--bind", ":8000", "--workers", "2", "ultimate_ladder.wsgi"]

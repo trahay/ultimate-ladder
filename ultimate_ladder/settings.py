@@ -21,6 +21,11 @@ env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+LOG_FILE = "/var/log/ultimate_ladder/ultimate_ladder.log"
+
+PATH_URL = '/ladder'
+PATH_URL = PATH_URL.strip('/')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -36,7 +41,7 @@ DEBUG = env.bool("DEBUG", default=True)
 
 APP_NAME = "ultimate-ladder"
 
-ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', '172.21.0.3', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', '172.21.0.3', 'localhost', 'trahay.nohost.me']
 #CSRF_TRUSTED_ORIGINS = [f"https://{APP_NAME}.fly.dev"]
 
 # Application definition
@@ -86,7 +91,7 @@ WSGI_APPLICATION = 'ultimate_ladder.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-if env.str("DATABASE_URL", default=None) is None:
+if env.str("POSTGRES_DB", default=None) is None:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -96,7 +101,14 @@ if env.str("DATABASE_URL", default=None) is None:
     print(DATABASES)
 else:
     DATABASES = {
-        "default": env.dj_db_url("DATABASE_URL"),
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env.str("POSTGRES_DB"),
+            'USER': env.str("POSTGRES_USER"),
+            'PASSWORD': env.str("POSTGRES_PASSWORD"),
+            'HOST': env.str("POSTGRES_HOST"),
+            'PORT': 5432,  # default postgres port
+        }
     }
 
 # Password validation
@@ -117,7 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGIN_REDIRECT_URL = '/ultimate_ladder/'
+#LOGIN_REDIRECT_URL = '/ultimate_ladder/'
 
 
 # Internationalization
@@ -134,9 +146,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-
-STATIC_URL = 'static/'
-STATIC_ROOT = 'static/'
+if PATH_URL:
+    STATIC_URL = f'/{PATH_URL}/static/'
+    MEDIA_ROOT = f'/{PATH_URL}/static/'
+else:
+   STATIC_URL = 'static/'
+   STATIC_ROOT = 'static/'
 
 
 # Default primary key field type
