@@ -41,8 +41,12 @@ DEBUG = env.bool("DEBUG", default=True)
 
 APP_NAME = "ultimate-ladder"
 
-ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', '172.21.0.3', 'localhost', 'trahay.nohost.me']
-#CSRF_TRUSTED_ORIGINS = [f"https://{APP_NAME}.fly.dev"]
+ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', 'localhost']
+
+SERVER_NAME=env.str("SERVER_NAME", default=None)
+if not SERVER_NAME is None:
+  ALLOWED_HOSTS.append(f'{SERVER_NAME}')
+  CSRF_TRUSTED_ORIGINS = [f"https://{SERVER_NAME}"]
 
 # Application definition
 
