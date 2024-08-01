@@ -154,8 +154,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 if PATH_URL:
+  STATIC_ROOT = 'static/'
   STATIC_URL = f'/{PATH_URL}/static/'
-  MEDIA_ROOT = f'/{PATH_URL}/static/'
 else:
   STATIC_URL = 'static/'
   STATIC_ROOT = 'static/'
