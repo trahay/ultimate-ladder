@@ -46,7 +46,8 @@ PATH_URL=''
 SERVER_PATH=env.str("SERVER_PATH", default=None)
 if not SERVER_PATH is None:
   PATH_URL = SERVER_PATH.strip('/')
-  LOGIN_REDIRECT_URL = f'/{PATH_URL}/'
+  PATH_URL = f'{PATH_URL}/'
+  LOGIN_REDIRECT_URL = f'/{PATH_URL}'
   
 SERVER_NAME=env.str("SERVER_NAME", default=None)
 if not SERVER_NAME is None:
