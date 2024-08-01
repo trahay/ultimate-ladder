@@ -133,7 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-#LOGIN_REDIRECT_URL = '/ultimate_ladder/'
+LOGIN_REDIRECT_URL = f'/{PATH_URL}/'
 
 
 # Internationalization
