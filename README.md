@@ -18,9 +18,16 @@ Now, you can access the website at this address: http://127.0.0.1:8000/ultimate_
 
 The admin interface is located at : http://127.0.0.1:8000/admin
 
-## Running in Docker
 
-First, create `.env` and specify ` POSTGRES_PASSWORD`, `POSTGRES_USER` and `POSTGRES_DB`:
+# Running in Docker
+
+First, initialize the submodules:
+```
+git submodule init
+git submodule update
+```
+
+Then, create `.env` by adapting `.env.sample` to your configuration.
 
 ```
 cp .env.sample .env
@@ -30,9 +37,13 @@ nano .env
 
 Then, start the containers with:
 ```
-docker-compose up
+docker-compose up -d --build
 ```
 
-## Real life deployement of the website
-
-You can deploy the website on your [YunoHost](https://yunohost.org/#/) instance using the following YNH package: https://github.com/trahay/ultimate_ladder_ynh 
+Finally, initialize a bunch of stuff
+```
+docker-compose exec web python manage.py makemigrations ultimate_ladder
+docker-compose exec web python manage.py migrate ultimate_ladder
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py createsuperuser
+```
