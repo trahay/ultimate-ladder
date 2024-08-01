@@ -23,10 +23,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 LOG_FILE = "/var/log/ultimate_ladder/ultimate_ladder.log"
 
-PATH_URL = '/ladder'
-PATH_URL = PATH_URL.strip('/')
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -43,6 +39,15 @@ APP_NAME = "ultimate-ladder"
 
 ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', 'localhost']
 
+LOGIN_REDIRECT_URL = '/'
+
+PATH_URL=''
+
+SERVER_PATH=env.str("SERVER_PATH", default=None)
+if not SERVER_PATH is None:
+  PATH_URL = SERVER_PATH.strip('/')
+  LOGIN_REDIRECT_URL = f'/{PATH_URL}/'
+  
 SERVER_NAME=env.str("SERVER_NAME", default=None)
 if not SERVER_NAME is None:
   ALLOWED_HOSTS.append(f'{SERVER_NAME}')
@@ -133,9 +138,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGIN_REDIRECT_URL = f'/{PATH_URL}/'
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -151,11 +153,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 if PATH_URL:
-    STATIC_URL = f'/{PATH_URL}/static/'
-    MEDIA_ROOT = f'/{PATH_URL}/static/'
+  STATIC_URL = f'/{PATH_URL}/static/'
+  MEDIA_ROOT = f'/{PATH_URL}/static/'
 else:
-   STATIC_URL = 'static/'
-   STATIC_ROOT = 'static/'
+  STATIC_URL = 'static/'
+  STATIC_ROOT = 'static/'
 
 
 # Default primary key field type
