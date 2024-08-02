@@ -504,5 +504,7 @@ def UpdateStats(game):
         if(game.score_team_b < game.score_team_a):
             playerStat.loss = playerStat.loss + 1
         playerStat.total_points = playerStat.total_points - team_a_points
+        if playerStat.total_points < 0:
+            playerStat.total_points = 0
         playerStat.save()
 
