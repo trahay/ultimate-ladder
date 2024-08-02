@@ -492,8 +492,11 @@ def UpdateStats(game):
     for t in game.team_set.filter(team_name='B'):
         p = t.player
         new_score=p.score - team_b_points
+        new_score=p.score - team_b_points
         logger.warning("\tUpdateStats(player='"+str(p)+"', score="+str(p.score)+") -> "+str(new_score))
         p.score = new_score
+        if p.score < 0:
+             p.score = 0
         p.save()
 
         playerStat,created = PlayerStats.objects.get_or_create(player=p, league=game.league, owner=game.owner)
@@ -504,7 +507,5 @@ def UpdateStats(game):
         if(game.score_team_b < game.score_team_a):
             playerStat.loss = playerStat.loss + 1
         playerStat.total_points = playerStat.total_points - team_a_points
-        if playerStat.total_points < 0:
-            playerStat.total_points = 0
         playerStat.save()
 
