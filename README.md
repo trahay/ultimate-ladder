@@ -47,3 +47,28 @@ docker-compose exec web python manage.py migrate ultimate_ladder
 docker-compose exec web python manage.py migrate
 docker-compose exec web python manage.py createsuperuser
 ```
+
+
+# Using Ultimate-ladder
+
+First, you need to create a `League`, eg `Summer league 2024`, and a
+list of players (eg. `Bart`, `Lisa`, `Homer`, ...)
+
+The home page show the current leagues and players
+
+![Home page](doc/home.png)
+
+Selecting a league shows the number of win/losses/draws for each player.
+
+![Example league](doc/example_league.png)
+
+When creating a `New game`, select the players for the next game.
+
+![Example league](doc/new_game.png)
+
+Click `save` to create the game. Two teams are created so that the
+scores and gender are balanced.
+
+![Example league](doc/game_score.png)
+
+After the game, enter the game score to update the players scores.
