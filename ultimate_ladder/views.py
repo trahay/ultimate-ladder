@@ -282,7 +282,7 @@ class GameDetail(FormMixin, generic.DetailView):
 
             messages.success(self.request, "The Game was updated successfully.")
             return HttpResponseRedirect(reverse('league', kwargs={"owner": league.owner, "pk":league.id}))
-        messages.error(request, "form is not valid!.")
+        messages.error(self.request, "form is not valid!.")
         return HttpResponseRedirect(reverse('game', kwargs={"owner": league.owner, "league_id":league.id, "pk":game.id}))
 
 
