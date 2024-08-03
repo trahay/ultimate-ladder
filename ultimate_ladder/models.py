@@ -29,8 +29,8 @@ class Game(models.Model):
     creation_date = models.DateTimeField()
     completion_date = models.DateTimeField(default=datetime.datetime.utcfromtimestamp(0))
     completed = models.BooleanField(default=False)
-    score_team_a = models.IntegerField(default=0)
-    score_team_b = models.IntegerField(default=0)
+    score_team_a = models.PositiveSmallIntegerField(default=0)
+    score_team_b = models.PositiveSmallIntegerField(default=0)
     def __str__(self):
         return str(self.league) + " ("+str(self.creation_date)+")"
 
