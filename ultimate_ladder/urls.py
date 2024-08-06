@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import include, path
 from . import views
 from django.views.generic import RedirectView
+from django.conf.urls.static import static
 
 app_name = "ultimate_ladder"
 
@@ -53,4 +54,4 @@ urlpatterns = [
     path(f'{settings.PATH_URL}<str:owner>/leagues/<int:league_pk>/create_game/', views.NewGame, name="add-game"),
 # edit game
     path(f'{settings.PATH_URL}<str:owner>/leagues/<int:league_id>/delete_game/<int:pk>', views.GameDelete.as_view(), name="delete-game"),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
