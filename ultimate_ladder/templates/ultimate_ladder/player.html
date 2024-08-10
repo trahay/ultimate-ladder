@@ -1,10 +1,34 @@
 {% extends 'ultimate_ladder/base.html' %}
 	
 {% block content %}
+<script>
+    $(document).ready(function () {
+        $('#players').DataTable({
+	    order: [[4, 'desc']],
+	});
+    });
+</script>
+
 
 <h1>{{ player.name }} ( {{ player.gender }} )</h1>
 
-Score: {{ player.score }}
+<table id="players" class="display compact" >
+  <thead><tr>
+      <th>League</th><th>Wins</th><th>Losses</th><th>Draws</th><th title="Points earned during this league">League points</th><th title="Points earned during all leagues">Total points</th>
+  </tr></thead>
+  <tbody>
+    {% for stat in player_stats %}
+    <tr>
+      <td><a href="{% url 'league' stat.owner stat.league.id %}">{{ stat.league }}</a></td>
+      <td>{{stat.win}}</td>
+      <td>{{stat.loss}}</td>
+      <td>{{stat.draw}}</td>
+      <td>{{stat.total_points}}</td>
+      <td>{{stat.player.score}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 
 {% if user.is_authenticated %}

@@ -83,6 +83,7 @@ class PlayerDetail(generic.DetailView):
         owner=getUserDB(self.kwargs["owner"])
         context["owner"]=owner.username
         context["form"] = PlayerForm()
+        context["player_stats"] = context["player"].playerstats_set.all()
         return context
 
 
