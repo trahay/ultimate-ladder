@@ -38,9 +38,10 @@ class Team(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    player_score = models.IntegerField(default=1000)
     team_name = models.CharField(max_length=1)
     def __str__(self):
-        return str(self.player) + " ("+str(self.game)+" / "+self.team_name+")" + "(db:"+str(self.owner)+")"
+        return str(self.player) + " ("+str(self.game)+" / "+self.team_name+" / "+str(self.player_score)+")" + "(db:"+str(self.owner)+")"
 
 class PlayerStats(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)

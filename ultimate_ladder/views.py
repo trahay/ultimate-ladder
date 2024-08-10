@@ -421,14 +421,14 @@ def NewGame(request, league_pk, owner):
             for p in team_a_players_m + team_a_players_f:
                 player = get_object_or_404(Player, id=p)
                 logger.warning("Adding "+str(player)+" to team A")
-                t = Team(game=game, player=player, team_name='A', owner=league.owner)
+                t = Team(game=game, player=player, player_score=player.score, team_name='A', owner=league.owner)
                 t.save()
                 team_a.append(player)
 
             for p in team_b_players_m + team_b_players_f:
                 player = get_object_or_404(Player, id=p)
                 logger.warning("Adding "+str(player)+" to team B")
-                t = Team(game=game, player=player, team_name='B', owner=league.owner)
+                t = Team(game=game, player=player, player_score=player.score, team_name='B', owner=league.owner)
                 t.save()
                 team_b.append(player)
 
@@ -442,7 +442,7 @@ def TeamScore(team):
     score=0
     for t in team:
          player = t.player
-         score = score + player.score
+         score = score + t.player_score
     return score
 
 def UpdateStats(game):

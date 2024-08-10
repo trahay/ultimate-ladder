@@ -30,14 +30,14 @@
 <ul>
   {% for team in team_a  %}
   <p>
-    <a href="{% url 'player' game.owner team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player.score }} )</a></p>
+    <a href="{% url 'player' game.owner team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player_score }} )</a></p>
   {% endfor %}
 </ul>
 
 <h2>Team B ({{ score_team_b }})</h2>
 <ul>
   {% for team in team_b  %}
-  <p><a href="{% url 'player' game.owner team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player.score }} )</a></p>
+  <p><a href="{% url 'player' game.owner team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player_score }} )</a></p>
   {% endfor %}
 </ul>
 
