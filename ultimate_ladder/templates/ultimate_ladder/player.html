@@ -12,6 +12,8 @@
 
 <h1>{{ player.name }} ( {{ player.gender }} )</h1>
 
+<h2>Leagues</h2>
+
 <table id="players" class="display compact" >
   <thead><tr>
       <th>League</th><th>Wins</th><th>Losses</th><th>Draws</th><th title="Points earned during this league">League points</th><th title="Points earned during all leagues">Total points</th>
@@ -38,4 +40,5 @@
   <a href="{% url 'delete-player' player.owner player.id %}" class="logo">Delete Player</a>
 </p>
 {% endif %}
+
 {% endblock content %}

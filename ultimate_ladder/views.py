@@ -27,6 +27,9 @@ logger = logging.getLogger(__name__)
 from .forms import PlayerForm, GameForm, ScoreForm
 from .models import Player, League, Game, Team, PlayerStats
 
+import os, time
+os.environ['TZ'] = 'Europe/Paris'
+time.tzset()
 
 def getUserDB(username):
     try:
