@@ -1,7 +1,7 @@
 asgiref==3.8.1
 dj-database-url==2.2.0
 dj-email-url==1.0.6
-Django==5.0.11
+Django==5.1.14
 django-cache-url==3.4.5
 django-environ==0.11.2
 environ==1.0
