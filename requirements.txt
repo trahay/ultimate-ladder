@@ -7,7 +7,7 @@ django-environ==0.11.2
 environ==1.0
 environs==11.0.0
 gunicorn==23.0.0
-marshmallow==3.21.3
+marshmallow==3.26.2
 numpy==2.0.0
 packaging==24.1
 pandas==2.2.2
