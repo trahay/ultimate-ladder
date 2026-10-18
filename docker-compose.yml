@@ -11,15 +11,17 @@ services:
         condition: service_healthy
 
   postgres:
-    image: postgres:16
+    image: postgres:18
     env_file: .env
     volumes: 
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres18_data:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      # -h localhost: during its first initialization, postgres runs a temporary
+      # server that only listens on a unix socket. Do not report it as ready.
+      test: ["CMD-SHELL", "pg_isready -h localhost -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 2s
       timeout: 5s
       retries: 30
 
 volumes:
-  postgres_data:
+  postgres18_data:

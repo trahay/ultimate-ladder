@@ -48,6 +48,10 @@ docker-compose exec web python manage.py migrate
 docker-compose exec web python manage.py createsuperuser
 ```
 
+If your database was created with PostgreSQL 16 (before October 2026),
+follow [doc/upgrade-postgres-18.md](doc/upgrade-postgres-18.md) to
+upgrade it to PostgreSQL 18.
+
 
 # Running the tests
 
