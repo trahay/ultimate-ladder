@@ -16,7 +16,14 @@ used by online games:
   account: only the result matters.
 
 The displayed score is the estimated skill of the player, scaled so that a
-new player starts at 1000. A draw between two teams of the same level does
+new player starts at 1000.
+
+Each player has two scores:
+- a global score, computed from all their games, which is used to create
+  balanced teams;
+- a score in each league, computed only from the games of the league,
+  starting from the initial score of the player. It is displayed in the
+  standings of the league. A draw between two teams of the same level does
 not change the scores. When creating a player, you can
 set an *initial score* to give an estimate of their level (more than 1000
 for an experienced player, less for a beginner). The score is used to
@@ -26,9 +33,10 @@ The code is in `ultimate_ladder/rating.py`.
 
 ## Standings of a league
 
-In a league, players get 3 points per win, 1 point per draw and 0 point per
-loss. Players with the same number of points are ranked by their percentage
-of wins.
+The standings of a league are sorted by the score of the players in this
+league. They
+also show the number of games won, lost and drawn in the league, and the
+league points: 3 points per win, 1 point per draw and 0 point per loss.
 
 ## Recomputing the scores
 

@@ -195,6 +195,39 @@ class UpdateStatsTests(RatingTestCase):
         self.assertEqual(self.stats(a[0], other).loss, 1)
 
 
+class LeagueScoreTests(RatingTestCase):
+    def test_new_league_starts_from_the_initial_score(self):
+        a = self.players(1300, 1000)
+        b = self.players(1000, 1000, prefix="Q")
+        self.play(a, b, 5, 3)
+        other = make_league(self.user, "Other")
+        a[0].score = 2000  # the global score does not matter for a new league
+        a[0].save()
+        self.play(a, b, 4, 4, league=other)
+        self.assertLess(abs(self.stats(a[0], other).score - 1300), 100)
+
+    def test_league_score_only_counts_the_games_of_the_league(self):
+        a = self.players(1000, 1000)
+        b = self.players(1000, 1000, prefix="Q")
+        other = make_league(self.user, "Other")
+        for i in range(3):
+            self.play(a, b, 5, 3)                 # a wins in this league
+        self.play(a, b, 3, 5, league=other)      # ... and loses in the other one
+        self.assertGreater(a[0].score, 1000)                    # global: 3 wins, 1 loss
+        self.assertGreater(self.stats(a[0]).score, 1000)        # this league: 3 wins
+        self.assertLess(self.stats(a[0], other).score, 1000)    # other league: 1 loss
+
+    def test_league_score_after_a_single_league_is_the_global_score(self):
+        a = self.players(1000, 1100)
+        b = self.players(950, 1050, prefix="Q")
+        self.play(a, b, 5, 3)
+        self.play(b, a, 5, 3)
+        for p in a + b:
+            stats = self.stats(p)
+            self.assertEqual(stats.score, p.score)
+            self.assertAlmostEqual(stats.mu, p.mu)
+
+
 class RecomputeTests(RatingTestCase):
     def test_recompute_replays_the_history(self):
         a = self.players(1000, 1100)
@@ -202,12 +235,14 @@ class RecomputeTests(RatingTestCase):
         self.play(a, b, 5, 3)
         self.play(b, a, 5, 3)
         self.play(a, b, 4, 4)
+        self.play(a, b, 2, 7, league=make_league(self.user, "Other"))
         expected = {p.pk: (p.score, p.mu, p.sigma) for p in Player.objects.all()}
-        expected_stats = [(s.player_id, s.win, s.loss, s.draw, s.total_points) for s in PlayerStats.objects.all()]
+        expected_stats = [(s.player_id, s.league_id, s.win, s.loss, s.draw, s.total_points, s.score)
+                          for s in PlayerStats.objects.all()]
 
         # break everything, then recompute
         Player.objects.update(score=0, mu=None, sigma=None)
-        PlayerStats.objects.update(win=9, total_points=99)
+        PlayerStats.objects.update(win=9, total_points=99, score=0, mu=None)
         rating.recompute_all()
 
         for p in Player.objects.all():
@@ -215,8 +250,8 @@ class RecomputeTests(RatingTestCase):
             self.assertEqual(p.score, score)
             self.assertAlmostEqual(p.mu, mu)
             self.assertAlmostEqual(p.sigma, sigma)
-        self.assertCountEqual([(s.player_id, s.win, s.loss, s.draw, s.total_points) for s in PlayerStats.objects.all()],
-                              expected_stats)
+        self.assertCountEqual([(s.player_id, s.league_id, s.win, s.loss, s.draw, s.total_points, s.score)
+                               for s in PlayerStats.objects.all()], expected_stats)
 
     def test_recompute_starts_from_the_initial_score(self):
         p = make_player(self.user, "Old", score=2345)

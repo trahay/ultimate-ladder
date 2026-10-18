@@ -50,7 +50,7 @@
 	<th title="{% translate 'Losses' %}"><span class="label-long">{% translate "Losses" %}</span><span class="label-short" aria-hidden="true">{% translate "L" context "abbreviation of losses" %}</span></th>
 	<th title="{% translate 'Draws' %}"><span class="label-long">{% translate "Draws" %}</span><span class="label-short" aria-hidden="true">{% translate "D" context "abbreviation of draws" %}</span></th>
 	<th title="{% translate '3 points per win, 1 per draw' %}"><span class="label-long">{% translate "Points" %}</span><span class="label-short" aria-hidden="true">{% translate "Pts" context "abbreviation of points" %}</span></th>
-	<th title="{% translate 'Current level of the player, all leagues included' %}">{% translate "Score" context "level of a player" %}</th>
+	<th title="{% translate 'Level of the player, computed only from the games of this league' %}">{% translate "Score" context "level of a player" %}</th>
     </tr></thead>
     <tbody>
 	{% for stat in player_list %}
@@ -62,7 +62,7 @@
 	    <td>{{ stat.loss }}</td>
 	    <td>{{ stat.draw }}</td>
 	    <td>{{ stat.total_points }}</td>
-	    <td>{{ stat.player.score }}</td>
+	    <td>{{ stat.score }}</td>
 	</tr>
 	{% endfor %}
     </tbody>

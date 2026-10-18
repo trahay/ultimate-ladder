@@ -65,5 +65,10 @@ class PlayerStats(models.Model):
     loss = models.IntegerField(default=0)
     draw = models.IntegerField(default=0)
     total_points = models.IntegerField(default=0)
+    # Rating of the player computed only from the games of this league
+    # (see rating.py): displayed score, mu and sigma.
+    score = models.IntegerField(default=1000)
+    mu = models.FloatField(null=True, blank=True)
+    sigma = models.FloatField(null=True, blank=True)
     
     

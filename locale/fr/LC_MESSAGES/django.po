@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:31+0000\n"
+"POT-Creation-Date: 2026-10-18 13:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -204,7 +204,7 @@ msgid_plural "%(counter)s games"
 msgstr[0] "%(counter)s match"
 msgstr[1] "%(counter)s matchs"
 
-#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:12
+#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:10
 #: ultimate_ladder/templates/ultimate_ladder/game.html:54
 #: ultimate_ladder/templates/ultimate_ladder/league.html:33
 #, python-format
@@ -213,16 +213,16 @@ msgid_plural "%(counter)s players"
 msgstr[0] "%(counter)s joueur"
 msgstr[1] "%(counter)s joueurs"
 
-#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:16
+#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:14
 #, python-format
 msgid "Last game: %(date)s"
 msgstr "Dernier match : %(date)s"
 
-#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:18
+#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:16
 msgid "No game yet"
 msgstr "Aucun match pour le moment"
 
-#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:25
+#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:23
 msgid "No league yet. Create one to start organizing games."
 msgstr "Aucune ligue pour le moment. Créez-en une pour organiser vos matchs."
 
@@ -304,6 +304,7 @@ msgstr "Niveau actuel du joueur"
 #: ultimate_ladder/templates/ultimate_ladder/league.html:53
 #: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:17
 #: ultimate_ladder/templates/ultimate_ladder/player.html:13
+#: ultimate_ladder/templates/ultimate_ladder/player.html:43
 msgctxt "level of a player"
 msgid "Score"
 msgstr "Niveau"
@@ -346,11 +347,11 @@ msgstr "Se déconnecter"
 msgid "Language"
 msgstr "Langue"
 
-#: ultimate_ladder/templates/ultimate_ladder/base.html:79
+#: ultimate_ladder/templates/ultimate_ladder/base.html:80
 msgid "Source code"
 msgstr "Code source"
 
-#: ultimate_ladder/templates/ultimate_ladder/base.html:81
+#: ultimate_ladder/templates/ultimate_ladder/base.html:82
 msgid "Report a bug"
 msgstr "Signaler un bug"
 
@@ -392,7 +393,7 @@ msgstr "Terminé"
 
 #: ultimate_ladder/templates/ultimate_ladder/game.html:12
 #: ultimate_ladder/templates/ultimate_ladder/league.html:34
-#: ultimate_ladder/templates/ultimate_ladder/player.html:73
+#: ultimate_ladder/templates/ultimate_ladder/player.html:74
 msgid "Ongoing"
 msgstr "En cours"
 
@@ -412,7 +413,7 @@ msgstr "Victoire de l'équipe B"
 
 #: ultimate_ladder/templates/ultimate_ladder/game.html:25
 #: ultimate_ladder/templates/ultimate_ladder/league.html:83
-#: ultimate_ladder/templates/ultimate_ladder/player.html:71
+#: ultimate_ladder/templates/ultimate_ladder/player.html:72
 msgid "Draw"
 msgstr "Match nul"
 
@@ -542,8 +543,9 @@ msgid "Pts"
 msgstr "Pts"
 
 #: ultimate_ladder/templates/ultimate_ladder/league.html:53
-msgid "Current level of the player, all leagues included"
-msgstr "Niveau actuel du joueur, toutes ligues confondues"
+#: ultimate_ladder/templates/ultimate_ladder/player.html:43
+msgid "Level of the player, computed only from the games of this league"
+msgstr "Niveau du joueur, calculé uniquement avec les matchs de cette ligue"
 
 #: ultimate_ladder/templates/ultimate_ladder/league.html:72
 msgid "The standings will appear once a game is completed."
@@ -639,6 +641,10 @@ msgstr "Créer le match"
 msgid "man"
 msgstr "homme"
 
+#: ultimate_ladder/templates/ultimate_ladder/player.html:13
+msgid "Level of the player, all leagues included"
+msgstr "Niveau du joueur, toutes ligues confondues"
+
 #: ultimate_ladder/templates/ultimate_ladder/player.html:17
 msgid "Games played"
 msgstr "Matchs joués"
@@ -647,33 +653,33 @@ msgstr "Matchs joués"
 msgid "League"
 msgstr "Ligue"
 
-#: ultimate_ladder/templates/ultimate_ladder/player.html:59
+#: ultimate_ladder/templates/ultimate_ladder/player.html:60
 #, python-format
 msgid "%(name)s has not completed any game yet."
 msgstr "%(name)s n'a encore terminé aucun match."
 
-#: ultimate_ladder/templates/ultimate_ladder/player.html:63
+#: ultimate_ladder/templates/ultimate_ladder/player.html:64
 msgid "Last games"
 msgstr "Derniers matchs"
 
-#: ultimate_ladder/templates/ultimate_ladder/player.html:68
+#: ultimate_ladder/templates/ultimate_ladder/player.html:69
 #, python-format
 msgid "team %(name)s"
 msgstr "équipe %(name)s"
 
-#: ultimate_ladder/templates/ultimate_ladder/player.html:71
+#: ultimate_ladder/templates/ultimate_ladder/player.html:72
 msgid "Win"
 msgstr "Victoire"
 
-#: ultimate_ladder/templates/ultimate_ladder/player.html:71
+#: ultimate_ladder/templates/ultimate_ladder/player.html:72
 msgid "Loss"
 msgstr "Défaite"
 
-#: ultimate_ladder/templates/ultimate_ladder/player.html:82
+#: ultimate_ladder/templates/ultimate_ladder/player.html:83
 msgid "Edit player"
 msgstr "Modifier le joueur"
 
-#: ultimate_ladder/templates/ultimate_ladder/player.html:83
+#: ultimate_ladder/templates/ultimate_ladder/player.html:84
 #: ultimate_ladder/templates/ultimate_ladder/player_confirm_delete.html:10
 msgid "Delete player"
 msgstr "Supprimer le joueur"
@@ -683,50 +689,50 @@ msgstr "Supprimer le joueur"
 msgid "Are you sure that you want to delete the player \"%(name)s\"?"
 msgstr "Voulez-vous vraiment supprimer le joueur « %(name)s » ?"
 
-#: ultimate_ladder/views.py:181
+#: ultimate_ladder/views.py:180
 msgid "The player was created."
 msgstr "Le joueur a été créé."
 
-#: ultimate_ladder/views.py:210
+#: ultimate_ladder/views.py:209
 msgid "The player was updated."
 msgstr "Le joueur a été modifié."
 
-#: ultimate_ladder/views.py:238
+#: ultimate_ladder/views.py:237
 msgid "The player was deleted."
 msgstr "Le joueur a été supprimé."
 
-#: ultimate_ladder/views.py:254
+#: ultimate_ladder/views.py:253
 msgid "The league was created."
 msgstr "La ligue a été créée."
 
-#: ultimate_ladder/views.py:280
+#: ultimate_ladder/views.py:279
 msgid "The league was updated."
 msgstr "La ligue a été modifiée."
 
-#: ultimate_ladder/views.py:299
+#: ultimate_ladder/views.py:298
 msgid "The league was deleted."
 msgstr "La ligue a été supprimée."
 
-#: ultimate_ladder/views.py:348
+#: ultimate_ladder/views.py:347
 msgid "You can only modify your own games."
 msgstr "Vous ne pouvez modifier que vos propres matchs."
 
-#: ultimate_ladder/views.py:353
+#: ultimate_ladder/views.py:352
 msgid "The game is already completed."
 msgstr "Le match est déjà terminé."
 
-#: ultimate_ladder/views.py:365
+#: ultimate_ladder/views.py:364
 msgid "The score was saved."
 msgstr "Le score a été enregistré."
 
-#: ultimate_ladder/views.py:367
+#: ultimate_ladder/views.py:366
 msgid "The score is not valid."
 msgstr "Le score n'est pas valide."
 
-#: ultimate_ladder/views.py:390
+#: ultimate_ladder/views.py:389
 msgid "The game was deleted."
 msgstr "Le match a été supprimé."
 
-#: ultimate_ladder/views.py:471 ultimate_ladder/views.py:548
+#: ultimate_ladder/views.py:470 ultimate_ladder/views.py:547
 msgid "You can only create games in your own leagues."
 msgstr "Vous ne pouvez créer des matchs que dans vos propres ligues."

@@ -160,11 +160,10 @@ class LeagueDetail(generic.DetailView):
         games = context["league"].game_set.annotate(nb_players=Count('team')).order_by('-creation_date', '-id')
         context["ongoing_games"] = games.filter(completed=False)
         context["completed_games"] = games.filter(completed=True)
-        # standings: 3 points per win, 1 per draw, then the percentage of wins
+        # standings: sorted by the score (level) of the players in this league
         context["player_list"] = (context["league"].playerstats_set.select_related('player')
                                   .annotate(played=F('win') + F('loss') + F('draw'))
-                                  .annotate(win_rate=Cast('win', FloatField()) / NullIf(Cast('played', FloatField()), 0.0))
-                                  .order_by('-total_points', F('win_rate').desc(nulls_last=True), Lower('player__name')))
+                                  .order_by('-score', Lower('player__name')))
 
         return context
 

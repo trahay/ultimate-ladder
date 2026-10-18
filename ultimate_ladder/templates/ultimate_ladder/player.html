@@ -10,7 +10,7 @@
 
 <div class="metrics">
     <article>
-	<span class="metric-label">{% translate "Score" context "level of a player" %}</span>
+	<span class="metric-label" title="{% translate 'Level of the player, all leagues included' %}">{% translate "Score" context "level of a player" %}</span>
 	<span class="metric-value">{{ player.score }}</span>
     </article>
     <article>
@@ -40,7 +40,7 @@
 <div class="overflow-auto">
 <table>
     <thead><tr>
-	<th>{% translate "League" %}</th><th>{% translate "Wins" %}</th><th>{% translate "Losses" %}</th><th>{% translate "Draws" %}</th><th title="{% translate '3 points per win, 1 per draw' %}">{% translate "Points" %}</th>
+	<th>{% translate "League" %}</th><th>{% translate "Wins" %}</th><th>{% translate "Losses" %}</th><th>{% translate "Draws" %}</th><th title="{% translate '3 points per win, 1 per draw' %}">{% translate "Points" %}</th><th title="{% translate 'Level of the player, computed only from the games of this league' %}">{% translate "Score" context "level of a player" %}</th>
     </tr></thead>
     <tbody>
 	{% for stat in player_stats %}
@@ -50,6 +50,7 @@
 	    <td>{{ stat.loss }}</td>
 	    <td>{{ stat.draw }}</td>
 	    <td>{{ stat.total_points }}</td>
+	    <td>{{ stat.score }}</td>
 	</tr>
 	{% endfor %}
     </tbody>

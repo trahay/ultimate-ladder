@@ -51,24 +51,18 @@ class LeaguePageTests(PageTestCase):
         self.assertContains(response, "Ongoing games")
         self.assertContains(response, "4 players")
 
-    def test_standings_are_sorted_by_league_points(self):
-        p = {name: make_player(self.user, name) for name in ["Low", "High", "Mid"]}
-        for name, points in [("Low", -10), ("High", 50), ("Mid", 5)]:
+    def test_standings_are_sorted_by_league_score(self):
+        # global scores in the opposite order: only the score in the league matters
+        p = {name: make_player(self.user, name, score=score)
+             for name, score in [("Low", 1500), ("High", 800), ("Mid", 1000), ("Also mid", 1000)]}
+        for name, league_score, points in [("Low", 900, 50), ("High", 1300, 0), ("Mid", 1100, 10), ("Also mid", 1100, 10)]:
             PlayerStats.objects.create(owner=self.user, player=p[name], league=self.league,
-                                       total_points=points)
+                                       score=league_score, total_points=points)
         response = self.client.get(self.url())
         names = [s.player.name for s in response.context["player_list"]]
-        self.assertEqual(names, ["High", "Mid", "Low"])
-
-    def test_standings_ties_are_broken_by_win_rate(self):
-        p = {name: make_player(self.user, name) for name in ["Drawer", "Winner"]}
-        # same number of points: 3 draws, or 1 win and 2 losses
-        PlayerStats.objects.create(owner=self.user, player=p["Drawer"], league=self.league,
-                                   draw=3, total_points=3)
-        PlayerStats.objects.create(owner=self.user, player=p["Winner"], league=self.league,
-                                   win=1, loss=2, total_points=3)
-        response = self.client.get(self.url())
-        self.assertEqual([s.player.name for s in response.context["player_list"]], ["Winner", "Drawer"])
+        self.assertEqual(names, ["High", "Also mid", "Mid", "Low"])
+        self.assertContains(response, "<td>1300</td>", html=True)
+        self.assertNotContains(response, "<td>800</td>", html=True)
         self.assertContains(response, "3 points per win, 1 point per draw.")
 
     def test_games_are_listed_most_recent_first(self):
