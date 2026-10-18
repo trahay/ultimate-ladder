@@ -3,11 +3,14 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-<h2>{% if player %} Edit {% else %} New {% endif %} Player</h2>
+<h1>{% if player %}Edit {{ player.name }}{% else %}New player{% endif %}</h1>
 
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Save">
+    <div class="actions">
+        <button type="submit">Save</button>
+        <a href="{% if player %}{% url 'player' player.owner player.id %}{% else %}{% url 'players' user %}{% endif %}" role="button" class="secondary outline">Cancel</a>
+    </div>
 </form>
 {% endif %} 
 

@@ -1,0 +1,45 @@
+{% comment %}Table of players, with a search field. Needs `players` (see players_by_name) and `owner`.
+With `detailed`, also shows the number of wins, losses and draws.{% endcomment %}
+{% if players %}
+<script>
+    $(document).ready(function () {
+        $('#player-table').DataTable({
+	    order: [[0, 'asc']],
+	    pageLength: 25,
+	    lengthChange: false,
+	});
+    });
+</script>
+<div class="overflow-auto">
+<table id="player-table" class="display compact">
+    <thead><tr>
+	<th>Player</th>
+	<th title="Number of completed games"><span class="label-long">Played</span><span class="label-short" aria-hidden="true">P</span></th>
+	{% if detailed %}
+	<th title="Wins"><span class="label-long">Wins</span><span class="label-short" aria-hidden="true">W</span></th>
+	<th title="Losses"><span class="label-long">Losses</span><span class="label-short" aria-hidden="true">L</span></th>
+	<th title="Draws"><span class="label-long">Draws</span><span class="label-short" aria-hidden="true">D</span></th>
+	{% endif %}
+	<th title="Percentage of games won"><span class="label-long">Win %</span><span class="label-short" aria-hidden="true">%</span></th>
+	<th title="Current score of the player">Score</th>
+    </tr></thead>
+    <tbody>
+	{% for player in players %}
+	<tr>
+	    <td data-order="{{ player.name|lower }}"><a href="{% url 'player' owner player.id %}" class="{% if player.gender == 'f' %}woman{% else %}man{% endif %}">{{ player.name }}{% if player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="woman"></i>{% endif %}</a></td>
+	    <td>{{ player.played }}</td>
+	    {% if detailed %}
+	    <td>{{ player.wins }}</td>
+	    <td>{{ player.losses }}</td>
+	    <td>{{ player.draws }}</td>
+	    {% endif %}
+	    <td data-order="{% if player.win_rate is None %}-1{% else %}{{ player.win_rate|stringformat:'f' }}{% endif %}">{% if player.win_rate is None %}–{% else %}{{ player.win_rate|floatformat:0 }}%{% endif %}</td>
+	    <td>{{ player.score }}</td>
+	</tr>
+	{% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<p class="empty">No player yet. Add the players of your group to create balanced teams.</p>
+{% endif %}

@@ -1,0 +1,18 @@
+{% comment %}List of leagues, as cards. Needs `league_list` (see leagues_with_stats) and `owner`.{% endcomment %}
+{% if league_list %}
+<div class="league-cards">
+    {% for league in league_list %}
+    <article>
+	<h3><a href="{% url 'league' owner league.id %}">{{ league.name }}</a></h3>
+	<p class="league-stats">
+	    {{ league.nb_games }} game{{ league.nb_games|pluralize }} · {{ league.nb_players }} player{{ league.nb_players|pluralize }}
+	</p>
+	<p class="league-stats">
+	    {% if league.last_game %}Last game: {{ league.last_game|date:"M j, Y" }}{% else %}No game yet{% endif %}
+	</p>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<p class="empty">No league yet. Create one to start organizing games.</p>
+{% endif %}

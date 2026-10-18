@@ -1,18 +1,43 @@
 {% extends 'ultimate_ladder/base.html' %}
-	
+
 {% block content %}
-
 {% if user.is_authenticated %}
-<h2>New Game</h2>
-
-League: {{ league.name }}
+<a href="{% url 'league' league.owner league.id %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ league.name }}</a>
+<h1>New game</h1>
+<p>Choose the players who are here: the teams are created automatically, with similar levels and the same number of women. <a href="{% url 'add-manual-game' league.owner league.id %}">Choose the teams manually</a></p>
 
 <form action="{% url 'add-game' league.owner league.id %}" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Save">
+    {{ form.non_field_errors }}
+    <fieldset class="player-choices" id="player-choices">
+	<legend class="sr-only">Players</legend>
+	{% for choice in form.players %}
+	{% with player=choice.data.value.instance %}
+	<label class="{% if player.gender == 'f' %}woman{% else %}man{% endif %}">
+	    {{ choice.tag }} {{ player.name }}{% if player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="woman"></i>{% endif %}
+	</label>
+	{% endwith %}
+	{% empty %}
+	<p class="empty">No player yet: <a href="{% url 'add-player' league.owner %}">create the players</a> first.</p>
+	{% endfor %}
+    </fieldset>
+    {{ form.players.errors }}
+    <p class="selection-summary" id="selection-summary" aria-live="polite"></p>
+    <button type="submit">Create the teams</button>
 </form>
 
-<a href="{% url 'add-manual-game' league.owner league.id %}">Choose the teams manually</a>
+<script>
+    // Display the number of selected players and women
+    const choices = document.getElementById('player-choices');
+    function updateSelection() {
+        const checked = choices.querySelectorAll('input:checked');
+        const women = choices.querySelectorAll('label.woman input:checked').length;
+        document.getElementById('selection-summary').textContent =
+            checked.length + ' player' + (checked.length > 1 ? 's' : '') + ' selected, including ' +
+            women + (women > 1 ? ' women' : ' woman');
+    }
+    choices.addEventListener('change', updateSelection);
+    updateSelection();
+</script>
 {% endif %}
 {% endblock content %}

@@ -1,70 +1,85 @@
 {% extends 'ultimate_ladder/base.html' %}
-	
+
 {% block content %}
 
 <script>
     $(document).ready(function () {
         $('#players').DataTable({
-	    order: [[4, 'desc']],
+	    order: [[0, 'asc']],
+	    pageLength: 25,
+	    lengthChange: false,
 	});
     });
 </script>
 
-
- 
-<h1>{{ league.name }} </h1>
-
-{% if league.game_set.count %}
-<h2>Ongoing games</h2>
-    <div>
-    {% for game in ongoing_games %}
-        <p><a href="{% url 'game' league.owner league.id game.id %}">{{ game.creation_date }}</a></p>
-    {% endfor %}
-    </div>
-    {% else %}
-    <div>
-	<p>No ongoing game.</p>
-    </div>
-    {% endif %}
-
-
-    <table id="players" class="display compact" >
-	<thead><tr>
-	    <th>Player</th><th>Wins</th><th>Losses</th><th>Draws</th><th title="Points earned during this league">League points</th><th title="Points earned during all leagues">Total points</th>
-	</tr></thead>
-	<tbody>
-	    {% for player in player_list %}
-	    <tr>
-		<td><a href="{% url 'player' league.owner player.player.id %}" class="{% if player.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.player.name }}</a></td>
-		<td>{{player.win}}</td>
-		<td>{{player.loss}}</td>
-		<td>{{player.draw}}</td>
-		<td>{{player.total_points}}</td>
-		<td>{{player.player.score}}</td>
-	    </tr>
-	    {% endfor %}	    
-	</tbody>
-	
-    </table>
-
-    {% if completed_games.count > 0 %}
-    <h2>Archived games</h2>
-    <div>
-	{% for game in completed_games %}
-        <p><a href="{% url 'game' league.owner league.id game.id %}">{{ game.creation_date }}</a></p>
-	{% endfor %}
-    </div>
-    {% else %}
-    <div>
-	<p>No previous ongoing game.</p>
-    </div>
-    {% endif %}
-
+<a href="{% url 'leagues' league.owner %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Leagues</a>
+<h1>{{ league.name }}</h1>
 
 {% if user.is_authenticated %}
 <div class="actions">
     <a href="{% url 'add-game' league.owner league.id %}" role="button"><i class="bi bi-plus-lg" aria-hidden="true"></i> New game</a>
     <a href="{% url 'add-manual-game' league.owner league.id %}" role="button" class="outline">New game (manual teams)</a>
+</div>
+{% endif %}
+
+{% if ongoing_games %}
+<h2>Ongoing games</h2>
+<ul class="game-list">
+    {% for game in ongoing_games %}
+    <li>
+	<a href="{% url 'game' league.owner league.id game.id %}">{{ game.creation_date|date:"M j, Y, H:i" }}</a>
+	<span class="game-info">{{ game.nb_players }} player{{ game.nb_players|pluralize }}</span>
+	<span class="badge badge-ongoing">Ongoing</span>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<h2>Standings</h2>
+{% if player_list %}
+<div class="overflow-auto">
+<table id="players" class="display compact">
+    <thead><tr>
+	<th>#</th><th>Player</th><th>Wins</th><th>Losses</th><th>Draws</th><th title="Points earned during this league">League points</th><th title="Current score of the player, all leagues included">Score</th>
+    </tr></thead>
+    <tbody>
+	{% for stat in player_list %}
+	<tr>
+	    <td>{{ forloop.counter }}</td>
+	    <td><a href="{% url 'player' league.owner stat.player.id %}" class="{% if stat.player.gender == 'f' %}woman{% else %}man{% endif %}">{{ stat.player.name }}{% if stat.player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="woman"></i>{% endif %}</a></td>
+	    <td>{{ stat.win }}</td>
+	    <td>{{ stat.loss }}</td>
+	    <td>{{ stat.draw }}</td>
+	    <td>{{ stat.total_points }}</td>
+	    <td>{{ stat.player.score }}</td>
+	</tr>
+	{% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<p class="empty">The standings will appear once a game is completed.</p>
+{% endif %}
+
+<h2>Completed games</h2>
+{% if completed_games %}
+<ul class="game-list">
+    {% for game in completed_games %}
+    <li>
+	<a href="{% url 'game' league.owner league.id game.id %}">{{ game.creation_date|date:"M j, Y, H:i" }}</a>
+	<span class="game-score">A {{ game.score_team_a }} – {{ game.score_team_b }} B</span>
+	<span class="game-info">
+	    {% if game.score_team_a > game.score_team_b %}Team A wins{% elif game.score_team_b > game.score_team_a %}Team B wins{% else %}Draw{% endif %}
+	</span>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="empty">No completed game yet.</p>
+{% endif %}
+
+{% if user.is_authenticated %}
+<div class="actions">
     <a href="{% url 'edit-league' league.owner league.id %}" role="button" class="secondary outline"><i class="bi bi-pencil" aria-hidden="true"></i> Edit league</a>
     <a href="{% url 'delete-league' league.owner league.id %}" class="danger"><i class="bi bi-trash" aria-hidden="true"></i> Delete league</a>
 </div>

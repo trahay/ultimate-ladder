@@ -7,7 +7,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormMi
 from django.views.generic.base import RedirectView
 from django.contrib import messages
 from datetime import datetime
-from django.db.models import Count
+from django.db.models import Count, F, FloatField, Max, Sum
+from django.db.models.functions import Cast, Coalesce, Lower, NullIf
 import pandas as pd
 import sys
 import math
@@ -30,6 +31,30 @@ from .models import Player, League, Game, Team, PlayerStats
 import os, time
 os.environ['TZ'] = 'Europe/Paris'
 time.tzset()
+
+def leagues_with_stats(owner):
+    """The leagues of the owner, with their number of games and of players
+    and the date of their last game. Most recently played first."""
+    return (League.objects.filter(owner=owner)
+            .annotate(nb_games=Count('game', distinct=True),
+                      nb_players=Count('playerstats', distinct=True),
+                      last_game=Max('game__creation_date'))
+            .order_by(F('last_game').desc(nulls_last=True), Lower('name')))
+
+def with_game_stats(players):
+    """Add the number of completed games played, won, lost and drawn by
+    each player (all leagues included), and their percentage of wins
+    (None if they have not played yet)."""
+    players = players.annotate(
+        wins=Coalesce(Sum('playerstats__win'), 0),
+        losses=Coalesce(Sum('playerstats__loss'), 0),
+        draws=Coalesce(Sum('playerstats__draw'), 0),
+    ).annotate(played=F('wins') + F('losses') + F('draws'))
+    return players.annotate(
+        win_rate=100 * Cast('wins', FloatField()) / NullIf(Cast('played', FloatField()), 0.0))
+
+def players_by_name(owner):
+    return with_game_stats(Player.objects.filter(owner=owner)).order_by(Lower('name'))
 
 def getUserDB(username):
     try:
@@ -62,8 +87,8 @@ class Index(generic.ListView):
         owner=getUserDB(owner_name)
         if owner is not None:
             context["owner"]=owner.username
-            context["all_players"]=Player.objects.filter(owner=owner)
-            context["league_list"]=League.objects.filter(owner=owner)
+            context["all_players"]=players_by_name(owner)
+            context["league_list"]=leagues_with_stats(owner)
         return context
 
 
@@ -75,8 +100,28 @@ class PlayerList(generic.ListView):
         context = super().get_context_data(**kwargs)
         owner=getUserDB(self.kwargs["owner"])
         context["owner"]=owner.username
-        context["player_list"]=Player.objects.filter(owner=owner)
+        context["player_list"]=players_by_name(owner)
         return context
+
+def recent_games(player, limit=10):
+    """The last games of a player, with the result of their team."""
+    games = []
+    for t in (Team.objects.filter(player=player).select_related('game', 'game__league')
+              .order_by('-game__creation_date', '-game__id')[:limit]):
+        game = t.game
+        own, other = game.score_team_a, game.score_team_b
+        if t.team_name == 'B':
+            own, other = other, own
+        if not game.completed:
+            result = None
+        elif own > other:
+            result = 'win'
+        elif own < other:
+            result = 'loss'
+        else:
+            result = 'draw'
+        games.append({'game': game, 'team_name': t.team_name, 'own': own, 'other': other, 'result': result})
+    return games
 
 class PlayerDetail(generic.DetailView):
     model=Player
@@ -86,7 +131,9 @@ class PlayerDetail(generic.DetailView):
         owner=getUserDB(self.kwargs["owner"])
         context["owner"]=owner.username
         context["form"] = PlayerForm()
-        context["player_stats"] = context["player"].playerstats_set.all()
+        context["player_stats"] = context["player"].playerstats_set.select_related('league')
+        context["totals"] = with_game_stats(Player.objects.filter(pk=context["player"].pk)).get()
+        context["recent_games"] = recent_games(context["player"])
         return context
 
 
@@ -99,7 +146,7 @@ class LeagueList(generic.ListView):
         context = super().get_context_data(**kwargs)
         user=User.objects.get(username=self.kwargs["owner"])
         context["owner"]=self.kwargs["owner"]
-        context["league_list"]=League.objects.filter(owner=user)
+        context["league_list"]=leagues_with_stats(user)
         return context
 
 class LeagueDetail(generic.DetailView):
@@ -108,9 +155,11 @@ class LeagueDetail(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["ongoing_games"] = context["league"].game_set.filter(completed=False)
-        context["completed_games"] = context["league"].game_set.filter(completed=True)
-        context["player_list"] = context["league"].playerstats_set.all()
+        games = context["league"].game_set.annotate(nb_players=Count('team')).order_by('-creation_date', '-id')
+        context["ongoing_games"] = games.filter(completed=False)
+        context["completed_games"] = games.filter(completed=True)
+        context["player_list"] = (context["league"].playerstats_set.select_related('player')
+                                  .order_by('-total_points', Lower('player__name')))
 
         return context
 

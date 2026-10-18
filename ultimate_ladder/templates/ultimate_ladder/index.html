@@ -1,42 +1,29 @@
 {% extends 'ultimate_ladder/base.html' %}
-	
-{% block content %}
 
+{% block content %}
 {% if user.is_authenticated %}
 
-<H1>Leagues</H1>
-{% if league_list %}
-    <div>
-    {% for league in league_list %}
-        <p><a href="{% url 'league' user league.id %}">{{ league.name }}</a></p>
-    {% endfor %}
+<section>
+    <div class="section-header">
+	<h1>Leagues</h1>
+	<a href="{% url 'add-league' user %}" role="button" class="outline"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create league</a>
     </div>
-    {% else %}
-    <div>
-      <p>No league available.</p>
-    </div>
-    {% endif %}
+    {% include 'ultimate_ladder/_league_cards.html' with owner=owner %}
+</section>
 
-    <div>
-      <a href="{% url 'add-league' user %}" role="button" class="outline"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create league</a>
+<section>
+    <div class="section-header">
+	<h1>Players</h1>
+	<a href="{% url 'add-player' user %}" role="button" class="outline"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create player</a>
     </div>
-    
-<H1>Players</H1>
-    {% if all_players %}
-    <div>
-    {% for player in all_players %}
-        <p><a href="{% url 'player' user player.id %}" class="{% if player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.name }}</a></p>
-    {% endfor %}
-    </div>
+    {% include 'ultimate_ladder/_players_table.html' with players=all_players owner=owner %}
+</section>
+
 {% else %}
-    <div>
-      <p>
-	No player.
-      </p>
-    </div>
+<article class="login">
+    <h1>Ultimate ladder</h1>
+    <p>Create balanced teams for your ultimate games, and follow the standings of your leagues.</p>
+    <a href="{% url 'login' %}?next={{ request.path }}" role="button">Log in</a>
+</article>
 {% endif %}
-
-    <a href="{% url 'add-player' user %}" role="button" class="outline"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create player</a>
-
-    {% endif %} 
-    {% endblock content %}
+{% endblock content %}

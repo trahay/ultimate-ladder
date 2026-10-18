@@ -3,14 +3,15 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-<h2>New Game (manual teams)</h2>
-
-League: {{ league.name }}
+<a href="{% url 'league' league.owner league.id %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ league.name }}</a>
+<h1>New game (manual teams)</h1>
+<p>Choose the team of each player. <a href="{% url 'add-game' league.owner league.id %}">Create the teams automatically</a></p>
 
 <form action="{% url 'add-manual-game' league.owner league.id %}" method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}
-    <table id="manual-teams" class="display compact">
+    <div class="overflow-auto">
+    <table id="manual-teams">
 	<thead><tr>
 	    <th>Player</th><th>Score</th><th>Absent</th><th>Team A</th><th>Team B</th>
 	</tr></thead>
@@ -28,14 +29,14 @@ League: {{ league.name }}
 	    {% endfor %}
 	</tbody>
     </table>
+    </div>
 
     <p id="team-a-summary">Team A: <span class="count">0</span> players (<span class="women">0</span> women), score <span class="score">0</span></p>
     <p id="team-b-summary">Team B: <span class="count">0</span> players (<span class="women">0</span> women), score <span class="score">0</span></p>
 
-    <input type="submit" value="Save">
+    <button type="submit">Create the game</button>
 </form>
 
-<a href="{% url 'add-game' league.owner league.id %}">Create the teams automatically</a>
 
 <script>
     // Display the number of players, of women, and the total score of each team

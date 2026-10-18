@@ -1,5 +1,6 @@
 """End-to-end tests of the team generation (NewGame view)."""
 import random
+import re
 
 from django.test import TestCase
 from django.urls import reverse
@@ -113,7 +114,8 @@ class NewGameTests(TestCase):
         game, team_a, team_b = self.create_game(players)
         self.assertEqual(self.preselected(), {p.pk for p in players})
         response = self.client.get(self.url())
-        self.assertContains(response, 'checked', count=len(players))
+        checked = re.findall(r'<input type="checkbox"[^>]* checked>', response.content.decode())
+        self.assertEqual(len(checked), len(players))
         self.assertNotIn(absent.pk, self.preselected())
 
     def test_only_the_last_game_is_used(self):

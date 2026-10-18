@@ -1,37 +1,80 @@
 {% extends 'ultimate_ladder/base.html' %}
-	
+
 {% block content %}
-<script>
-    $(document).ready(function () {
-        $('#players').DataTable({
-	    order: [[4, 'desc']],
-	});
-    });
-</script>
+<a href="{% url 'players' player.owner %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Players</a>
 
+<h1 class="{% if player.gender == 'f' %}woman{% else %}man{% endif %}">
+    {{ player.name }}{% if player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="woman"></i>{% else %}<i class="bi bi-gender-male gender-icon" role="img" aria-label="man"></i>{% endif %}
+</h1>
 
-<h1>{{ player.name }} ( {{ player.gender }} )</h1>
+<div class="metrics">
+    <article>
+	<span class="metric-label">Score</span>
+	<span class="metric-value">{{ player.score }}</span>
+    </article>
+    <article>
+	<span class="metric-label">Games played</span>
+	<span class="metric-value">{{ totals.played }}</span>
+    </article>
+    <article>
+	<span class="metric-label">Wins</span>
+	<span class="metric-value">{{ totals.wins }}</span>
+    </article>
+    <article>
+	<span class="metric-label">Losses</span>
+	<span class="metric-value">{{ totals.losses }}</span>
+    </article>
+    <article>
+	<span class="metric-label">Draws</span>
+	<span class="metric-value">{{ totals.draws }}</span>
+    </article>
+    <article>
+	<span class="metric-label">Win %</span>
+	<span class="metric-value">{% if totals.win_rate is None %}–{% else %}{{ totals.win_rate|floatformat:0 }}%{% endif %}</span>
+    </article>
+</div>
 
 <h2>Leagues</h2>
-
-<table id="players" class="display compact" >
-  <thead><tr>
-      <th>League</th><th>Wins</th><th>Losses</th><th>Draws</th><th title="Points earned during this league">League points</th><th title="Points earned during all leagues">Total points</th>
-  </tr></thead>
-  <tbody>
-    {% for stat in player_stats %}
-    <tr>
-      <td><a href="{% url 'league' stat.owner stat.league.id %}">{{ stat.league }}</a></td>
-      <td>{{stat.win}}</td>
-      <td>{{stat.loss}}</td>
-      <td>{{stat.draw}}</td>
-      <td>{{stat.total_points}}</td>
-      <td>{{stat.player.score}}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
+{% if player_stats %}
+<div class="overflow-auto">
+<table>
+    <thead><tr>
+	<th>League</th><th>Wins</th><th>Losses</th><th>Draws</th><th title="Points earned during this league">League points</th>
+    </tr></thead>
+    <tbody>
+	{% for stat in player_stats %}
+	<tr>
+	    <td><a href="{% url 'league' stat.owner stat.league.id %}">{{ stat.league }}</a></td>
+	    <td>{{ stat.win }}</td>
+	    <td>{{ stat.loss }}</td>
+	    <td>{{ stat.draw }}</td>
+	    <td>{{ stat.total_points }}</td>
+	</tr>
+	{% endfor %}
+    </tbody>
 </table>
+</div>
+{% else %}
+<p class="empty">{{ player.name }} has not completed any game yet.</p>
+{% endif %}
 
+{% if recent_games %}
+<h2>Last games</h2>
+<ul class="game-list">
+    {% for g in recent_games %}
+    <li>
+	<a href="{% url 'game' player.owner g.game.league.id g.game.id %}">{{ g.game.creation_date|date:"M j, Y" }}</a>
+	<span class="game-info">{{ g.game.league.name }} · team {{ g.team_name }}</span>
+	{% if g.result %}
+	<span class="game-score">{{ g.own }} – {{ g.other }}</span>
+	<span class="badge badge-{{ g.result }}">{% if g.result == 'win' %}Win{% elif g.result == 'loss' %}Loss{% else %}Draw{% endif %}</span>
+	{% else %}
+	<span class="badge badge-ongoing">Ongoing</span>
+	{% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
 
 {% if user.is_authenticated %}
 <div class="actions">
@@ -39,5 +82,4 @@
   <a href="{% url 'delete-player' player.owner player.id %}" class="danger"><i class="bi bi-trash" aria-hidden="true"></i> Delete player</a>
 </div>
 {% endif %}
-
 {% endblock content %}

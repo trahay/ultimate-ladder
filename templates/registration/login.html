@@ -1,37 +1,31 @@
 {% extends 'ultimate_ladder/base.html' %}
 
 {% block content %}
+<article class="login">
+  <h1>Log in</h1>
 
   {% if form.errors %}
-    <p>Your username and password didn't match. Please try again.</p>
+    <p class="alert alert-error">Your username and password didn't match. Try again.</p>
   {% endif %}
 
   {% if next %}
     {% if user.is_authenticated %}
       <p>Your account doesn't have access to this page. To proceed,
-      please login with an account that has access.</p>
-    {% else %}
-      <p>Please login to see this page.</p>
+      log in with an account that has access.</p>
     {% endif %}
   {% endif %}
 
   <form method="post" action="{% url 'login' %}">
     {% csrf_token %}
-    <table>
-      <tr>
-        <td>{{ form.username.label_tag }}</td>
-        <td>{{ form.username }}</td>
-      </tr>
-      <tr>
-        <td>{{ form.password.label_tag }}</td>
-        <td>{{ form.password }}</td>
-      </tr>
-    </table>
-    <input type="submit" value="login">
+    <label for="{{ form.username.id_for_label }}">Username</label>
+    {{ form.username }}
+    <label for="{{ form.password.id_for_label }}">Password</label>
+    {{ form.password }}
+    <button type="submit">Log in</button>
     <input type="hidden" name="next" value="{{ next }}">
   </form>
 
   {# Assumes you set up the password_reset view in your URLconf #}
   <p><a href="{% url 'password_reset' %}">Lost password?</a></p>
-
+</article>
 {% endblock %}

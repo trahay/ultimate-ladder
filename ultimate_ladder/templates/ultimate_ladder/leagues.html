@@ -1,24 +1,11 @@
 {% extends 'ultimate_ladder/base.html' %}
-	
+
 {% block content %}
-
-
-<h1>Leagues</h1>
-{% if league_list %}
-    <div>
-    {% for league in league_list %}
-        <p><a href="{% url 'league' owner league.id %}">{{ league.name }}</a></p>
-    {% endfor %}
-    </div>
-    {% else %}
-    <div>
-      <p>No league available.</p>
-    </div>
-{% endif %}
-
-{% if user.is_authenticated %}
-<div class="actions">
+<div class="section-header">
+    <h1>Leagues</h1>
+    {% if user.is_authenticated %}
     <a href="{% url 'add-league' user %}" role="button"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create league</a>
+    {% endif %}
 </div>
-{% endif %}
+{% include 'ultimate_ladder/_league_cards.html' %}
 {% endblock content %}
