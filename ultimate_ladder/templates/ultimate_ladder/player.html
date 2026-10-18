@@ -34,11 +34,10 @@
 
 
 {% if user.is_authenticated %}
-<p>
-  <a href="{% url 'edit-player' player.owner player.id %}" class="logo">Edit Player</a>
-
-  <a href="{% url 'delete-player' player.owner player.id %}" class="logo">Delete Player</a>
-</p>
+<div class="actions">
+  <a href="{% url 'edit-player' player.owner player.id %}" role="button" class="secondary outline"><i class="bi bi-pencil" aria-hidden="true"></i> Edit player</a>
+  <a href="{% url 'delete-player' player.owner player.id %}" class="danger"><i class="bi bi-trash" aria-hidden="true"></i> Delete player</a>
+</div>
 {% endif %}
 
 {% endblock content %}

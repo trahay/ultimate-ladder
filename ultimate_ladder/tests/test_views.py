@@ -77,6 +77,53 @@ class ReadOnlyPagesTests(ViewTestCase):
         self.assertContains(response, "Carol")
         self.assertContains(response, "Dave")
 
+    def test_game_team_summaries(self):
+        players = [self.player,  # Carol, f, 1100
+                   make_player(self.user, "Dave", "m", 900),
+                   make_player(self.user, "Erin", "f", 1000),
+                   make_player(self.user, "Fred", "m", 800)]
+        game = make_game(self.league, players[:2], players[2:])
+        response = self.client.get(reverse(
+            "game", kwargs={"owner": "alice", "league_id": self.league.pk, "pk": game.pk}))
+        team_a, team_b = response.context["teams"]
+        self.assertEqual((team_a["name"], team_a["score"], team_a["nb_players"], team_a["nb_women"]),
+                         ("A", 2000, 2, 1))
+        self.assertEqual((team_b["name"], team_b["score"], team_b["nb_players"], team_b["nb_women"]),
+                         ("B", 1800, 2, 1))
+        # players are sorted by decreasing score
+        self.assertEqual([t.player.name for t in team_a["members"]], ["Carol", "Dave"])
+        self.assertEqual(response.context["score_gap"], 200)
+        self.assertEqual(response.context["stronger_team"], "A")
+        self.assertContains(response, "200 points in favour of team A")
+        self.assertContains(response, "2000 points · 2 players · 1 woman")
+
+    def test_ongoing_game_shows_score_form_to_logged_users(self):
+        p2 = make_player(self.user, "Dave", "m", 1100)
+        game = make_game(self.league, [self.player], [p2])
+        url = reverse("game", kwargs={"owner": "alice", "league_id": self.league.pk, "pk": game.pk})
+        response = self.client.get(url)
+        self.assertContains(response, "Ongoing")
+        self.assertNotContains(response, "Save the score")
+        self.assertContains(response, "Both teams have the same level")
+        self.login()
+        response = self.client.get(url)
+        self.assertContains(response, "Save the score")
+        self.assertContains(response, 'data-target="id_score_team_a"', count=2)
+        self.assertContains(response, 'data-target="id_score_team_b"', count=2)
+
+    def test_completed_game_shows_final_score(self):
+        p2 = make_player(self.user, "Dave", "m", 900)
+        game = make_game(self.league, [self.player], [p2])
+        game.score_team_a, game.score_team_b, game.completed = 4, 7, True
+        game.save()
+        self.login()
+        response = self.client.get(reverse(
+            "game", kwargs={"owner": "alice", "league_id": self.league.pk, "pk": game.pk}))
+        self.assertContains(response, "Completed")
+        self.assertContains(response, "Team B wins")
+        self.assertContains(response, '<span class="final-score">7</span>', html=False)
+        self.assertNotContains(response, "Save the score")
+
     def test_unknown_player(self):
         response = self.client.get(reverse("player", kwargs={"owner": "alice", "pk": 999}))
         self.assertEqual(response.status_code, 404)

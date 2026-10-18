@@ -4,75 +4,67 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.red.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="{% static 'ultimate_ladder/style.css' %}">
 
-    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.datatables.net/rss.xml">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-    <style type="text/css" class="init">
-      
-    </style>
     <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 
-    <title>Ultimate ultimate_ladder</title>
+    <title>Ultimate ladder</title>
   </head>
   <body>
-      <header class="header">
-          <div class="container">
-	      {% if user.is_authenticated %}
-              <a href="{%url 'index' user %}" class="logo">Home</a>
-	      <nav class="nav">
-		  <a href="{% url 'leagues' user %}">Leagues</a>
-		  <a href="{% url 'players' user %}">Players</a>
-	      </nav>
-	      <nav>
-		  User: {{ user.get_username }}
-		  <form action="{% url 'logout' %}" method="post">
-		    {% csrf_token %}
-		    <input type="submit" class="btn btn-default btn-lg" value="Logout">
-		  </form>
-	      </nav>
-	      {% else %}
-	      <a href="{% url 'login' %}?next={{ request.path }}" class="logo">Home</a>
-	      <nav class="nav">
-	      </nav>
-	      <nav>
-		<a href="{% url 'login' %}?next={{ request.path }}">Login</a>
-	      </nav>
+      <header class="site-header">
+	  <nav class="container">
+	      <ul>
+		  <li>
+		      {% if user.is_authenticated %}
+		      <a href="{% url 'index' user %}" class="brand"><i class="bi bi-disc" aria-hidden="true"></i> Ultimate ladder</a>
+		      {% else %}
+		      <a href="{% url 'login' %}?next={{ request.path }}" class="brand"><i class="bi bi-disc" aria-hidden="true"></i> Ultimate ladder</a>
+		      {% endif %}
+		  </li>
+	      </ul>
+	      <ul>
+		  {% if user.is_authenticated %}
+		  <li><a href="{% url 'leagues' user %}">Leagues</a></li>
+		  <li><a href="{% url 'players' user %}">Players</a></li>
+		  <li>
+		      <form action="{% url 'logout' %}" method="post" style="margin: 0">
+			  {% csrf_token %}
+			  <span class="username"><i class="bi bi-person" aria-hidden="true"></i> {{ user.get_username }}</span>
+			  <button type="submit" class="link">Logout</button>
+		      </form>
+		  </li>
+		  {% else %}
+		  <li><a href="{% url 'login' %}?next={{ request.path }}">Login</a></li>
 		  {% endif %}
-	  </div>
+	      </ul>
+	  </nav>
       </header>
-      <main>
-	  <div class="container">
-	      {% if messages %}
-	      <div class="messages">
-		  {% for message in messages %}
-		  <div class="alert {% if message.tags %}alert-{{ message.tags }}"{% endif %}>
-		      {{ message }}
-		  </div>
-		  {% endfor %}
+      <main class="container">
+	  {% if messages %}
+	  <div class="messages">
+	      {% for message in messages %}
+	      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="status">
+		  {{ message }}
 	      </div>
-	      {% endif %}
-	      
-	      {%block content%} 
-	      {%endblock content%}
+	      {% endfor %}
 	  </div>
-      </main>
-
-      <footer class="footer">
-	{% if user.is_authenticated %}
-          <div class="container">
-	    <a href="{% url 'add-league' user %}" class="logo">Create League</a>
-	    <a href="{% url 'add-player' user %}" class="logo">Create Player</a>
-          </div>
 	  {% endif %}
 
-          <div class="container">
-	    <p>Source code: <a href="https://github.com/trahay/ultimate-ladder">https://github.com/trahay/ultimate-ladder</a></p>
-	    <p>
-	      Reporting bugs: <a href="https://github.com/trahay/ultimate-ladder/issues">https://github.com/trahay/ultimate-ladder/issues</a>
-	      </p>
-          </div>
+	  {%block content%}
+	  {%endblock content%}
+      </main>
+
+      <footer class="site-footer">
+	  <div class="container">
+	      <a href="https://github.com/trahay/ultimate-ladder">Source code</a>
+	      ·
+	      <a href="https://github.com/trahay/ultimate-ladder/issues">Report a bug</a>
+	  </div>
       </footer>
   </body>
 </html>

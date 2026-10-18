@@ -245,6 +245,18 @@ def get_team_score(owner, Game, team_name):
     return TeamScore(team)
 
 
+def team_summary(team, team_name, score):
+    """What is displayed about a team on the game page."""
+    members = list(team.select_related('player').order_by('-player_score'))
+    return {
+        'name': team_name,
+        'members': members,
+        'score': score,
+        'nb_players': len(members),
+        'nb_women': sum(1 for t in members if t.player.gender == 'f'),
+    }
+
+
 class GameDetail(FormMixin, generic.DetailView):
     model=Game
     template_name = "ultimate_ladder/game.html"
@@ -259,6 +271,11 @@ class GameDetail(FormMixin, generic.DetailView):
         context["team_a"] = context["game"].team_set.filter(team_name='A')
         context["team_b"] = context["game"].team_set.filter(team_name='B')
         context["league"] = context["game"].league
+        context["teams"] = [team_summary(context["team_a"], 'A', context["score_team_a"]),
+                            team_summary(context["team_b"], 'B', context["score_team_b"])]
+        context["score_gap"] = abs(context["score_team_a"] - context["score_team_b"])
+        if context["score_team_a"] != context["score_team_b"]:
+            context["stronger_team"] = 'A' if context["score_team_a"] > context["score_team_b"] else 'B'
         return context
 
     def post(self, *args, **kwargs):

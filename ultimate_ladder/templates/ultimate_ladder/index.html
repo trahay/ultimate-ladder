@@ -18,7 +18,7 @@
     {% endif %}
 
     <div>
-      <a href="{% url 'add-league' user %}" class="logo">Create League</a>
+      <a href="{% url 'add-league' user %}" role="button" class="outline"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create league</a>
     </div>
     
 <H1>Players</H1>
@@ -36,7 +36,7 @@
     </div>
 {% endif %}
 
-    <a href="{% url 'add-player' user %}" class="logo">Create Player</a>
+    <a href="{% url 'add-player' user %}" role="button" class="outline"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create player</a>
 
     {% endif %} 
     {% endblock content %}

@@ -3,16 +3,16 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-<div class="center">
-	<form method="post" class="card">
+<article>
+	<form method="post">
 		{% csrf_token %}
-		<h2>Delete Game</h2>
+		<h2>Delete game</h2>
 		<p>Are you sure that you want to delete "{{game}}"?</p>
-		<p class="form-buttons">
-			<input type="submit" class="btn btn-primary" value="Delete">
-			<a href="{% url 'league' league.owner league.id %}" class="btn btn-outline">Cancel</a>
-		</p>
+		<div class="actions">
+			<button type="submit"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button>
+			<a href="{% url 'league' league.owner league.id %}" role="button" class="secondary outline">Cancel</a>
+		</div>
 	</form>
-</div>
+</article>
 {% endif %}
 {% endblock content %}

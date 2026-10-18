@@ -2,9 +2,7 @@
 	
 {% block content %}
 
-{% load static %}
-<link rel="stylesheet" href="{% static 'ultimate_ladder/style.css' %}">
-
+<h1>Players</h1>
 {% if player_list %}
     <div>
     {% for player in player_list %}
@@ -17,4 +15,9 @@
     </div>
 {% endif %}
 
+{% if user.is_authenticated %}
+<div class="actions">
+    <a href="{% url 'add-player' user %}" role="button"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create player</a>
+</div>
+{% endif %}
 {% endblock content %}

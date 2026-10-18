@@ -1,48 +1,92 @@
 {% extends 'ultimate_ladder/base.html' %}
-	
-{% block content %}
-<h1>{{ game.league.name }} ( {{ game.creation_date }} ) </h1>
 
-<div>
-  <p><b>Creation date</b>:   {{game.creation_date}}</p>
+{% block content %}
+<a href="{% url 'league' game.owner league.id %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ league.name }}</a>
+
+<h1 class="game-title">
+  Game of {{ game.creation_date|date:"M j, Y, H:i" }}
   {% if game.completed %}
-  <p><b>Completion date</b>:   {{game.completion_date}}</p>
-  <p><b>Score A</b>:   {{game.score_team_a}}</p>
-  <p><b>Score B</b>:   {{game.score_team_b}}</p>
+  <span class="badge badge-completed">Completed</span>
   {% else %}
-  <p><b>Ongoing game</b></p>
+  <span class="badge badge-ongoing">Ongoing</span>
   {% endif %}
+</h1>
+
+{% if game.completed %}
+<div class="scoreboard" aria-label="Final score">
+  <div><span class="team-label">Team A</span><span class="final-score">{{ game.score_team_a }}</span></div>
+  <span class="separator">–</span>
+  <div><span class="team-label">Team B</span><span class="final-score">{{ game.score_team_b }}</span></div>
+</div>
+<p class="winner">
+  {% if game.score_team_a > game.score_team_b %}Team A wins
+  {% elif game.score_team_b > game.score_team_a %}Team B wins
+  {% else %}Draw{% endif %}
+</p>
+{% elif user.is_authenticated %}
+<form action="{% url 'game' game.owner league.id game.id %}" method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="scoreboard">
+    {% for field in form %}
+    {% if not forloop.first %}<span class="separator">–</span>{% endif %}
+    <div>
+      <label for="{{ field.id_for_label }}" class="team-label">{% if forloop.first %}Team A{% else %}Team B{% endif %}</label>
+      <div class="stepper">
+        <button type="button" class="secondary outline" data-step="-1" data-target="{{ field.id_for_label }}" aria-label="Remove one point to {% if forloop.first %}team A{% else %}team B{% endif %}">−</button>
+        {{ field }}
+        <button type="button" class="secondary outline" data-step="1" data-target="{{ field.id_for_label }}" aria-label="Add one point to {% if forloop.first %}team A{% else %}team B{% endif %}">+</button>
+      </div>
+      {{ field.errors }}
+    </div>
+    {% endfor %}
+  </div>
+  <button type="submit">Save the score</button>
+</form>
+{% endif %}
+
+<div class="teams">
+  {% for team in teams %}
+  <article>
+    <h2>Team {{ team.name }}</h2>
+    <p class="team-stats">
+      {{ team.score }} points · {{ team.nb_players }} player{{ team.nb_players|pluralize }} · {{ team.nb_women }} wom{{ team.nb_women|pluralize:"an,en" }}
+    </p>
+    <ul class="team-players">
+      {% for t in team.members %}
+      <li>
+        <a href="{% url 'player' game.owner t.player.id %}" class="{% if t.player.gender == 'f' %}woman{% else %}man{% endif %}">{{ t.player.name }}{% if t.player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="woman"></i>{% endif %}</a>
+        <span class="player-score">{{ t.player_score }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+  {% endfor %}
 </div>
 
-{% if user.is_authenticated %}
-{% if game.completed == False %}
-
-<form action="{% url 'game' game.owner league.id game.id %}" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Save">
-</form>
-
-{% endif %}
-{% endif %}
-
-<h2>Team A ({{ score_team_a }})</h2>
-<ul>
-  {% for team in team_a  %}
-  <p>
-    <a href="{% url 'player' game.owner team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player_score }} )</a></p>
-  {% endfor %}
-</ul>
-
-<h2>Team B ({{ score_team_b }})</h2>
-<ul>
-  {% for team in team_b  %}
-  <p><a href="{% url 'player' game.owner team.player.id %}" class="{% if team.player.gender == 'f' %} woman {% else %} man {% endif %}">{{ team.player.name }} ( {{ team.player_score }} )</a></p>
-  {% endfor %}
-</ul>
+<p class="balance">
+  <i class="bi bi-speedometer2" aria-hidden="true"></i>
+  {% if stronger_team %}
+  Level difference: {{ score_gap }} points in favour of team {{ stronger_team }}
+  {% else %}
+  Both teams have the same level
+  {% endif %}
+</p>
 
 {% if user.is_authenticated %}
-<a href="{% url 'delete-game' game.owner league.id game.id %}" class="logo">Delete Game</a>
+<div class="actions">
+  <a href="{% url 'delete-game' game.owner league.id game.id %}" class="danger"><i class="bi bi-trash" aria-hidden="true"></i> Delete game</a>
+</div>
 {% endif %}
 
+<script>
+  // +/- buttons around the score inputs
+  document.querySelectorAll('.stepper button').forEach(function (button) {
+    button.addEventListener('click', function () {
+      const input = document.getElementById(button.dataset.target);
+      const value = (parseInt(input.value) || 0) + parseInt(button.dataset.step);
+      input.value = Math.max(0, value);
+    });
+  });
+</script>
 {% endblock content %}
