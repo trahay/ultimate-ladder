@@ -1,11 +1,12 @@
 """End-to-end tests of the team generation (NewGame view)."""
 import random
+
 from django.test import TestCase
 from django.urls import reverse
 
 from ultimate_ladder.models import Game, Team
 
-from .utils import PASSWORD, make_league, make_player, make_user, seed
+from .utils import PASSWORD, make_game, make_league, make_player, make_user, seed
 
 
 class NewGameTests(TestCase):
@@ -83,6 +84,63 @@ class NewGameTests(TestCase):
         response = self.client.post(self.url(bob_league, owner="bob"),
                                     {"players": [p.pk for p in players]})
         self.assertEqual(response.status_code, 404)
+
+    # --- Player list (issue #2) ----------------------------------------
+
+    def preselected(self, league=None):
+        """Ids of the players that are checked in the new game form."""
+        response = self.client.get(self.url(league))
+        self.assertEqual(response.status_code, 200)
+        return {int(pk) for pk in response.context["form"]["players"].value()}
+
+    def test_players_are_sorted_by_name(self):
+        for name in ["charlie", "Bob", "alice", "Dave"]:
+            make_player(self.user, name)
+        response = self.client.get(self.url())
+        names = [p.name for p in response.context["form"].fields["players"].queryset]
+        self.assertEqual(names, ["alice", "Bob", "charlie", "Dave"])
+        content = response.content.decode()
+        positions = [content.index(n) for n in names]
+        self.assertEqual(positions, sorted(positions))
+
+    def test_nothing_preselected_without_previous_game(self):
+        make_player(self.user, "P1")
+        self.assertEqual(self.preselected(), set())
+
+    def test_players_of_last_game_are_preselected(self):
+        players = self.roster(3, 2)
+        absent = make_player(self.user, "Absent")
+        game, team_a, team_b = self.create_game(players)
+        self.assertEqual(self.preselected(), {p.pk for p in players})
+        response = self.client.get(self.url())
+        self.assertContains(response, 'checked', count=len(players))
+        self.assertNotIn(absent.pk, self.preselected())
+
+    def test_only_the_last_game_is_used(self):
+        p = self.roster(4, 0)
+        make_game(self.league, [p[0]], [p[1]])
+        make_game(self.league, [p[2]], [p[3]])
+        self.assertEqual(self.preselected(), {p[2].pk, p[3].pk})
+
+    def test_last_game_of_the_league_has_priority(self):
+        p = self.roster(4, 0)
+        other_league = make_league(self.user, "Other")
+        make_game(self.league, [p[0]], [p[1]])
+        make_game(other_league, [p[2]], [p[3]])  # more recent, other league
+        self.assertEqual(self.preselected(), {p[0].pk, p[1].pk})
+
+    def test_new_league_uses_last_game_of_the_owner(self):
+        p = self.roster(2, 0)
+        make_game(self.league, [p[0]], [p[1]])
+        new_league = make_league(self.user, "New")
+        self.assertEqual(self.preselected(new_league), {p[0].pk, p[1].pk})
+
+    def test_games_of_other_users_are_ignored(self):
+        bob = make_user("bob")
+        bob_players = [make_player(bob, "B1"), make_player(bob, "B2")]
+        make_game(make_league(bob), [bob_players[0]], [bob_players[1]])
+        make_player(self.user, "P1")
+        self.assertEqual(self.preselected(), set())
 
     # --- Team generation ---------------------------------------------
 

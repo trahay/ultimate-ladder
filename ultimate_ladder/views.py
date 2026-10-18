@@ -347,12 +347,23 @@ def create_team(df):
 
 
 
+def last_game_players(league):
+    """Return the ids of the players of the last game of the league (or of
+    the last game of the league owner if the league has no game yet), so that
+    they are pre-selected when creating a new game."""
+    last_game = Game.objects.filter(league=league).order_by('-creation_date', '-id').first()
+    if last_game is None:
+        last_game = Game.objects.filter(owner=league.owner).order_by('-creation_date', '-id').first()
+    if last_game is None:
+        return []
+    return list(last_game.team_set.values_list('player_id', flat=True))
+
 @login_required
 def NewGame(request, league_pk, owner):
     user=getUserDB(owner)
     league = get_object_or_404(League, id=league_pk, owner=user)
     if request.method == 'GET':
-        formdata = {'owner': owner, 'league': league}
+        formdata = {'owner': owner, 'league': league, 'players': last_game_players(league)}
         context = {'form': GameForm(instance=league, initial=formdata), 'league': league, 'owner': owner}
         return render(request,'ultimate_ladder/new_game.html',context)
     elif request.method == 'POST':

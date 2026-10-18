@@ -1,5 +1,6 @@
 from django.db import models
 from django import forms
+from django.db.models.functions import Lower
 from .models import Player, Game
 
 from django.contrib.auth import get_user_model
@@ -17,9 +18,9 @@ class GameForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # only print the players of the current user"
+        # only print the players of the current user, sorted by name
         owner=User.objects.get(username=kwargs["initial"]["owner"])
-        self.fields['players'].queryset = Player.objects.filter(owner=owner)
+        self.fields['players'].queryset = Player.objects.filter(owner=owner).order_by(Lower('name'))
 
     players = forms.ModelMultipleChoiceField(
                 widget = forms.CheckboxSelectMultiple,
