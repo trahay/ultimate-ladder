@@ -12,5 +12,7 @@ League: {{ league.name }}
     {{ form.as_p }}
     <input type="submit" value="Save">
 </form>
+
+<a href="{% url 'add-manual-game' league.owner league.id %}">Choose the teams manually</a>
 {% endif %}
 {% endblock content %}

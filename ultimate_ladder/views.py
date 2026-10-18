@@ -24,7 +24,7 @@ import matchmaking as mm
 import logging
 logger = logging.getLogger(__name__)
 
-from .forms import PlayerForm, GameForm, ScoreForm
+from .forms import PlayerForm, GameForm, ManualGameForm, ScoreForm
 from .models import Player, League, Game, Team, PlayerStats
 
 import os, time
@@ -347,16 +347,35 @@ def create_team(df):
 
 
 
+def last_game(league):
+    """Return the last game of the league (or the last game of the league
+    owner if the league has no game yet), or None."""
+    game = Game.objects.filter(league=league).order_by('-creation_date', '-id').first()
+    if game is None:
+        game = Game.objects.filter(owner=league.owner).order_by('-creation_date', '-id').first()
+    return game
+
 def last_game_players(league):
-    """Return the ids of the players of the last game of the league (or of
-    the last game of the league owner if the league has no game yet), so that
-    they are pre-selected when creating a new game."""
-    last_game = Game.objects.filter(league=league).order_by('-creation_date', '-id').first()
-    if last_game is None:
-        last_game = Game.objects.filter(owner=league.owner).order_by('-creation_date', '-id').first()
-    if last_game is None:
+    """Return the ids of the players of the last game, so that they are
+    pre-selected when creating a new game."""
+    game = last_game(league)
+    if game is None:
         return []
-    return list(last_game.team_set.values_list('player_id', flat=True))
+    return list(game.team_set.values_list('player_id', flat=True))
+
+def last_game_teams(league):
+    """Return {player_id: team_name} for the last game, so that the teams
+    are pre-filled when creating a new game with manual teams."""
+    game = last_game(league)
+    if game is None:
+        return {}
+    return dict(game.team_set.values_list('player_id', 'team_name'))
+
+def add_team(game, players, team_name):
+    """Create the Team entries of the players of a team."""
+    for player in players:
+        logger.warning("Adding "+str(player)+" to team "+team_name)
+        Team(game=game, player=player, player_score=player.score, team_name=team_name, owner=game.owner).save()
 
 @login_required
 def NewGame(request, league_pk, owner):
@@ -430,28 +449,47 @@ def NewGame(request, league_pk, owner):
                 team_b_players_f = temp
                 logger.warning("Imbalance detected. Swapping team_f_a and team_f_b")
 
-            team_a=[]
-            team_b=[]
             # Create Team entries in the database
-            for p in team_a_players_m + team_a_players_f:
-                player = get_object_or_404(Player, id=p)
-                logger.warning("Adding "+str(player)+" to team A")
-                t = Team(game=game, player=player, player_score=player.score, team_name='A', owner=league.owner)
-                t.save()
-                team_a.append(player)
-
-            for p in team_b_players_m + team_b_players_f:
-                player = get_object_or_404(Player, id=p)
-                logger.warning("Adding "+str(player)+" to team B")
-                t = Team(game=game, player=player, player_score=player.score, team_name='B', owner=league.owner)
-                t.save()
-                team_b.append(player)
+            team_a = [get_object_or_404(Player, id=p) for p in team_a_players_m + team_a_players_f]
+            team_b = [get_object_or_404(Player, id=p) for p in team_b_players_m + team_b_players_f]
+            add_team(game, team_a, 'A')
+            add_team(game, team_b, 'B')
 
             logger.warning("NewGame(game='"+str(game)+"', team_a="+str(team_a)+", team_b="+str(team_b)+")")
             return HttpResponseRedirect(reverse('game', kwargs={"league_id":league.id, "pk":game.id, "owner":owner}))
         else:
             context = {'form': form, 'league': league, "owner": owner}
             return render(request, 'ultimate_ladder/new_game.html', context)
+
+@login_required
+def NewManualGame(request, league_pk, owner):
+    """Create a game whose teams are chosen by the user."""
+    user=getUserDB(owner)
+    league = get_object_or_404(League, id=league_pk, owner=user)
+    if not league.owner == request.user:
+        messages.error(request, "You can only create games for your own leagues !")
+        raise Http404
+
+    if request.method == 'POST':
+        form = ManualGameForm(request.POST, owner=league.owner)
+        if form.is_valid():
+            game = Game(league=league,
+                        creation_date=datetime.now(),
+                        owner=league.owner)
+            game.save()
+            team_a = form.team('A')
+            team_b = form.team('B')
+            add_team(game, team_a, 'A')
+            add_team(game, team_b, 'B')
+            logger.warning("NewManualGame(game='"+str(game)+"', team_a="+str(team_a)+", team_b="+str(team_b)+")")
+            return HttpResponseRedirect(reverse('game', kwargs={"league_id":league.id, "pk":game.id, "owner":owner}))
+    else:
+        initial = {ManualGameForm.field_name(player_id): team
+                   for player_id, team in last_game_teams(league).items()}
+        form = ManualGameForm(owner=league.owner, initial=initial)
+
+    context = {'form': form, 'league': league, 'owner': owner}
+    return render(request, 'ultimate_ladder/new_manual_game.html', context)
 
 def TeamScore(team):
     score=0

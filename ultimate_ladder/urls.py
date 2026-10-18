@@ -52,6 +52,7 @@ urlpatterns = [
     path(f'{settings.PATH_URL}<str:owner>/leagues/<int:league_id>/<int:pk>', views.GameDetail.as_view(), name="game"),
 # new game
     path(f'{settings.PATH_URL}<str:owner>/leagues/<int:league_pk>/create_game/', views.NewGame, name="add-game"),
+    path(f'{settings.PATH_URL}<str:owner>/leagues/<int:league_pk>/create_manual_game/', views.NewManualGame, name="add-manual-game"),
 # edit game
     path(f'{settings.PATH_URL}<str:owner>/leagues/<int:league_id>/delete_game/<int:pk>', views.GameDelete.as_view(), name="delete-game"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

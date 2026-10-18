@@ -255,8 +255,18 @@ textarea {
     color:var(--color-blue);
 }
 
-woman {
+.woman {
     color:var(--color-pink);
+}
+
+/* new game with manual teams */
+#manual-teams th,
+#manual-teams td {
+  padding: 0.1rem 0.75rem;
+}
+#manual-teams th:nth-child(n+2),
+#manual-teams td:nth-child(n+2) {
+  text-align: center;
 }
 
 .btn {

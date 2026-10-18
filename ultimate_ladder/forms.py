@@ -39,6 +39,42 @@ class GameForm(forms.ModelForm):
         fields = ['players']
         
 
+TEAM_CHOICES = [('', 'Absent'), ('A', 'Team A'), ('B', 'Team B')]
+
+class ManualGameForm(forms.Form):
+    """Create a game whose teams are chosen by the user: for each player of
+    the owner, choose whether they are absent, in team A or in team B."""
+
+    def __init__(self, *args, owner, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.players = list(Player.objects.filter(owner=owner).order_by(Lower('name')))
+        for player in self.players:
+            self.fields[self.field_name(player.id)] = forms.ChoiceField(
+                label=player.name,
+                choices=TEAM_CHOICES,
+                required=False,
+                widget=forms.RadioSelect,
+            )
+
+    @staticmethod
+    def field_name(player_id):
+        return f'player_{player_id}'
+
+    def player_fields(self):
+        """(player, bound field) for each player, to render the form."""
+        return [(player, self[self.field_name(player.id)]) for player in self.players]
+
+    def team(self, team_name):
+        return [player for player in self.players
+                if self.cleaned_data.get(self.field_name(player.id)) == team_name]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not self.team('A') or not self.team('B'):
+            raise forms.ValidationError('Each team needs at least one player.')
+        return cleaned_data
+
+
 class ScoreForm(forms.ModelForm):
     class Meta:
         model = Game

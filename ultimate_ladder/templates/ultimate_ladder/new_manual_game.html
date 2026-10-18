@@ -1,0 +1,63 @@
+{% extends 'ultimate_ladder/base.html' %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<h2>New Game (manual teams)</h2>
+
+League: {{ league.name }}
+
+<form action="{% url 'add-manual-game' league.owner league.id %}" method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <table id="manual-teams" class="display compact">
+	<thead><tr>
+	    <th>Player</th><th>Score</th><th>Absent</th><th>Team A</th><th>Team B</th>
+	</tr></thead>
+	<tbody>
+	    {% for player, field in form.player_fields %}
+	    <tr data-score="{{ player.score }}" data-gender="{{ player.gender }}">
+		<td class="{% if player.gender == 'f' %} woman {% else %} man {% endif %}">{{ player.name }}</td>
+		<td>{{ player.score }}</td>
+		{% for radio in field %}
+		<td><label title="{{ player.name }}: {{ radio.choice_label }}">{{ radio.tag }}</label></td>
+		{% endfor %}
+	    </tr>
+	    {% empty %}
+	    <tr><td colspan="5">No player.</td></tr>
+	    {% endfor %}
+	</tbody>
+    </table>
+
+    <p id="team-a-summary">Team A: <span class="count">0</span> players (<span class="women">0</span> women), score <span class="score">0</span></p>
+    <p id="team-b-summary">Team B: <span class="count">0</span> players (<span class="women">0</span> women), score <span class="score">0</span></p>
+
+    <input type="submit" value="Save">
+</form>
+
+<a href="{% url 'add-game' league.owner league.id %}">Create the teams automatically</a>
+
+<script>
+    // Display the number of players, of women, and the total score of each team
+    function updateSummary() {
+        for (const team of ['A', 'B']) {
+            let count = 0, women = 0, score = 0;
+            document.querySelectorAll('#manual-teams tbody tr').forEach(function (row) {
+                const checked = row.querySelector('input[type=radio]:checked');
+                if (checked && checked.value === team) {
+                    count += 1;
+                    score += parseInt(row.dataset.score);
+                    if (row.dataset.gender === 'f') women += 1;
+                }
+            });
+            const summary = document.getElementById('team-' + team.toLowerCase() + '-summary');
+            summary.querySelector('.count').textContent = count;
+            summary.querySelector('.women').textContent = women;
+            summary.querySelector('.score').textContent = score;
+        }
+    }
+    document.getElementById('manual-teams').addEventListener('change', updateSummary);
+    updateSummary();
+</script>
+{% endif %}
+{% endblock content %}

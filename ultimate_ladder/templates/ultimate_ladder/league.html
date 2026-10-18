@@ -64,6 +64,8 @@
 {% if user.is_authenticated %}
     <a href="{% url 'add-game' league.owner league.id %}" class="logo">New game</a>
 
+    <a href="{% url 'add-manual-game' league.owner league.id %}" class="logo">New game (manual teams)</a>
+
     <a href="{% url 'edit-league' league.owner league.id %}" class="logo">Edit League</a>
 
     <a href="{% url 'delete-league' league.owner league.id %}" class="logo">Delete League</a>
