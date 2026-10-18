@@ -321,7 +321,8 @@ a.danger {
   margin: 0;
 }
 
-.empty {
+.empty,
+.hint {
   color: var(--pico-muted-color);
 }
 
@@ -461,24 +462,31 @@ a.danger {
 }
 
 @media (max-width: 576px) {
-  #player-table .label-long {
+  #player-table .label-long,
+  #players .label-long {
     position: absolute;
     width: 1px;
     height: 1px;
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
   }
-  #player-table .label-short {
+  #player-table .label-short,
+  #players .label-short {
     display: inline;
   }
   #player-table th,
-  #player-table td {
+  #player-table td,
+  #players th,
+  #players td {
     padding-left: 0.3rem;
     padding-right: 0.3rem;
   }
   #player-table thead th.sorting,
   #player-table thead th.sorting_asc,
-  #player-table thead th.sorting_desc {
+  #player-table thead th.sorting_desc,
+  #players thead th.sorting,
+  #players thead th.sorting_asc,
+  #players thead th.sorting_desc {
     padding-right: 1rem;
   }
 }

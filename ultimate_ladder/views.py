@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 from .forms import PlayerForm, GameForm, ManualGameForm, ScoreForm
 from .models import Player, League, Game, Team, PlayerStats
+from . import rating
 
 import os, time
 os.environ['TZ'] = 'Europe/Paris'
@@ -158,15 +159,18 @@ class LeagueDetail(generic.DetailView):
         games = context["league"].game_set.annotate(nb_players=Count('team')).order_by('-creation_date', '-id')
         context["ongoing_games"] = games.filter(completed=False)
         context["completed_games"] = games.filter(completed=True)
+        # standings: 3 points per win, 1 per draw, then the percentage of wins
         context["player_list"] = (context["league"].playerstats_set.select_related('player')
-                                  .order_by('-total_points', Lower('player__name')))
+                                  .annotate(played=F('win') + F('loss') + F('draw'))
+                                  .annotate(win_rate=Cast('win', FloatField()) / NullIf(Cast('played', FloatField()), 0.0))
+                                  .order_by('-total_points', F('win_rate').desc(nulls_last=True), Lower('player__name')))
 
         return context
 
 # require authentification
 class PlayerCreate(LoginRequiredMixin, CreateView):
     model = Player
-    fields = [ 'name', 'gender', 'score' ]
+    fields = [ 'name', 'gender', 'initial_score' ]
     template_name = "ultimate_ladder/edit_player.html"
 
     def get_success_url(self):
@@ -176,18 +180,19 @@ class PlayerCreate(LoginRequiredMixin, CreateView):
         messages.success(self.request, "The Player was created successfully.")
         name=form.cleaned_data.get("name")
         gender=form.cleaned_data.get("gender")
-        score=form.cleaned_data.get("score")
+        score=form.cleaned_data.get("initial_score")
         if self.request.user.is_authenticated:
             owner=self.request.user
         user_name=owner.username
         form.instance.owner=owner
+        rating.reset_player(form.instance)
         logger.warning("PlayerCreate(userdb='"+str(user_name)+"', name='"+name+"', gender='"+gender+"', score='"+str(score)+"')")
 
         return super(PlayerCreate, self).form_valid(form)
 
 class PlayerUpdate(LoginRequiredMixin, UpdateView):
     model = Player
-    fields = [ 'name', 'gender', 'score' ]
+    fields = [ 'name', 'gender', 'initial_score' ]
     template_name = "ultimate_ladder/edit_player.html"
 
     def get_success_url(self):
@@ -204,8 +209,14 @@ class PlayerUpdate(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "The Player was updated successfully.")
         name=form.cleaned_data.get("name")
         gender=form.cleaned_data.get("gender")
-        score=form.cleaned_data.get("score")
+        score=form.cleaned_data.get("initial_score")
         owner=self.request.user
+        # The initial score is the starting point of the rating: it changes
+        # the current rating only if the player has not completed any game
+        # yet (otherwise, it is used when the ratings are recomputed).
+        if 'initial_score' in form.changed_data and \
+           not Team.objects.filter(player=form.instance, game__completed=True).exists():
+            rating.reset_player(form.instance)
         logger.warning("PlayerUpdate(name='"+name+"', gender='"+gender+"', score='"+str(score)+"')")
         return super(PlayerUpdate,self).form_valid(form)
 
@@ -565,66 +576,7 @@ def TeamScore(team):
     return score
 
 def UpdateStats(game):
-    # We need to update each player's score
-
-    # The winning team's players score increase, and the loosers score decrease
-    # The sum of increase and decrease should be zero
-    # (actually there's a rounding error, so it may not be exactly zero)
-
-    nb_players=game.team_set.count()
-    # On average, each player will get 5 points for each point difference during this game
-    delta=(game.score_team_a - game.score_team_b) * 5 * nb_players
-
-    # Then, if a team is "stronger" than the other, reduce/increase the delta
-    score_a=TeamScore(game.team_set.filter(team_name='A'))
-    score_b=TeamScore(game.team_set.filter(team_name='B'))
-    team_balance=score_a/score_b
-    delta=delta*team_balance
-    
-    # The number of players may be different
-    # This is the number of points to give/remove to each team
-    nb_points=delta*nb_players/2
-    team_a_points=nb_points/game.team_set.filter(team_name='A').count()
-    team_b_points=nb_points/game.team_set.filter(team_name='B').count()
-
-    logger.warning("UpdateStats(game='"+str(game)+"', level_a="+str(score_a)+", level_b="+str(score_b)+")")
-    
-    logger.warning("UpdateStats(game='"+str(game)+"', score="+str(game.score_team_a)+"-"+str(game.score_team_b)+", delta="+str(delta)+")")
-    
-    for t in game.team_set.filter(team_name='A'):
-        p = t.player
-        new_score=p.score + team_a_points
-        logger.warning("\tUpdateStats(player='"+str(p)+"', score="+str(p.score)+") -> "+str(new_score))
-        p.score = new_score        
-        p.save()
-
-        playerStat,created = PlayerStats.objects.get_or_create(player=p, league=game.league, owner=game.owner)
-        if(game.score_team_a > game.score_team_b):
-            playerStat.win = playerStat.win + 1
-        if(game.score_team_a == game.score_team_b):
-            playerStat.draw = playerStat.draw + 1
-        if(game.score_team_a < game.score_team_b):
-            playerStat.loss = playerStat.loss + 1
-        playerStat.total_points = playerStat.total_points + team_a_points
-        playerStat.save()
-
-    for t in game.team_set.filter(team_name='B'):
-        p = t.player
-        new_score=p.score - team_b_points
-        new_score=p.score - team_b_points
-        logger.warning("\tUpdateStats(player='"+str(p)+"', score="+str(p.score)+") -> "+str(new_score))
-        p.score = new_score
-        if p.score < 0:
-             p.score = 0
-        p.save()
-
-        playerStat,created = PlayerStats.objects.get_or_create(player=p, league=game.league, owner=game.owner)
-        if(game.score_team_b > game.score_team_a):
-            playerStat.win = playerStat.win + 1
-        if(game.score_team_b == game.score_team_a):
-            playerStat.draw = playerStat.draw + 1
-        if(game.score_team_b < game.score_team_a):
-            playerStat.loss = playerStat.loss + 1
-        playerStat.total_points = playerStat.total_points - team_b_points
-        playerStat.save()
-
+    """Update the ratings and statistics of the players of a game that was
+    just completed (see rating.py)."""
+    logger.warning("UpdateStats(game='"+str(game)+"', score="+str(game.score_team_a)+"-"+str(game.score_team_b)+")")
+    rating.complete_game(game)

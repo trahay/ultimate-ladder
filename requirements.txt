@@ -9,6 +9,7 @@ environs==11.0.0
 gunicorn==23.0.0
 marshmallow==3.26.2
 numpy==2.0.0
+openskill==6.2.0
 packaging==24.1
 pandas==2.2.2
 psycopg==3.1.19

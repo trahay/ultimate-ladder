@@ -60,6 +60,17 @@ class LeaguePageTests(PageTestCase):
         names = [s.player.name for s in response.context["player_list"]]
         self.assertEqual(names, ["High", "Mid", "Low"])
 
+    def test_standings_ties_are_broken_by_win_rate(self):
+        p = {name: make_player(self.user, name) for name in ["Drawer", "Winner"]}
+        # same number of points: 3 draws, or 1 win and 2 losses
+        PlayerStats.objects.create(owner=self.user, player=p["Drawer"], league=self.league,
+                                   draw=3, total_points=3)
+        PlayerStats.objects.create(owner=self.user, player=p["Winner"], league=self.league,
+                                   win=1, loss=2, total_points=3)
+        response = self.client.get(self.url())
+        self.assertEqual([s.player.name for s in response.context["player_list"]], ["Winner", "Drawer"])
+        self.assertContains(response, "3 points per win, 1 point per draw.")
+
     def test_games_are_listed_most_recent_first(self):
         a, b = make_player(self.user, "A1"), make_player(self.user, "B1")
         old = finish(make_game(self.league, [a], [b]), 1, 0, update_stats=False)

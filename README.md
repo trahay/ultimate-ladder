@@ -52,6 +52,10 @@ If your database was created with PostgreSQL 16 (before October 2026),
 follow [doc/upgrade-postgres-18.md](doc/upgrade-postgres-18.md) to
 upgrade it to PostgreSQL 18.
 
+The scores of the players are computed with OpenSkill: see
+[doc/ratings.md](doc/ratings.md), which also explains how to upgrade from
+the previous scoring system.
+
 
 # Running the tests
 

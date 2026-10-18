@@ -36,17 +36,26 @@
 {% endif %}
 
 <h2>Standings</h2>
+<p class="hint">3 points per win, 1 point per draw.</p>
 {% if player_list %}
 <div class="overflow-auto">
 <table id="players" class="display compact">
     <thead><tr>
-	<th>#</th><th>Player</th><th>Wins</th><th>Losses</th><th>Draws</th><th title="Points earned during this league">League points</th><th title="Current score of the player, all leagues included">Score</th>
+	<th>#</th>
+	<th>Player</th>
+	<th title="Games played in this league"><span class="label-long">Played</span><span class="label-short" aria-hidden="true">P</span></th>
+	<th title="Wins"><span class="label-long">Wins</span><span class="label-short" aria-hidden="true">W</span></th>
+	<th title="Losses"><span class="label-long">Losses</span><span class="label-short" aria-hidden="true">L</span></th>
+	<th title="Draws"><span class="label-long">Draws</span><span class="label-short" aria-hidden="true">D</span></th>
+	<th title="3 points per win, 1 per draw"><span class="label-long">Points</span><span class="label-short" aria-hidden="true">Pts</span></th>
+	<th title="Current level of the player, all leagues included">Score</th>
     </tr></thead>
     <tbody>
 	{% for stat in player_list %}
 	<tr>
 	    <td>{{ forloop.counter }}</td>
 	    <td><a href="{% url 'player' league.owner stat.player.id %}" class="{% if stat.player.gender == 'f' %}woman{% else %}man{% endif %}">{{ stat.player.name }}{% if stat.player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="woman"></i>{% endif %}</a></td>
+	    <td>{{ stat.played }}</td>
 	    <td>{{ stat.win }}</td>
 	    <td>{{ stat.loss }}</td>
 	    <td>{{ stat.draw }}</td>

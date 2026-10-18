@@ -138,15 +138,16 @@ class PlayerEditionTests(ViewTestCase):
     def test_create(self):
         self.login()
         response = self.client.post(reverse("add-player", kwargs={"owner": "alice"}),
-                                    {"name": "Eve", "gender": "f", "score": 1200})
+                                    {"name": "Eve", "gender": "f", "initial_score": 1200})
         self.assertRedirects(response, reverse("players", kwargs={"owner": "alice"}))
         eve = Player.objects.get(name="Eve")
-        self.assertEqual((eve.owner, eve.gender, eve.score), (self.user, "f", 1200))
+        self.assertEqual((eve.owner, eve.gender, eve.initial_score, eve.score), (self.user, "f", 1200, 1200))
+        self.assertIsNotNone(eve.mu)
 
     def test_create_invalid_gender(self):
         self.login()
         response = self.client.post(reverse("add-player", kwargs={"owner": "alice"}),
-                                    {"name": "Eve", "gender": "x", "score": 1200})
+                                    {"name": "Eve", "gender": "x", "initial_score": 1200})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Player.objects.filter(name="Eve").exists())
 
@@ -154,10 +155,23 @@ class PlayerEditionTests(ViewTestCase):
         self.login()
         response = self.client.post(
             reverse("edit-player", kwargs={"owner": "alice", "pk": self.player.pk}),
-            {"name": "Caroline", "gender": "f", "score": 1300})
+            {"name": "Caroline", "gender": "f", "initial_score": 1300})
         self.assertRedirects(response, reverse("players", kwargs={"owner": "alice"}))
         self.player.refresh_from_db()
-        self.assertEqual((self.player.name, self.player.score), ("Caroline", 1300))
+        # no game yet: the score follows the initial score
+        self.assertEqual((self.player.name, self.player.initial_score, self.player.score), ("Caroline", 1300, 1300))
+
+    def test_update_initial_score_after_games(self):
+        """Once the player has played, changing the initial score does not
+        change their current score (it is used when recomputing)."""
+        game = make_game(self.league, [self.player], [make_player(self.user, "Dave")])
+        game.completed = True
+        game.save()
+        self.login()
+        self.client.post(reverse("edit-player", kwargs={"owner": "alice", "pk": self.player.pk}),
+                         {"name": "Carol", "gender": "f", "initial_score": 1500})
+        self.player.refresh_from_db()
+        self.assertEqual((self.player.initial_score, self.player.score), (1500, 1100))
 
     def test_delete(self):
         self.login()
@@ -170,7 +184,7 @@ class PlayerEditionTests(ViewTestCase):
         self.login("bob")
         response = self.client.post(
             reverse("edit-player", kwargs={"owner": "alice", "pk": self.player.pk}),
-            {"name": "Hacked", "gender": "f", "score": 0})
+            {"name": "Hacked", "gender": "f", "initial_score": 0})
         self.assertEqual(response.status_code, 404)
 
     def test_cannot_delete_player_of_another_user(self):

@@ -11,7 +11,19 @@ class Player(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     name = models.CharField(max_length=200)
     gender = models.CharField(max_length=10, choices=genders)
+    # Displayed score, computed from the rating (mu, sigma) of the player
+    # (see rating.py).
     score = models.IntegerField(default=1000)
+    # Estimated level of the player when they joined. Used as the starting
+    # point of the rating when the ratings are recomputed.
+    initial_score = models.IntegerField(
+        default=1000, verbose_name="Initial score",
+        help_text="Estimated level of the player when they join: 1000 for an average player. "
+                  "Their score then evolves with the results of their games.")
+    # OpenSkill rating: estimated skill (mu) and its uncertainty (sigma).
+    # None until the first rating of the player.
+    mu = models.FloatField(null=True, blank=True)
+    sigma = models.FloatField(null=True, blank=True)
     def __str__(self):
         return self.name + " (" + self.gender + ")"
     def value(self):
