@@ -69,6 +69,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # serve the static files (CSS...), also when DEBUG is False
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'ultimate_ladder.middleware.LanguageMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -174,6 +176,11 @@ else:
   STATIC_URL = 'static/'
   STATIC_ROOT = 'static/'
 
+
+# The static files are served by WhiteNoise, directly from the static
+# directories of the applications (no need to run collectstatic).
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = DEBUG
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
