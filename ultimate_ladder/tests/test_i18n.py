@@ -51,7 +51,13 @@ class LanguageTests(TestCase):
         response = self.client.get(self.url)
         self.assertContains(response, 'name="language" value="fr"')
         self.assertContains(response, 'name="language" value="en"')
-        self.assertContains(response, 'aria-current="true">FR</button>', html=False)
+        # flags, named in their own language
+        self.assertContains(response, 'class="flag"', count=2)
+        self.assertContains(response, 'aria-label="Français"')
+        self.assertContains(response, 'aria-label="English"')
+        selector = response.content.decode().split('class="language-selector"')[1]
+        self.assertRegex(selector, r'value="fr"[^>]*aria-current="true"')
+        self.assertNotRegex(selector, r'value="en"[^>]*aria-current="true"')
 
     def test_login_page_in_french(self):
         self.client.logout()

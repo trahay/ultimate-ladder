@@ -53,7 +53,7 @@
 			  {% for code, name in languages %}
 			  {% get_language_info for code as language %}
 			  <button type="submit" name="language" value="{{ code }}" class="link" lang="{{ code }}" title="{{ language.name_local|capfirst }}" aria-label="{{ language.name_local|capfirst }}"
-				  {% if code == LANGUAGE_CODE %}aria-current="true"{% endif %}>{{ code|upper }}</button>
+				  {% if code == LANGUAGE_CODE %}aria-current="true"{% endif %}>{% include 'ultimate_ladder/_flag.html' %}</button>
 			  {% endfor %}
 		      </form>
 		  </li>

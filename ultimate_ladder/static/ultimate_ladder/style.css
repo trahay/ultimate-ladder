@@ -500,11 +500,29 @@ a.danger {
 }
 
 .language-selector button {
-  font-size: 0.85rem;
-  color: var(--pico-muted-color);
+  display: inline-flex;
+  padding: 0.2rem;
+  border-radius: 3px;
+  line-height: 0;
+}
+
+/* flags: the language that is not selected is dimmed */
+.flag {
+  width: 1.5rem;
+  height: 1rem;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--pico-muted-border-color);
+  opacity: 0.45;
+  transition: opacity 0.15s;
+}
+
+.language-selector button:hover .flag,
+.language-selector button:focus-visible .flag,
+.language-selector button[aria-current] .flag {
+  opacity: 1;
 }
 
 .language-selector button[aria-current] {
-  color: var(--pico-primary);
-  font-weight: 700;
+  outline: 2px solid var(--pico-primary);
+  outline-offset: 1px;
 }
