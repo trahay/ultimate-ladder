@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse, reverse_lazy
 from django.views import generic
@@ -510,6 +510,6 @@ def UpdateStats(game):
             playerStat.draw = playerStat.draw + 1
         if(game.score_team_b < game.score_team_a):
             playerStat.loss = playerStat.loss + 1
-        playerStat.total_points = playerStat.total_points - team_a_points
+        playerStat.total_points = playerStat.total_points - team_b_points
         playerStat.save()
 

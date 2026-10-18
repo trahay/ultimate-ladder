@@ -49,6 +49,18 @@ docker-compose exec web python manage.py createsuperuser
 ```
 
 
+# Running the tests
+
+The tests are located in `ultimate_ladder/tests/`. They use an in-memory
+SQLite database, so no PostgreSQL server is needed. The `matchmaking`
+submodule must be initialized.
+```
+python manage.py test
+```
+
+Tests marked with `@unittest.expectedFailure` document known bugs.
+
+
 # Using Ultimate-ladder
 
 First, you need to create a `League`, eg `Summer league 2024`, and a
