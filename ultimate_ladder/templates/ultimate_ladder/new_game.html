@@ -1,29 +1,31 @@
 {% extends 'ultimate_ladder/base.html' %}
+{% load i18n %}
 
 {% block content %}
 {% if user.is_authenticated %}
 <a href="{% url 'league' league.owner league.id %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ league.name }}</a>
-<h1>New game</h1>
-<p>Choose the players who are here: the teams are created automatically, with similar levels and the same number of women. <a href="{% url 'add-manual-game' league.owner league.id %}">Choose the teams manually</a></p>
+<h1>{% translate "New game" %}</h1>
+<p>{% translate "Choose the players who are here: the teams are created automatically, with similar levels and the same number of women." %} <a href="{% url 'add-manual-game' league.owner league.id %}">{% translate "Choose the teams manually" %}</a></p>
 
 <form action="{% url 'add-game' league.owner league.id %}" method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}
     <fieldset class="player-choices" id="player-choices">
-	<legend class="sr-only">Players</legend>
+	<legend class="sr-only">{% translate "Players" %}</legend>
 	{% for choice in form.players %}
 	{% with player=choice.data.value.instance %}
 	<label class="{% if player.gender == 'f' %}woman{% else %}man{% endif %}">
-	    {{ choice.tag }} {{ player.name }}{% if player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="woman"></i>{% endif %}
+	    {{ choice.tag }} {{ player.name }}{% if player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="{% translate 'woman' %}"></i>{% endif %}
 	</label>
 	{% endwith %}
 	{% empty %}
-	<p class="empty">No player yet: <a href="{% url 'add-player' league.owner %}">create the players</a> first.</p>
+	<p class="empty">{% url 'add-player' league.owner as add_player_url %}{% blocktranslate %}No player yet: <a href="{{ add_player_url }}">create the players</a> first.{% endblocktranslate %}</p>
 	{% endfor %}
     </fieldset>
     {{ form.players.errors }}
-    <p class="selection-summary" id="selection-summary" aria-live="polite"></p>
-    <button type="submit">Create the teams</button>
+    <p class="selection-summary" id="selection-summary" aria-live="polite"
+       data-template="{% translate 'Selected players: {players} (women: {women})' %}"></p>
+    <button type="submit">{% translate "Create the teams" %}</button>
 </form>
 
 <script>
@@ -32,9 +34,9 @@
     function updateSelection() {
         const checked = choices.querySelectorAll('input:checked');
         const women = choices.querySelectorAll('label.woman input:checked').length;
-        document.getElementById('selection-summary').textContent =
-            checked.length + ' player' + (checked.length > 1 ? 's' : '') + ' selected, including ' +
-            women + (women > 1 ? ' women' : ' woman');
+        const summary = document.getElementById('selection-summary');
+        summary.textContent = summary.dataset.template
+            .replace('{players}', checked.length).replace('{women}', women);
     }
     choices.addEventListener('change', updateSelection);
     updateSelection();

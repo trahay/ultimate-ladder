@@ -25,6 +25,7 @@ app_name = "ultimate_ladder"
 
 urlpatterns = [
     path(f'{settings.PATH_URL}accounts/', include('django.contrib.auth.urls')),
+    path(f'{settings.PATH_URL}i18n/', include('django.conf.urls.i18n')),
     path(f'{settings.PATH_URL}admin/', admin.site.urls),
 
     path(f'{settings.PATH_URL}', views.IndexRedirectView.as_view(), name="index-redirect"),

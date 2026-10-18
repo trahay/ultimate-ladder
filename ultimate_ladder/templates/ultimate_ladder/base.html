@@ -1,6 +1,6 @@
-{%load static %}
+{% load static i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,6 +12,10 @@
 
     <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script>
+      // texts of the tables (search, pagination...) in the language of the page
+      window.DATATABLES_LANGUAGE = {% if LANGUAGE_CODE == 'fr' %}{url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json'}{% else %}{}{% endif %};
+    </script>
 
     <title>Ultimate ladder</title>
   </head>
@@ -29,18 +33,30 @@
 	      </ul>
 	      <ul>
 		  {% if user.is_authenticated %}
-		  <li><a href="{% url 'leagues' user %}">Leagues</a></li>
-		  <li><a href="{% url 'players' user %}">Players</a></li>
+		  <li><a href="{% url 'leagues' user %}">{% translate "Leagues" %}</a></li>
+		  <li><a href="{% url 'players' user %}">{% translate "Players" %}</a></li>
 		  <li>
 		      <form action="{% url 'logout' %}" method="post" style="margin: 0">
 			  {% csrf_token %}
 			  <span class="username"><i class="bi bi-person" aria-hidden="true"></i> {{ user.get_username }}</span>
-			  <button type="submit" class="link">Logout</button>
+			  <button type="submit" class="link">{% translate "Log out" %}</button>
 		      </form>
 		  </li>
 		  {% else %}
-		  <li><a href="{% url 'login' %}?next={{ request.path }}">Login</a></li>
+		  <li><a href="{% url 'login' %}?next={{ request.path }}">{% translate "Log in" %}</a></li>
 		  {% endif %}
+		  <li>
+		      <form action="{% url 'set_language' %}" method="post" class="language-selector" aria-label="{% translate 'Language' %}">
+			  {% csrf_token %}
+			  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+			  {% get_available_languages as languages %}
+			  {% for code, name in languages %}
+			  {% get_language_info for code as language %}
+			  <button type="submit" name="language" value="{{ code }}" class="link" lang="{{ code }}" title="{{ language.name_local|capfirst }}" aria-label="{{ language.name_local|capfirst }}"
+				  {% if code == LANGUAGE_CODE %}aria-current="true"{% endif %}>{{ code|upper }}</button>
+			  {% endfor %}
+		      </form>
+		  </li>
 	      </ul>
 	  </nav>
       </header>
@@ -61,9 +77,9 @@
 
       <footer class="site-footer">
 	  <div class="container">
-	      <a href="https://github.com/trahay/ultimate-ladder">Source code</a>
+	      <a href="https://github.com/trahay/ultimate-ladder">{% translate "Source code" %}</a>
 	      ·
-	      <a href="https://github.com/trahay/ultimate-ladder/issues">Report a bug</a>
+	      <a href="https://github.com/trahay/ultimate-ladder/issues">{% translate "Report a bug" %}</a>
 	  </div>
       </footer>
   </body>

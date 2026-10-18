@@ -1,0 +1,732 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:31+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: templates/registration/logged_out.html:6
+msgid "Logged out"
+msgstr "Déconnexion"
+
+#: templates/registration/logged_out.html:7
+msgid "You are logged out."
+msgstr "Vous êtes déconnecté·e."
+
+#: templates/registration/logged_out.html:8
+msgid "Log in again"
+msgstr "Se reconnecter"
+
+#: templates/registration/login.html:6 templates/registration/login.html:24
+#: templates/registration/password_reset_complete.html:7
+#: ultimate_ladder/templates/ultimate_ladder/base.html:46
+#: ultimate_ladder/templates/ultimate_ladder/index.html:27
+msgid "Log in"
+msgstr "Se connecter"
+
+#: templates/registration/login.html:9
+msgid "Your username and password didn't match. Try again."
+msgstr "Le nom d'utilisateur ou le mot de passe est incorrect. Réessayez."
+
+#: templates/registration/login.html:14
+msgid ""
+"Your account doesn't have access to this page. To proceed, log in with an "
+"account that has access."
+msgstr ""
+"Votre compte n'a pas accès à cette page. Pour continuer, connectez-vous avec"
+" un compte qui y a accès."
+
+#: templates/registration/login.html:20
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: templates/registration/login.html:22
+msgid "Password"
+msgstr "Mot de passe"
+
+#: templates/registration/login.html:29
+msgid "Lost password?"
+msgstr "Mot de passe oublié ?"
+
+#: templates/registration/password_reset_complete.html:6
+msgid "Your password has been changed"
+msgstr "Votre mot de passe a été modifié"
+
+#: templates/registration/password_reset_confirm.html:7
+#: templates/registration/password_reset_confirm.html:12
+msgid "New password"
+msgstr "Nouveau mot de passe"
+
+#: templates/registration/password_reset_confirm.html:8
+msgid "Enter your new password twice."
+msgstr "Saisissez deux fois votre nouveau mot de passe."
+
+#: templates/registration/password_reset_confirm.html:15
+msgid "Confirm the password"
+msgstr "Confirmez le mot de passe"
+
+#: templates/registration/password_reset_confirm.html:17
+msgid "Change my password"
+msgstr "Changer mon mot de passe"
+
+#: templates/registration/password_reset_confirm.html:20
+msgid "Password reset failed"
+msgstr "Échec de la réinitialisation du mot de passe"
+
+#: templates/registration/password_reset_confirm.html:21
+msgid ""
+"The password reset link is invalid, possibly because it has already been "
+"used. Request a new password reset."
+msgstr ""
+"Le lien de réinitialisation n'est pas valide, peut-être parce qu'il a déjà "
+"été utilisé. Demandez une nouvelle réinitialisation."
+
+#: templates/registration/password_reset_done.html:6
+msgid ""
+"We've emailed you instructions for setting your password. If they haven't "
+"arrived in a few minutes, check your spam folder."
+msgstr ""
+"Nous vous avons envoyé par e-mail les instructions pour choisir votre mot de"
+" passe. Si vous ne les recevez pas d'ici quelques minutes, vérifiez vos "
+"courriers indésirables."
+
+#: templates/registration/password_reset_email.html:1
+#, python-format
+msgid ""
+"Someone asked for a password reset for the email %(email)s. Follow the link "
+"below:"
+msgstr ""
+"Une réinitialisation du mot de passe a été demandée pour l'adresse "
+"%(email)s. Suivez ce lien :"
+
+#: templates/registration/password_reset_form.html:6
+msgid "Lost password"
+msgstr "Mot de passe oublié"
+
+#: templates/registration/password_reset_form.html:10
+msgid "Email"
+msgstr "E-mail"
+
+#: templates/registration/password_reset_form.html:12
+msgid "Reset password"
+msgstr "Réinitialiser le mot de passe"
+
+#: ultimate_ladder/forms.py:23 ultimate_ladder/forms.py:38
+msgid "Name"
+msgstr "Nom"
+
+#: ultimate_ladder/forms.py:24
+msgid "Gender"
+msgstr "Genre"
+
+#: ultimate_ladder/forms.py:25
+msgid "Initial score"
+msgstr "Niveau initial"
+
+#: ultimate_ladder/forms.py:28
+msgid ""
+"Estimated level of the player when they join: 1000 for an average player. "
+"Their score then evolves with the results of their games."
+msgstr ""
+"Niveau estimé du joueur ou de la joueuse à son arrivée : 1000 pour un niveau"
+" moyen. Son niveau évolue ensuite selon les résultats de ses matchs."
+
+#: ultimate_ladder/forms.py:58
+msgid "Select at least two players."
+msgstr "Sélectionnez au moins deux joueurs."
+
+#: ultimate_ladder/forms.py:67
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:17
+msgid "Absent"
+msgstr "Absent·e"
+
+#: ultimate_ladder/forms.py:67
+#: ultimate_ladder/templates/ultimate_ladder/game.html:18
+#: ultimate_ladder/templates/ultimate_ladder/game.html:35
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:17
+msgid "Team A"
+msgstr "Équipe A"
+
+#: ultimate_ladder/forms.py:67
+#: ultimate_ladder/templates/ultimate_ladder/game.html:20
+#: ultimate_ladder/templates/ultimate_ladder/game.html:35
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:17
+msgid "Team B"
+msgstr "Équipe B"
+
+#: ultimate_ladder/forms.py:99
+msgid "Each team needs at least one player."
+msgstr "Chaque équipe doit avoir au moins un joueur."
+
+#: ultimate_ladder/forms.py:108
+msgid "Score of team A"
+msgstr "Score de l'équipe A"
+
+#: ultimate_ladder/forms.py:109
+msgid "Score of team B"
+msgstr "Score de l'équipe B"
+
+#: ultimate_ladder/models.py:10
+msgctxt "gender"
+msgid "M"
+msgstr "H"
+
+#: ultimate_ladder/models.py:10
+msgctxt "gender"
+msgid "F"
+msgstr "F"
+
+#: ultimate_ladder/settings.py:154
+msgid "French"
+msgstr "Français"
+
+#: ultimate_ladder/settings.py:155
+msgid "English"
+msgstr "Anglais"
+
+#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:10
+#, python-format
+msgid "%(counter)s game"
+msgid_plural "%(counter)s games"
+msgstr[0] "%(counter)s match"
+msgstr[1] "%(counter)s matchs"
+
+#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:12
+#: ultimate_ladder/templates/ultimate_ladder/game.html:54
+#: ultimate_ladder/templates/ultimate_ladder/league.html:33
+#, python-format
+msgid "%(counter)s player"
+msgid_plural "%(counter)s players"
+msgstr[0] "%(counter)s joueur"
+msgstr[1] "%(counter)s joueurs"
+
+#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:16
+#, python-format
+msgid "Last game: %(date)s"
+msgstr "Dernier match : %(date)s"
+
+#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:18
+msgid "No game yet"
+msgstr "Aucun match pour le moment"
+
+#: ultimate_ladder/templates/ultimate_ladder/_league_cards.html:25
+msgid "No league yet. Create one to start organizing games."
+msgstr "Aucune ligue pour le moment. Créez-en une pour organiser vos matchs."
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:19
+#: ultimate_ladder/templates/ultimate_ladder/league.html:47
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:17
+msgid "Player"
+msgstr "Joueur"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:20
+msgid "Number of completed games"
+msgstr "Nombre de matchs terminés"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:20
+#: ultimate_ladder/templates/ultimate_ladder/league.html:48
+msgid "Played"
+msgstr "Joués"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:20
+#: ultimate_ladder/templates/ultimate_ladder/league.html:48
+msgctxt "abbreviation of played"
+msgid "P"
+msgstr "J"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:22
+#: ultimate_ladder/templates/ultimate_ladder/league.html:49
+#: ultimate_ladder/templates/ultimate_ladder/player.html:21
+#: ultimate_ladder/templates/ultimate_ladder/player.html:43
+msgid "Wins"
+msgstr "Victoires"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:22
+#: ultimate_ladder/templates/ultimate_ladder/league.html:49
+msgctxt "abbreviation of wins"
+msgid "W"
+msgstr "V"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:23
+#: ultimate_ladder/templates/ultimate_ladder/league.html:50
+#: ultimate_ladder/templates/ultimate_ladder/player.html:25
+#: ultimate_ladder/templates/ultimate_ladder/player.html:43
+msgid "Losses"
+msgstr "Défaites"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:23
+#: ultimate_ladder/templates/ultimate_ladder/league.html:50
+msgctxt "abbreviation of losses"
+msgid "L"
+msgstr "D"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:24
+#: ultimate_ladder/templates/ultimate_ladder/league.html:51
+#: ultimate_ladder/templates/ultimate_ladder/player.html:29
+#: ultimate_ladder/templates/ultimate_ladder/player.html:43
+msgid "Draws"
+msgstr "Nuls"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:24
+#: ultimate_ladder/templates/ultimate_ladder/league.html:51
+msgctxt "abbreviation of draws"
+msgid "D"
+msgstr "N"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:26
+msgid "Percentage of games won"
+msgstr "Pourcentage de matchs gagnés"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:26
+#: ultimate_ladder/templates/ultimate_ladder/player.html:33
+#, python-format
+msgid "Win %%"
+msgstr "%% victoires"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:27
+msgid "Current level of the player"
+msgstr "Niveau actuel du joueur"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:27
+#: ultimate_ladder/templates/ultimate_ladder/league.html:53
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:17
+#: ultimate_ladder/templates/ultimate_ladder/player.html:13
+msgctxt "level of a player"
+msgid "Score"
+msgstr "Niveau"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:32
+#: ultimate_ladder/templates/ultimate_ladder/game.html:59
+#: ultimate_ladder/templates/ultimate_ladder/league.html:59
+#: ultimate_ladder/templates/ultimate_ladder/new_game.html:18
+#: ultimate_ladder/templates/ultimate_ladder/player.html:8
+msgid "woman"
+msgstr "femme"
+
+#: ultimate_ladder/templates/ultimate_ladder/_players_table.html:47
+msgid "No player yet. Add the players of your group to create balanced teams."
+msgstr ""
+"Aucun joueur pour le moment. Ajoutez les joueurs de votre groupe pour créer "
+"des équipes équilibrées."
+
+#: ultimate_ladder/templates/ultimate_ladder/base.html:36
+#: ultimate_ladder/templates/ultimate_ladder/index.html:9
+#: ultimate_ladder/templates/ultimate_ladder/league.html:17
+#: ultimate_ladder/templates/ultimate_ladder/leagues.html:6
+#: ultimate_ladder/templates/ultimate_ladder/player.html:38
+msgid "Leagues"
+msgstr "Ligues"
+
+#: ultimate_ladder/templates/ultimate_ladder/base.html:37
+#: ultimate_ladder/templates/ultimate_ladder/index.html:17
+#: ultimate_ladder/templates/ultimate_ladder/new_game.html:14
+#: ultimate_ladder/templates/ultimate_ladder/player.html:5
+#: ultimate_ladder/templates/ultimate_ladder/players.html:6
+msgid "Players"
+msgstr "Joueurs"
+
+#: ultimate_ladder/templates/ultimate_ladder/base.html:42
+msgid "Log out"
+msgstr "Se déconnecter"
+
+#: ultimate_ladder/templates/ultimate_ladder/base.html:49
+msgid "Language"
+msgstr "Langue"
+
+#: ultimate_ladder/templates/ultimate_ladder/base.html:79
+msgid "Source code"
+msgstr "Code source"
+
+#: ultimate_ladder/templates/ultimate_ladder/base.html:81
+msgid "Report a bug"
+msgstr "Signaler un bug"
+
+#: ultimate_ladder/templates/ultimate_ladder/edit_league.html:7
+#: ultimate_ladder/templates/ultimate_ladder/edit_player.html:7
+#, python-format
+msgid "Edit %(name)s"
+msgstr "Modifier %(name)s"
+
+#: ultimate_ladder/templates/ultimate_ladder/edit_league.html:7
+msgid "New league"
+msgstr "Nouvelle ligue"
+
+#: ultimate_ladder/templates/ultimate_ladder/edit_league.html:12
+#: ultimate_ladder/templates/ultimate_ladder/edit_player.html:12
+msgid "Save"
+msgstr "Enregistrer"
+
+#: ultimate_ladder/templates/ultimate_ladder/edit_league.html:13
+#: ultimate_ladder/templates/ultimate_ladder/edit_player.html:13
+#: ultimate_ladder/templates/ultimate_ladder/game_confirm_delete.html:14
+#: ultimate_ladder/templates/ultimate_ladder/league_confirm_delete.html:14
+#: ultimate_ladder/templates/ultimate_ladder/player_confirm_delete.html:14
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ultimate_ladder/templates/ultimate_ladder/edit_player.html:7
+msgid "New player"
+msgstr "Nouveau joueur"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:8
+#, python-format
+msgid "Game of %(date)s"
+msgstr "Match du %(date)s"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:10
+msgid "Completed"
+msgstr "Terminé"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:12
+#: ultimate_ladder/templates/ultimate_ladder/league.html:34
+#: ultimate_ladder/templates/ultimate_ladder/player.html:73
+msgid "Ongoing"
+msgstr "En cours"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:17
+msgid "Final score"
+msgstr "Score final"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:23
+#: ultimate_ladder/templates/ultimate_ladder/league.html:83
+msgid "Team A wins"
+msgstr "Victoire de l'équipe A"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:24
+#: ultimate_ladder/templates/ultimate_ladder/league.html:83
+msgid "Team B wins"
+msgstr "Victoire de l'équipe B"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:25
+#: ultimate_ladder/templates/ultimate_ladder/league.html:83
+#: ultimate_ladder/templates/ultimate_ladder/player.html:71
+msgid "Draw"
+msgstr "Match nul"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:37
+msgid "Remove one point to team A"
+msgstr "Retirer un point à l'équipe A"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:37
+msgid "Remove one point to team B"
+msgstr "Retirer un point à l'équipe B"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:39
+msgid "Add one point to team A"
+msgstr "Ajouter un point à l'équipe A"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:39
+msgid "Add one point to team B"
+msgstr "Ajouter un point à l'équipe B"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:45
+msgid "Save the score"
+msgstr "Enregistrer le score"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:52
+#, python-format
+msgid "Team %(name)s"
+msgstr "Équipe %(name)s"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:54
+#, python-format
+msgid "%(score)s points"
+msgstr "%(score)s points"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:54
+#, python-format
+msgid "%(counter)s woman"
+msgid_plural "%(counter)s women"
+msgstr[0] "%(counter)s femme"
+msgstr[1] "%(counter)s femmes"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:71
+#, python-format
+msgid ""
+"Level difference: %(score_gap)s points in favour of team %(stronger_team)s"
+msgstr ""
+"Écart de niveau : %(score_gap)s points en faveur de l'équipe "
+"%(stronger_team)s"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:73
+msgid "Both teams have the same level"
+msgstr "Les deux équipes ont le même niveau"
+
+#: ultimate_ladder/templates/ultimate_ladder/game.html:79
+#: ultimate_ladder/templates/ultimate_ladder/game_confirm_delete.html:10
+msgid "Delete game"
+msgstr "Supprimer le match"
+
+#: ultimate_ladder/templates/ultimate_ladder/game_confirm_delete.html:11
+#, python-format
+msgid ""
+"Are you sure that you want to delete the game of %(date)s (%(league)s)?"
+msgstr "Voulez-vous vraiment supprimer le match du %(date)s (%(league)s) ?"
+
+#: ultimate_ladder/templates/ultimate_ladder/game_confirm_delete.html:13
+#: ultimate_ladder/templates/ultimate_ladder/league_confirm_delete.html:13
+#: ultimate_ladder/templates/ultimate_ladder/player_confirm_delete.html:13
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ultimate_ladder/templates/ultimate_ladder/index.html:10
+#: ultimate_ladder/templates/ultimate_ladder/leagues.html:8
+msgid "Create league"
+msgstr "Créer une ligue"
+
+#: ultimate_ladder/templates/ultimate_ladder/index.html:18
+#: ultimate_ladder/templates/ultimate_ladder/players.html:8
+msgid "Create player"
+msgstr "Créer un joueur"
+
+#: ultimate_ladder/templates/ultimate_ladder/index.html:26
+msgid ""
+"Create balanced teams for your ultimate games, and follow the standings of "
+"your leagues."
+msgstr ""
+"Créez des équipes équilibrées pour vos matchs d'ultimate, et suivez le "
+"classement de vos ligues."
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:22
+#: ultimate_ladder/templates/ultimate_ladder/new_game.html:7
+msgid "New game"
+msgstr "Nouveau match"
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:23
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:8
+msgid "New game (manual teams)"
+msgstr "Nouveau match (équipes manuelles)"
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:28
+msgid "Ongoing games"
+msgstr "Matchs en cours"
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:40
+msgid "Standings"
+msgstr "Classement"
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:41
+msgid "3 points per win, 1 point per draw."
+msgstr "3 points par victoire, 1 point par match nul."
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:48
+msgid "Games played in this league"
+msgstr "Matchs joués dans cette ligue"
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:52
+#: ultimate_ladder/templates/ultimate_ladder/player.html:43
+msgid "3 points per win, 1 per draw"
+msgstr "3 points par victoire, 1 par match nul"
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:52
+#: ultimate_ladder/templates/ultimate_ladder/player.html:43
+msgid "Points"
+msgstr "Points"
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:52
+msgctxt "abbreviation of points"
+msgid "Pts"
+msgstr "Pts"
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:53
+msgid "Current level of the player, all leagues included"
+msgstr "Niveau actuel du joueur, toutes ligues confondues"
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:72
+msgid "The standings will appear once a game is completed."
+msgstr "Le classement apparaîtra dès qu'un match sera terminé."
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:75
+msgid "Completed games"
+msgstr "Matchs terminés"
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:89
+msgid "No completed game yet."
+msgstr "Aucun match terminé pour le moment."
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:94
+msgid "Edit league"
+msgstr "Modifier la ligue"
+
+#: ultimate_ladder/templates/ultimate_ladder/league.html:95
+#: ultimate_ladder/templates/ultimate_ladder/league_confirm_delete.html:10
+msgid "Delete league"
+msgstr "Supprimer la ligue"
+
+#: ultimate_ladder/templates/ultimate_ladder/league_confirm_delete.html:11
+#, python-format
+msgid ""
+"Are you sure that you want to delete the league \"%(name)s\" and all its "
+"games?"
+msgstr ""
+"Voulez-vous vraiment supprimer la ligue « %(name)s » et tous ses matchs ?"
+
+#: ultimate_ladder/templates/ultimate_ladder/new_game.html:8
+msgid ""
+"Choose the players who are here: the teams are created automatically, with "
+"similar levels and the same number of women."
+msgstr ""
+"Choisissez les joueurs présents : les équipes sont créées automatiquement, "
+"avec des niveaux proches et le même nombre de femmes."
+
+#: ultimate_ladder/templates/ultimate_ladder/new_game.html:8
+msgid "Choose the teams manually"
+msgstr "Choisir les équipes manuellement"
+
+#: ultimate_ladder/templates/ultimate_ladder/new_game.html:22
+#, python-format
+msgid ""
+"No player yet: <a href=\"%(add_player_url)s\">create the players</a> first."
+msgstr ""
+"Aucun joueur pour le moment : <a href=\"%(add_player_url)s\">créez d'abord "
+"les joueurs</a>."
+
+#: ultimate_ladder/templates/ultimate_ladder/new_game.html:27
+#, python-brace-format
+msgid "Selected players: {players} (women: {women})"
+msgstr "Joueurs sélectionnés : {players} (femmes : {women})"
+
+#: ultimate_ladder/templates/ultimate_ladder/new_game.html:28
+msgid "Create the teams"
+msgstr "Créer les équipes"
+
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:9
+msgid "Choose the team of each player."
+msgstr "Choisissez l'équipe de chaque joueur."
+
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:9
+msgid "Create the teams automatically"
+msgstr "Créer les équipes automatiquement"
+
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:29
+msgid "No player yet."
+msgstr "Aucun joueur pour le moment."
+
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:35
+msgid ""
+"Team A — players: <span class=\"count\">0</span>, women: <span "
+"class=\"women\">0</span>, total level: <span class=\"score\">0</span>"
+msgstr ""
+"Équipe A — joueurs : <span class=\"count\">0</span>, femmes : <span "
+"class=\"women\">0</span>, niveau total : <span class=\"score\">0</span>"
+
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:36
+msgid ""
+"Team B — players: <span class=\"count\">0</span>, women: <span "
+"class=\"women\">0</span>, total level: <span class=\"score\">0</span>"
+msgstr ""
+"Équipe B — joueurs : <span class=\"count\">0</span>, femmes : <span "
+"class=\"women\">0</span>, niveau total : <span class=\"score\">0</span>"
+
+#: ultimate_ladder/templates/ultimate_ladder/new_manual_game.html:38
+msgid "Create the game"
+msgstr "Créer le match"
+
+#: ultimate_ladder/templates/ultimate_ladder/player.html:8
+msgid "man"
+msgstr "homme"
+
+#: ultimate_ladder/templates/ultimate_ladder/player.html:17
+msgid "Games played"
+msgstr "Matchs joués"
+
+#: ultimate_ladder/templates/ultimate_ladder/player.html:43
+msgid "League"
+msgstr "Ligue"
+
+#: ultimate_ladder/templates/ultimate_ladder/player.html:59
+#, python-format
+msgid "%(name)s has not completed any game yet."
+msgstr "%(name)s n'a encore terminé aucun match."
+
+#: ultimate_ladder/templates/ultimate_ladder/player.html:63
+msgid "Last games"
+msgstr "Derniers matchs"
+
+#: ultimate_ladder/templates/ultimate_ladder/player.html:68
+#, python-format
+msgid "team %(name)s"
+msgstr "équipe %(name)s"
+
+#: ultimate_ladder/templates/ultimate_ladder/player.html:71
+msgid "Win"
+msgstr "Victoire"
+
+#: ultimate_ladder/templates/ultimate_ladder/player.html:71
+msgid "Loss"
+msgstr "Défaite"
+
+#: ultimate_ladder/templates/ultimate_ladder/player.html:82
+msgid "Edit player"
+msgstr "Modifier le joueur"
+
+#: ultimate_ladder/templates/ultimate_ladder/player.html:83
+#: ultimate_ladder/templates/ultimate_ladder/player_confirm_delete.html:10
+msgid "Delete player"
+msgstr "Supprimer le joueur"
+
+#: ultimate_ladder/templates/ultimate_ladder/player_confirm_delete.html:11
+#, python-format
+msgid "Are you sure that you want to delete the player \"%(name)s\"?"
+msgstr "Voulez-vous vraiment supprimer le joueur « %(name)s » ?"
+
+#: ultimate_ladder/views.py:181
+msgid "The player was created."
+msgstr "Le joueur a été créé."
+
+#: ultimate_ladder/views.py:210
+msgid "The player was updated."
+msgstr "Le joueur a été modifié."
+
+#: ultimate_ladder/views.py:238
+msgid "The player was deleted."
+msgstr "Le joueur a été supprimé."
+
+#: ultimate_ladder/views.py:254
+msgid "The league was created."
+msgstr "La ligue a été créée."
+
+#: ultimate_ladder/views.py:280
+msgid "The league was updated."
+msgstr "La ligue a été modifiée."
+
+#: ultimate_ladder/views.py:299
+msgid "The league was deleted."
+msgstr "La ligue a été supprimée."
+
+#: ultimate_ladder/views.py:348
+msgid "You can only modify your own games."
+msgstr "Vous ne pouvez modifier que vos propres matchs."
+
+#: ultimate_ladder/views.py:353
+msgid "The game is already completed."
+msgstr "Le match est déjà terminé."
+
+#: ultimate_ladder/views.py:365
+msgid "The score was saved."
+msgstr "Le score a été enregistré."
+
+#: ultimate_ladder/views.py:367
+msgid "The score is not valid."
+msgstr "Le score n'est pas valide."
+
+#: ultimate_ladder/views.py:390
+msgid "The game was deleted."
+msgstr "Le match a été supprimé."
+
+#: ultimate_ladder/views.py:471 ultimate_ladder/views.py:548
+msgid "You can only create games in your own leagues."
+msgstr "Vous ne pouvez créer des matchs que dans vos propres ligues."

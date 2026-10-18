@@ -1,15 +1,16 @@
 {% extends 'ultimate_ladder/base.html' %}
-	
+{% load i18n %}
+
 {% block content %}
 
 {% if user.is_authenticated %}
-<h1>{% if league %}Edit {{ league.name }}{% else %}New league{% endif %}</h1>
+<h1>{% if league %}{% blocktranslate with name=league.name %}Edit {{ name }}{% endblocktranslate %}{% else %}{% translate "New league" %}{% endif %}</h1>
 
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
     <div class="actions">
-        <button type="submit">Save</button>
-        <a href="{% if league %}{% url 'league' league.owner league.id %}{% else %}{% url 'leagues' user %}{% endif %}" role="button" class="secondary outline">Cancel</a>
+        <button type="submit">{% translate "Save" %}</button>
+        <a href="{% if league %}{% url 'league' league.owner league.id %}{% else %}{% url 'leagues' user %}{% endif %}" role="button" class="secondary outline">{% translate "Cancel" %}</a>
     </div>
 </form>
 {% endif %}

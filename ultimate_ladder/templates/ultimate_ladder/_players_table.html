@@ -1,5 +1,6 @@
 {% comment %}Table of players, with a search field. Needs `players` (see players_by_name) and `owner`.
 With `detailed`, also shows the number of wins, losses and draws.{% endcomment %}
+{% load i18n %}
 {% if players %}
 <script>
     $(document).ready(function () {
@@ -7,26 +8,27 @@ With `detailed`, also shows the number of wins, losses and draws.{% endcomment %
 	    order: [[0, 'asc']],
 	    pageLength: 25,
 	    lengthChange: false,
+	    language: DATATABLES_LANGUAGE,
 	});
     });
 </script>
 <div class="overflow-auto">
 <table id="player-table" class="display compact">
     <thead><tr>
-	<th>Player</th>
-	<th title="Number of completed games"><span class="label-long">Played</span><span class="label-short" aria-hidden="true">P</span></th>
+	<th>{% translate "Player" %}</th>
+	<th title="{% translate 'Number of completed games' %}"><span class="label-long">{% translate "Played" %}</span><span class="label-short" aria-hidden="true">{% translate "P" context "abbreviation of played" %}</span></th>
 	{% if detailed %}
-	<th title="Wins"><span class="label-long">Wins</span><span class="label-short" aria-hidden="true">W</span></th>
-	<th title="Losses"><span class="label-long">Losses</span><span class="label-short" aria-hidden="true">L</span></th>
-	<th title="Draws"><span class="label-long">Draws</span><span class="label-short" aria-hidden="true">D</span></th>
+	<th title="{% translate 'Wins' %}"><span class="label-long">{% translate "Wins" %}</span><span class="label-short" aria-hidden="true">{% translate "W" context "abbreviation of wins" %}</span></th>
+	<th title="{% translate 'Losses' %}"><span class="label-long">{% translate "Losses" %}</span><span class="label-short" aria-hidden="true">{% translate "L" context "abbreviation of losses" %}</span></th>
+	<th title="{% translate 'Draws' %}"><span class="label-long">{% translate "Draws" %}</span><span class="label-short" aria-hidden="true">{% translate "D" context "abbreviation of draws" %}</span></th>
 	{% endif %}
-	<th title="Percentage of games won"><span class="label-long">Win %</span><span class="label-short" aria-hidden="true">%</span></th>
-	<th title="Current score of the player">Score</th>
+	<th title="{% translate 'Percentage of games won' %}"><span class="label-long">{% translate "Win %" %}</span><span class="label-short" aria-hidden="true">%</span></th>
+	<th title="{% translate 'Current level of the player' %}">{% translate "Score" context "level of a player" %}</th>
     </tr></thead>
     <tbody>
 	{% for player in players %}
 	<tr>
-	    <td data-order="{{ player.name|lower }}"><a href="{% url 'player' owner player.id %}" class="{% if player.gender == 'f' %}woman{% else %}man{% endif %}">{{ player.name }}{% if player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="woman"></i>{% endif %}</a></td>
+	    <td data-order="{{ player.name|lower }}"><a href="{% url 'player' owner player.id %}" class="{% if player.gender == 'f' %}woman{% else %}man{% endif %}">{{ player.name }}{% if player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="{% translate 'woman' %}"></i>{% endif %}</a></td>
 	    <td>{{ player.played }}</td>
 	    {% if detailed %}
 	    <td>{{ player.wins }}</td>
@@ -41,5 +43,5 @@ With `detailed`, also shows the number of wins, losses and draws.{% endcomment %
 </table>
 </div>
 {% else %}
-<p class="empty">No player yet. Add the players of your group to create balanced teams.</p>
+<p class="empty">{% translate "No player yet. Add the players of your group to create balanced teams." %}</p>
 {% endif %}

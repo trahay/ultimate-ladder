@@ -5,10 +5,12 @@ FROM python:${PYTHON_VERSION}
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# install psycopg2 dependencies.
+# install psycopg2 dependencies, and gettext to update the translations
+# (python manage.py makemessages / compilemessages).
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
+    gettext \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /code

@@ -1,6 +1,10 @@
 {% extends 'ultimate_ladder/base.html' %}
+{% load i18n %}
 
 {% block content %}
-  <p>Logged out!</p>
-  <a href="{% url 'login'%}">Click here to login again.</a>
+<article class="login">
+  <h1>{% translate "Logged out" %}</h1>
+  <p>{% translate "You are logged out." %}</p>
+  <a href="{% url 'login' %}" role="button">{% translate "Log in again" %}</a>
+</article>
 {% endblock %}

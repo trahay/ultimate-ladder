@@ -15,6 +15,7 @@ import math
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext as _
 
 User = get_user_model()
 
@@ -25,7 +26,7 @@ import matchmaking as mm
 import logging
 logger = logging.getLogger(__name__)
 
-from .forms import PlayerForm, GameForm, ManualGameForm, ScoreForm
+from .forms import PlayerForm, PlayerEditForm, LeagueForm, GameForm, ManualGameForm, ScoreForm
 from .models import Player, League, Game, Team, PlayerStats
 from . import rating
 
@@ -170,14 +171,14 @@ class LeagueDetail(generic.DetailView):
 # require authentification
 class PlayerCreate(LoginRequiredMixin, CreateView):
     model = Player
-    fields = [ 'name', 'gender', 'initial_score' ]
+    form_class = PlayerEditForm
     template_name = "ultimate_ladder/edit_player.html"
 
     def get_success_url(self):
         return reverse('players', kwargs={"owner": self.request.user})
 
     def form_valid(self, form, **kwargs):
-        messages.success(self.request, "The Player was created successfully.")
+        messages.success(self.request, _("The player was created."))
         name=form.cleaned_data.get("name")
         gender=form.cleaned_data.get("gender")
         score=form.cleaned_data.get("initial_score")
@@ -192,7 +193,7 @@ class PlayerCreate(LoginRequiredMixin, CreateView):
 
 class PlayerUpdate(LoginRequiredMixin, UpdateView):
     model = Player
-    fields = [ 'name', 'gender', 'initial_score' ]
+    form_class = PlayerEditForm
     template_name = "ultimate_ladder/edit_player.html"
 
     def get_success_url(self):
@@ -206,7 +207,7 @@ class PlayerUpdate(LoginRequiredMixin, UpdateView):
         return obj
 
     def form_valid(self, form):
-        messages.success(self.request, "The Player was updated successfully.")
+        messages.success(self.request, _("The player was updated."))
         name=form.cleaned_data.get("name")
         gender=form.cleaned_data.get("gender")
         score=form.cleaned_data.get("initial_score")
@@ -234,7 +235,7 @@ class PlayerDelete(LoginRequiredMixin, DeleteView):
         return obj
 
     def form_valid(self, form):
-        messages.success(self.request, "The Player was deleted successfully.")
+        messages.success(self.request, _("The player was deleted."))
         name=form.cleaned_data.get("name")
         logger.warning("PlayerDeleteUpdate()")
         return super(PlayerDelete,self).form_valid(form)
@@ -243,14 +244,14 @@ class PlayerDelete(LoginRequiredMixin, DeleteView):
 
 class LeagueCreate(LoginRequiredMixin, CreateView):
     model = League
-    fields = [ 'name' ]
+    form_class = LeagueForm
     template_name = "ultimate_ladder/edit_league.html"
 
     def get_success_url(self):
         return reverse('leagues', kwargs={"owner": self.request.user})
 
     def form_valid(self, form):
-        messages.success(self.request, "The League was created successfully.")
+        messages.success(self.request, _("The league was created."))
         name=form.cleaned_data.get("name")
         if self.request.user.is_authenticated:
             owner=self.request.user
@@ -262,7 +263,7 @@ class LeagueCreate(LoginRequiredMixin, CreateView):
 
 class LeagueUpdate(LoginRequiredMixin, UpdateView):
     model = League
-    fields = [ 'name' ]
+    form_class = LeagueForm
     template_name = "ultimate_ladder/edit_league.html"
 
     def get_success_url(self):
@@ -276,7 +277,7 @@ class LeagueUpdate(LoginRequiredMixin, UpdateView):
         return obj
 
     def form_valid(self, form):
-        messages.success(self.request, "The League was updated successfully.")
+        messages.success(self.request, _("The league was updated."))
         logger.warning("LeagueUpdate(name='"+form.instance.name+"')")
         return super(LeagueUpdate,self).form_valid(form)
 
@@ -295,7 +296,7 @@ class LeagueDelete(LoginRequiredMixin, DeleteView):
         return obj
 
     def form_valid(self, form):
-        messages.success(self.request, "The League was deleted successfully.")
+        messages.success(self.request, _("The league was deleted."))
         logger.warning("LeagueDelete()")
         return super(LeagueDelete,self).form_valid(form)
 
@@ -344,12 +345,12 @@ class GameDetail(FormMixin, generic.DetailView):
         form = self.get_form()
 
         if not game.owner == self.request.user:
-            messages.error(self.request, "You can only modify you own games !")
+            messages.error(self.request, _("You can only modify your own games."))
             raise Http404
 
         if form.is_valid():    
             if game.completed == True:
-                messages.error(self.request, "The Game is already completed.")
+                messages.error(self.request, _("The game is already completed."))
                 return HttpResponseRedirect(reverse('game', kwargs={"owner":league.owner, "league_id":league.id, "pk":game.id}))
 
             game.score_team_a = form.cleaned_data.get("score_team_a")
@@ -361,9 +362,9 @@ class GameDetail(FormMixin, generic.DetailView):
 
             UpdateStats(game)
 
-            messages.success(self.request, "The Game was updated successfully.")
+            messages.success(self.request, _("The score was saved."))
             return HttpResponseRedirect(reverse('league', kwargs={"owner": league.owner, "pk":league.id}))
-        messages.error(self.request, "form is not valid!.")
+        messages.error(self.request, _("The score is not valid."))
         return HttpResponseRedirect(reverse('game', kwargs={"owner": league.owner, "league_id":league.id, "pk":game.id}))
 
 
@@ -386,7 +387,7 @@ class GameDelete(LoginRequiredMixin, DeleteView):
         return obj
 
     def form_valid(self, form):
-        messages.success(self.request, "The Game was deleted successfully.")
+        messages.success(self.request, _("The game was deleted."))
         game=form.cleaned_data.get("game")
         logger.warning("GameDelete()")
         return super(GameDelete,self).form_valid(form)
@@ -467,7 +468,7 @@ def NewGame(request, league_pk, owner):
         form = GameForm(request.POST, initial=formdata)
 
         if not league.owner == request.user:
-            messages.error(request, "You can only modify create game for your own league !")
+            messages.error(request, _("You can only create games in your own leagues."))
             raise Http404
 
         if form.is_valid():
@@ -544,7 +545,7 @@ def NewManualGame(request, league_pk, owner):
     user=getUserDB(owner)
     league = get_object_or_404(League, id=league_pk, owner=user)
     if not league.owner == request.user:
-        messages.error(request, "You can only create games for your own leagues !")
+        messages.error(request, _("You can only create games in your own leagues."))
         raise Http404
 
     if request.method == 'POST':

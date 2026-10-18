@@ -490,3 +490,21 @@ a.danger {
     padding-right: 1rem;
   }
 }
+
+/* language selector */
+
+.language-selector {
+  margin: 0;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.language-selector button {
+  font-size: 0.85rem;
+  color: var(--pico-muted-color);
+}
+
+.language-selector button[aria-current] {
+  color: var(--pico-primary);
+  font-weight: 700;
+}

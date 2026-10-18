@@ -1,27 +1,28 @@
 {% extends 'ultimate_ladder/base.html' %}
+{% load i18n %}
 
 {% block content %}
 <a href="{% url 'league' game.owner league.id %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ league.name }}</a>
 
 <h1 class="game-title">
-  Game of {{ game.creation_date|date:"M j, Y, H:i" }}
+  {% blocktranslate with date=game.creation_date|date:"DATETIME_FORMAT" %}Game of {{ date }}{% endblocktranslate %}
   {% if game.completed %}
-  <span class="badge badge-completed">Completed</span>
+  <span class="badge badge-completed">{% translate "Completed" %}</span>
   {% else %}
-  <span class="badge badge-ongoing">Ongoing</span>
+  <span class="badge badge-ongoing">{% translate "Ongoing" %}</span>
   {% endif %}
 </h1>
 
 {% if game.completed %}
-<div class="scoreboard" aria-label="Final score">
-  <div><span class="team-label">Team A</span><span class="final-score">{{ game.score_team_a }}</span></div>
+<div class="scoreboard" aria-label="{% translate 'Final score' %}">
+  <div><span class="team-label">{% translate "Team A" %}</span><span class="final-score">{{ game.score_team_a }}</span></div>
   <span class="separator">–</span>
-  <div><span class="team-label">Team B</span><span class="final-score">{{ game.score_team_b }}</span></div>
+  <div><span class="team-label">{% translate "Team B" %}</span><span class="final-score">{{ game.score_team_b }}</span></div>
 </div>
 <p class="winner">
-  {% if game.score_team_a > game.score_team_b %}Team A wins
-  {% elif game.score_team_b > game.score_team_a %}Team B wins
-  {% else %}Draw{% endif %}
+  {% if game.score_team_a > game.score_team_b %}{% translate "Team A wins" %}
+  {% elif game.score_team_b > game.score_team_a %}{% translate "Team B wins" %}
+  {% else %}{% translate "Draw" %}{% endif %}
 </p>
 {% elif user.is_authenticated %}
 <form action="{% url 'game' game.owner league.id game.id %}" method="post">
@@ -31,31 +32,31 @@
     {% for field in form %}
     {% if not forloop.first %}<span class="separator">–</span>{% endif %}
     <div>
-      <label for="{{ field.id_for_label }}" class="team-label">{% if forloop.first %}Team A{% else %}Team B{% endif %}</label>
+      <label for="{{ field.id_for_label }}" class="team-label">{% if forloop.first %}{% translate "Team A" %}{% else %}{% translate "Team B" %}{% endif %}</label>
       <div class="stepper">
-        <button type="button" class="secondary outline" data-step="-1" data-target="{{ field.id_for_label }}" aria-label="Remove one point to {% if forloop.first %}team A{% else %}team B{% endif %}">−</button>
+        <button type="button" class="secondary outline" data-step="-1" data-target="{{ field.id_for_label }}" aria-label="{% if forloop.first %}{% translate 'Remove one point to team A' %}{% else %}{% translate 'Remove one point to team B' %}{% endif %}">−</button>
         {{ field }}
-        <button type="button" class="secondary outline" data-step="1" data-target="{{ field.id_for_label }}" aria-label="Add one point to {% if forloop.first %}team A{% else %}team B{% endif %}">+</button>
+        <button type="button" class="secondary outline" data-step="1" data-target="{{ field.id_for_label }}" aria-label="{% if forloop.first %}{% translate 'Add one point to team A' %}{% else %}{% translate 'Add one point to team B' %}{% endif %}">+</button>
       </div>
       {{ field.errors }}
     </div>
     {% endfor %}
   </div>
-  <button type="submit">Save the score</button>
+  <button type="submit">{% translate "Save the score" %}</button>
 </form>
 {% endif %}
 
 <div class="teams">
   {% for team in teams %}
   <article>
-    <h2>Team {{ team.name }}</h2>
+    <h2>{% blocktranslate with name=team.name %}Team {{ name }}{% endblocktranslate %}</h2>
     <p class="team-stats">
-      {{ team.score }} points · {{ team.nb_players }} player{{ team.nb_players|pluralize }} · {{ team.nb_women }} wom{{ team.nb_women|pluralize:"an,en" }}
+      {% blocktranslate with score=team.score %}{{ score }} points{% endblocktranslate %} · {% blocktranslate count counter=team.nb_players %}{{ counter }} player{% plural %}{{ counter }} players{% endblocktranslate %} · {% blocktranslate count counter=team.nb_women %}{{ counter }} woman{% plural %}{{ counter }} women{% endblocktranslate %}
     </p>
     <ul class="team-players">
       {% for t in team.members %}
       <li>
-        <a href="{% url 'player' game.owner t.player.id %}" class="{% if t.player.gender == 'f' %}woman{% else %}man{% endif %}">{{ t.player.name }}{% if t.player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="woman"></i>{% endif %}</a>
+        <a href="{% url 'player' game.owner t.player.id %}" class="{% if t.player.gender == 'f' %}woman{% else %}man{% endif %}">{{ t.player.name }}{% if t.player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="{% translate 'woman' %}"></i>{% endif %}</a>
         <span class="player-score">{{ t.player_score }}</span>
       </li>
       {% endfor %}
@@ -67,15 +68,15 @@
 <p class="balance">
   <i class="bi bi-speedometer2" aria-hidden="true"></i>
   {% if stronger_team %}
-  Level difference: {{ score_gap }} points in favour of team {{ stronger_team }}
+  {% blocktranslate %}Level difference: {{ score_gap }} points in favour of team {{ stronger_team }}{% endblocktranslate %}
   {% else %}
-  Both teams have the same level
+  {% translate "Both teams have the same level" %}
   {% endif %}
 </p>
 
 {% if user.is_authenticated %}
 <div class="actions">
-  <a href="{% url 'delete-game' game.owner league.id game.id %}" class="danger"><i class="bi bi-trash" aria-hidden="true"></i> Delete game</a>
+  <a href="{% url 'delete-game' game.owner league.id game.id %}" class="danger"><i class="bi bi-trash" aria-hidden="true"></i> {% translate "Delete game" %}</a>
 </div>
 {% endif %}
 

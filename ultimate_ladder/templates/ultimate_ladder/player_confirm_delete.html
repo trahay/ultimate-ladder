@@ -1,17 +1,17 @@
 {% extends 'ultimate_ladder/base.html' %}
-	
+{% load i18n %}
+
 {% block content %}
 
 {% if user.is_authenticated %}
-
 <article>
 	<form method="post">
 		{% csrf_token %}
-		<h2>Delete player</h2>
-		<p>Are you sure that you want to delete "{{player}}"?</p>
+		<h2>{% translate "Delete player" %}</h2>
+		<p>{% blocktranslate with name=player.name %}Are you sure that you want to delete the player "{{ name }}"?{% endblocktranslate %}</p>
 		<div class="actions">
-			<button type="submit"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button>
-			<a href="{% url 'players' player.owner %}" role="button" class="secondary outline">Cancel</a>
+			<button type="submit"><i class="bi bi-trash" aria-hidden="true"></i> {% translate "Delete" %}</button>
+			<a href="{% url 'players' player.owner %}" role="button" class="secondary outline">{% translate "Cancel" %}</a>
 		</div>
 	</form>
 </article>

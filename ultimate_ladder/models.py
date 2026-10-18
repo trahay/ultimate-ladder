@@ -3,9 +3,11 @@ import datetime
 #import settings
 from django.utils import timezone
 from django.conf import settings
+from django.utils.translation import pgettext_lazy
 
 # Create your models here.
-genders=( ('m', 'M'), ('f', 'F'))
+# The labels are translated, with the same English values (no migration)
+genders=( ('m', pgettext_lazy('gender', 'M')), ('f', pgettext_lazy('gender', 'F')))
 
 class Player(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)

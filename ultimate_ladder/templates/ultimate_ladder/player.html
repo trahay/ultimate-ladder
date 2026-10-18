@@ -1,45 +1,46 @@
 {% extends 'ultimate_ladder/base.html' %}
+{% load i18n %}
 
 {% block content %}
-<a href="{% url 'players' player.owner %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Players</a>
+<a href="{% url 'players' player.owner %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> {% translate "Players" %}</a>
 
 <h1 class="{% if player.gender == 'f' %}woman{% else %}man{% endif %}">
-    {{ player.name }}{% if player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="woman"></i>{% else %}<i class="bi bi-gender-male gender-icon" role="img" aria-label="man"></i>{% endif %}
+    {{ player.name }}{% if player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="{% translate 'woman' %}"></i>{% else %}<i class="bi bi-gender-male gender-icon" role="img" aria-label="{% translate 'man' %}"></i>{% endif %}
 </h1>
 
 <div class="metrics">
     <article>
-	<span class="metric-label">Score</span>
+	<span class="metric-label">{% translate "Score" context "level of a player" %}</span>
 	<span class="metric-value">{{ player.score }}</span>
     </article>
     <article>
-	<span class="metric-label">Games played</span>
+	<span class="metric-label">{% translate "Games played" %}</span>
 	<span class="metric-value">{{ totals.played }}</span>
     </article>
     <article>
-	<span class="metric-label">Wins</span>
+	<span class="metric-label">{% translate "Wins" %}</span>
 	<span class="metric-value">{{ totals.wins }}</span>
     </article>
     <article>
-	<span class="metric-label">Losses</span>
+	<span class="metric-label">{% translate "Losses" %}</span>
 	<span class="metric-value">{{ totals.losses }}</span>
     </article>
     <article>
-	<span class="metric-label">Draws</span>
+	<span class="metric-label">{% translate "Draws" %}</span>
 	<span class="metric-value">{{ totals.draws }}</span>
     </article>
     <article>
-	<span class="metric-label">Win %</span>
+	<span class="metric-label">{% translate "Win %" %}</span>
 	<span class="metric-value">{% if totals.win_rate is None %}–{% else %}{{ totals.win_rate|floatformat:0 }}%{% endif %}</span>
     </article>
 </div>
 
-<h2>Leagues</h2>
+<h2>{% translate "Leagues" %}</h2>
 {% if player_stats %}
 <div class="overflow-auto">
 <table>
     <thead><tr>
-	<th>League</th><th>Wins</th><th>Losses</th><th>Draws</th><th title="3 points per win, 1 per draw">Points</th>
+	<th>{% translate "League" %}</th><th>{% translate "Wins" %}</th><th>{% translate "Losses" %}</th><th>{% translate "Draws" %}</th><th title="{% translate '3 points per win, 1 per draw' %}">{% translate "Points" %}</th>
     </tr></thead>
     <tbody>
 	{% for stat in player_stats %}
@@ -55,21 +56,21 @@
 </table>
 </div>
 {% else %}
-<p class="empty">{{ player.name }} has not completed any game yet.</p>
+<p class="empty">{% blocktranslate with name=player.name %}{{ name }} has not completed any game yet.{% endblocktranslate %}</p>
 {% endif %}
 
 {% if recent_games %}
-<h2>Last games</h2>
+<h2>{% translate "Last games" %}</h2>
 <ul class="game-list">
     {% for g in recent_games %}
     <li>
-	<a href="{% url 'game' player.owner g.game.league.id g.game.id %}">{{ g.game.creation_date|date:"M j, Y" }}</a>
-	<span class="game-info">{{ g.game.league.name }} · team {{ g.team_name }}</span>
+	<a href="{% url 'game' player.owner g.game.league.id g.game.id %}">{{ g.game.creation_date|date:"DATE_FORMAT" }}</a>
+	<span class="game-info">{{ g.game.league.name }} · {% blocktranslate with name=g.team_name %}team {{ name }}{% endblocktranslate %}</span>
 	{% if g.result %}
 	<span class="game-score">{{ g.own }} – {{ g.other }}</span>
-	<span class="badge badge-{{ g.result }}">{% if g.result == 'win' %}Win{% elif g.result == 'loss' %}Loss{% else %}Draw{% endif %}</span>
+	<span class="badge badge-{{ g.result }}">{% if g.result == 'win' %}{% translate "Win" %}{% elif g.result == 'loss' %}{% translate "Loss" %}{% else %}{% translate "Draw" %}{% endif %}</span>
 	{% else %}
-	<span class="badge badge-ongoing">Ongoing</span>
+	<span class="badge badge-ongoing">{% translate "Ongoing" %}</span>
 	{% endif %}
     </li>
     {% endfor %}
@@ -78,8 +79,8 @@
 
 {% if user.is_authenticated %}
 <div class="actions">
-  <a href="{% url 'edit-player' player.owner player.id %}" role="button" class="secondary outline"><i class="bi bi-pencil" aria-hidden="true"></i> Edit player</a>
-  <a href="{% url 'delete-player' player.owner player.id %}" class="danger"><i class="bi bi-trash" aria-hidden="true"></i> Delete player</a>
+  <a href="{% url 'edit-player' player.owner player.id %}" role="button" class="secondary outline"><i class="bi bi-pencil" aria-hidden="true"></i> {% translate "Edit player" %}</a>
+  <a href="{% url 'delete-player' player.owner player.id %}" class="danger"><i class="bi bi-trash" aria-hidden="true"></i> {% translate "Delete player" %}</a>
 </div>
 {% endif %}
 {% endblock content %}

@@ -1,20 +1,21 @@
 {% extends 'ultimate_ladder/base.html' %}
+{% load i18n %}
 
 {% block content %}
 {% if user.is_authenticated %}
 
 <section>
     <div class="section-header">
-	<h1>Leagues</h1>
-	<a href="{% url 'add-league' user %}" role="button" class="outline"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create league</a>
+	<h1>{% translate "Leagues" %}</h1>
+	<a href="{% url 'add-league' user %}" role="button" class="outline"><i class="bi bi-plus-lg" aria-hidden="true"></i> {% translate "Create league" %}</a>
     </div>
     {% include 'ultimate_ladder/_league_cards.html' with owner=owner %}
 </section>
 
 <section>
     <div class="section-header">
-	<h1>Players</h1>
-	<a href="{% url 'add-player' user %}" role="button" class="outline"><i class="bi bi-plus-lg" aria-hidden="true"></i> Create player</a>
+	<h1>{% translate "Players" %}</h1>
+	<a href="{% url 'add-player' user %}" role="button" class="outline"><i class="bi bi-plus-lg" aria-hidden="true"></i> {% translate "Create player" %}</a>
     </div>
     {% include 'ultimate_ladder/_players_table.html' with players=all_players owner=owner %}
 </section>
@@ -22,8 +23,8 @@
 {% else %}
 <article class="login">
     <h1>Ultimate ladder</h1>
-    <p>Create balanced teams for your ultimate games, and follow the standings of your leagues.</p>
-    <a href="{% url 'login' %}?next={{ request.path }}" role="button">Log in</a>
+    <p>{% translate "Create balanced teams for your ultimate games, and follow the standings of your leagues." %}</p>
+    <a href="{% url 'login' %}?next={{ request.path }}" role="button">{% translate "Log in" %}</a>
 </article>
 {% endif %}
 {% endblock content %}

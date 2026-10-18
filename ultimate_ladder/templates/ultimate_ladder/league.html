@@ -1,4 +1,5 @@
 {% extends 'ultimate_ladder/base.html' %}
+{% load i18n %}
 
 {% block content %}
 
@@ -8,53 +9,54 @@
 	    order: [[0, 'asc']],
 	    pageLength: 25,
 	    lengthChange: false,
+	    language: DATATABLES_LANGUAGE,
 	});
     });
 </script>
 
-<a href="{% url 'leagues' league.owner %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Leagues</a>
+<a href="{% url 'leagues' league.owner %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> {% translate "Leagues" %}</a>
 <h1>{{ league.name }}</h1>
 
 {% if user.is_authenticated %}
 <div class="actions">
-    <a href="{% url 'add-game' league.owner league.id %}" role="button"><i class="bi bi-plus-lg" aria-hidden="true"></i> New game</a>
-    <a href="{% url 'add-manual-game' league.owner league.id %}" role="button" class="outline">New game (manual teams)</a>
+    <a href="{% url 'add-game' league.owner league.id %}" role="button"><i class="bi bi-plus-lg" aria-hidden="true"></i> {% translate "New game" %}</a>
+    <a href="{% url 'add-manual-game' league.owner league.id %}" role="button" class="outline">{% translate "New game (manual teams)" %}</a>
 </div>
 {% endif %}
 
 {% if ongoing_games %}
-<h2>Ongoing games</h2>
+<h2>{% translate "Ongoing games" %}</h2>
 <ul class="game-list">
     {% for game in ongoing_games %}
     <li>
-	<a href="{% url 'game' league.owner league.id game.id %}">{{ game.creation_date|date:"M j, Y, H:i" }}</a>
-	<span class="game-info">{{ game.nb_players }} player{{ game.nb_players|pluralize }}</span>
-	<span class="badge badge-ongoing">Ongoing</span>
+	<a href="{% url 'game' league.owner league.id game.id %}">{{ game.creation_date|date:"DATETIME_FORMAT" }}</a>
+	<span class="game-info">{% blocktranslate count counter=game.nb_players %}{{ counter }} player{% plural %}{{ counter }} players{% endblocktranslate %}</span>
+	<span class="badge badge-ongoing">{% translate "Ongoing" %}</span>
     </li>
     {% endfor %}
 </ul>
 {% endif %}
 
-<h2>Standings</h2>
-<p class="hint">3 points per win, 1 point per draw.</p>
+<h2>{% translate "Standings" %}</h2>
+<p class="hint">{% translate "3 points per win, 1 point per draw." %}</p>
 {% if player_list %}
 <div class="overflow-auto">
 <table id="players" class="display compact">
     <thead><tr>
 	<th>#</th>
-	<th>Player</th>
-	<th title="Games played in this league"><span class="label-long">Played</span><span class="label-short" aria-hidden="true">P</span></th>
-	<th title="Wins"><span class="label-long">Wins</span><span class="label-short" aria-hidden="true">W</span></th>
-	<th title="Losses"><span class="label-long">Losses</span><span class="label-short" aria-hidden="true">L</span></th>
-	<th title="Draws"><span class="label-long">Draws</span><span class="label-short" aria-hidden="true">D</span></th>
-	<th title="3 points per win, 1 per draw"><span class="label-long">Points</span><span class="label-short" aria-hidden="true">Pts</span></th>
-	<th title="Current level of the player, all leagues included">Score</th>
+	<th>{% translate "Player" %}</th>
+	<th title="{% translate 'Games played in this league' %}"><span class="label-long">{% translate "Played" %}</span><span class="label-short" aria-hidden="true">{% translate "P" context "abbreviation of played" %}</span></th>
+	<th title="{% translate 'Wins' %}"><span class="label-long">{% translate "Wins" %}</span><span class="label-short" aria-hidden="true">{% translate "W" context "abbreviation of wins" %}</span></th>
+	<th title="{% translate 'Losses' %}"><span class="label-long">{% translate "Losses" %}</span><span class="label-short" aria-hidden="true">{% translate "L" context "abbreviation of losses" %}</span></th>
+	<th title="{% translate 'Draws' %}"><span class="label-long">{% translate "Draws" %}</span><span class="label-short" aria-hidden="true">{% translate "D" context "abbreviation of draws" %}</span></th>
+	<th title="{% translate '3 points per win, 1 per draw' %}"><span class="label-long">{% translate "Points" %}</span><span class="label-short" aria-hidden="true">{% translate "Pts" context "abbreviation of points" %}</span></th>
+	<th title="{% translate 'Current level of the player, all leagues included' %}">{% translate "Score" context "level of a player" %}</th>
     </tr></thead>
     <tbody>
 	{% for stat in player_list %}
 	<tr>
 	    <td>{{ forloop.counter }}</td>
-	    <td><a href="{% url 'player' league.owner stat.player.id %}" class="{% if stat.player.gender == 'f' %}woman{% else %}man{% endif %}">{{ stat.player.name }}{% if stat.player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="woman"></i>{% endif %}</a></td>
+	    <td><a href="{% url 'player' league.owner stat.player.id %}" class="{% if stat.player.gender == 'f' %}woman{% else %}man{% endif %}">{{ stat.player.name }}{% if stat.player.gender == 'f' %}<i class="bi bi-gender-female gender-icon" role="img" aria-label="{% translate 'woman' %}"></i>{% endif %}</a></td>
 	    <td>{{ stat.played }}</td>
 	    <td>{{ stat.win }}</td>
 	    <td>{{ stat.loss }}</td>
@@ -67,30 +69,30 @@
 </table>
 </div>
 {% else %}
-<p class="empty">The standings will appear once a game is completed.</p>
+<p class="empty">{% translate "The standings will appear once a game is completed." %}</p>
 {% endif %}
 
-<h2>Completed games</h2>
+<h2>{% translate "Completed games" %}</h2>
 {% if completed_games %}
 <ul class="game-list">
     {% for game in completed_games %}
     <li>
-	<a href="{% url 'game' league.owner league.id game.id %}">{{ game.creation_date|date:"M j, Y, H:i" }}</a>
+	<a href="{% url 'game' league.owner league.id game.id %}">{{ game.creation_date|date:"DATETIME_FORMAT" }}</a>
 	<span class="game-score">A {{ game.score_team_a }} – {{ game.score_team_b }} B</span>
 	<span class="game-info">
-	    {% if game.score_team_a > game.score_team_b %}Team A wins{% elif game.score_team_b > game.score_team_a %}Team B wins{% else %}Draw{% endif %}
+	    {% if game.score_team_a > game.score_team_b %}{% translate "Team A wins" %}{% elif game.score_team_b > game.score_team_a %}{% translate "Team B wins" %}{% else %}{% translate "Draw" %}{% endif %}
 	</span>
     </li>
     {% endfor %}
 </ul>
 {% else %}
-<p class="empty">No completed game yet.</p>
+<p class="empty">{% translate "No completed game yet." %}</p>
 {% endif %}
 
 {% if user.is_authenticated %}
 <div class="actions">
-    <a href="{% url 'edit-league' league.owner league.id %}" role="button" class="secondary outline"><i class="bi bi-pencil" aria-hidden="true"></i> Edit league</a>
-    <a href="{% url 'delete-league' league.owner league.id %}" class="danger"><i class="bi bi-trash" aria-hidden="true"></i> Delete league</a>
+    <a href="{% url 'edit-league' league.owner league.id %}" role="button" class="secondary outline"><i class="bi bi-pencil" aria-hidden="true"></i> {% translate "Edit league" %}</a>
+    <a href="{% url 'delete-league' league.owner league.id %}" class="danger"><i class="bi bi-trash" aria-hidden="true"></i> {% translate "Delete league" %}</a>
 </div>
 {% endif %}
 {% endblock content %}

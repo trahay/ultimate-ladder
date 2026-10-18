@@ -1,17 +1,18 @@
 {% extends 'ultimate_ladder/base.html' %}
-	
+{% load i18n %}
+
 {% block content %}
 
 {% if user.is_authenticated %}
-<h1>{% if player %}Edit {{ player.name }}{% else %}New player{% endif %}</h1>
+<h1>{% if player %}{% blocktranslate with name=player.name %}Edit {{ name }}{% endblocktranslate %}{% else %}{% translate "New player" %}{% endif %}</h1>
 
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
     <div class="actions">
-        <button type="submit">Save</button>
-        <a href="{% if player %}{% url 'player' player.owner player.id %}{% else %}{% url 'players' user %}{% endif %}" role="button" class="secondary outline">Cancel</a>
+        <button type="submit">{% translate "Save" %}</button>
+        <a href="{% if player %}{% url 'player' player.owner player.id %}{% else %}{% url 'players' user %}{% endif %}" role="button" class="secondary outline">{% translate "Cancel" %}</a>
     </div>
 </form>
-{% endif %} 
+{% endif %}
 
 {% endblock content %}

@@ -1,11 +1,12 @@
 {% extends 'ultimate_ladder/base.html' %}
+{% load i18n %}
 
 {% block content %}
 
 {% if user.is_authenticated %}
 <a href="{% url 'league' league.owner league.id %}" class="back"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ league.name }}</a>
-<h1>New game (manual teams)</h1>
-<p>Choose the team of each player. <a href="{% url 'add-game' league.owner league.id %}">Create the teams automatically</a></p>
+<h1>{% translate "New game (manual teams)" %}</h1>
+<p>{% translate "Choose the team of each player." %} <a href="{% url 'add-game' league.owner league.id %}">{% translate "Create the teams automatically" %}</a></p>
 
 <form action="{% url 'add-manual-game' league.owner league.id %}" method="post">
     {% csrf_token %}
@@ -13,7 +14,7 @@
     <div class="overflow-auto">
     <table id="manual-teams">
 	<thead><tr>
-	    <th>Player</th><th>Score</th><th>Absent</th><th>Team A</th><th>Team B</th>
+	    <th>{% translate "Player" %}</th><th>{% translate "Score" context "level of a player" %}</th><th>{% translate "Absent" %}</th><th>{% translate "Team A" %}</th><th>{% translate "Team B" %}</th>
 	</tr></thead>
 	<tbody>
 	    {% for player, field in form.player_fields %}
@@ -25,16 +26,16 @@
 		{% endfor %}
 	    </tr>
 	    {% empty %}
-	    <tr><td colspan="5">No player.</td></tr>
+	    <tr><td colspan="5">{% translate "No player yet." %}</td></tr>
 	    {% endfor %}
 	</tbody>
     </table>
     </div>
 
-    <p id="team-a-summary">Team A: <span class="count">0</span> players (<span class="women">0</span> women), score <span class="score">0</span></p>
-    <p id="team-b-summary">Team B: <span class="count">0</span> players (<span class="women">0</span> women), score <span class="score">0</span></p>
+    <p id="team-a-summary">{% blocktranslate %}Team A — players: <span class="count">0</span>, women: <span class="women">0</span>, total level: <span class="score">0</span>{% endblocktranslate %}</p>
+    <p id="team-b-summary">{% blocktranslate %}Team B — players: <span class="count">0</span>, women: <span class="women">0</span>, total level: <span class="score">0</span>{% endblocktranslate %}</p>
 
-    <button type="submit">Create the game</button>
+    <button type="submit">{% translate "Create the game" %}</button>
 </form>
 
 

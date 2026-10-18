@@ -69,6 +69,23 @@ python manage.py test
 Tests marked with `@unittest.expectedFailure` document known bugs.
 
 
+# Translations
+
+The site is in French by default, and in English for the users who select
+it. The texts are written in English in the code and the templates, and
+translated in `locale/fr/LC_MESSAGES/django.po`.
+
+After changing a text, update and compile the translations (gettext is
+installed in the Docker image):
+```
+docker-compose exec web python manage.py makemessages -l fr -i 'ultimate_ladder/matchmaking/*' -i 'static/*' -i 'ultimate_ladder/static/*' --no-obsolete
+# translate the new texts in locale/fr/LC_MESSAGES/django.po, then:
+docker-compose exec web python manage.py compilemessages -l fr --ignore 'ultimate_ladder/matchmaking'
+```
+Commit both `django.po` and `django.mo`: the tests check that the compiled
+file is up to date.
+
+
 # Using Ultimate-ladder
 
 First, you need to create a `League`, eg `Summer league 2024`, and a

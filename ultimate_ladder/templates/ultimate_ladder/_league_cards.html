@@ -1,18 +1,23 @@
 {% comment %}List of leagues, as cards. Needs `league_list` (see leagues_with_stats) and `owner`.{% endcomment %}
+{% load i18n %}
 {% if league_list %}
 <div class="league-cards">
     {% for league in league_list %}
     <article>
 	<h3><a href="{% url 'league' owner league.id %}">{{ league.name }}</a></h3>
 	<p class="league-stats">
-	    {{ league.nb_games }} game{{ league.nb_games|pluralize }} · {{ league.nb_players }} player{{ league.nb_players|pluralize }}
+	    {% blocktranslate count counter=league.nb_games %}{{ counter }} game{% plural %}{{ counter }} games{% endblocktranslate %} · {% blocktranslate count counter=league.nb_players %}{{ counter }} player{% plural %}{{ counter }} players{% endblocktranslate %}
 	</p>
 	<p class="league-stats">
-	    {% if league.last_game %}Last game: {{ league.last_game|date:"M j, Y" }}{% else %}No game yet{% endif %}
+	    {% if league.last_game %}
+	    {% blocktranslate with date=league.last_game|date:"DATE_FORMAT" %}Last game: {{ date }}{% endblocktranslate %}
+	    {% else %}
+	    {% translate "No game yet" %}
+	    {% endif %}
 	</p>
     </article>
     {% endfor %}
 </div>
 {% else %}
-<p class="empty">No league yet. Create one to start organizing games.</p>
+<p class="empty">{% translate "No league yet. Create one to start organizing games." %}</p>
 {% endif %}
